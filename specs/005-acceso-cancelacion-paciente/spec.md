@@ -29,24 +29,36 @@ Esta spec no tiene pantallas propias para el paciente: las acciones que define (
 enlace, cancelar) se presentan dentro del portal (002). Sí define el comportamiento que
 cualquier pantalla de paciente debe respetar.
 
+## Clarifications
+
+### Session 2026-11-07
+
+- Q: ¿Basta con el enlace para acceder, o el paciente debe confirmar además las 4 últimas cifras de su teléfono? → A: Enlace + 4 últimas cifras del teléfono de la ficha, en todos los canales (portal, correos de recordatorio y futuros); sin ambos no se muestra ningún dato y los intentos fallidos están limitados.
+- Q: ¿Qué límite de intentos fallidos de las 4 cifras se aplica? → A: 5 fallos seguidos → pausa de 15 min; 10 fallos seguidos → enlace bloqueado hasta que recepción lo regenere; un acierto pone la cuenta a cero.
+- Q: ¿Cuánto dura el acceso tras confirmar las 4 cifras? → A: En ese dispositivo, hasta 30 minutos sin actividad; después se vuelven a pedir. Regenerar el enlace lo termina al instante.
+- Q: ¿El origen de la cancelación distingue portal y recordatorio? → A: No. Dos valores: `recepcion` y `paciente`; se pide a la 001 que sustituya la propuesta de tres valores de S2.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Entrar con mi enlace personal (Priority: P1)
 
-Un paciente abre el enlace personal que le dio la clínica (o que le llegó en un correo) y
-accede a sus datos sin crear cuenta ni recordar contraseña. Un enlace que no es válido no
-muestra ningún dato y le dice cómo conseguir uno nuevo.
+Un paciente abre el enlace personal que le dio la clínica (o que le llegó en un correo),
+confirma las 4 últimas cifras de su teléfono y accede a sus datos sin crear cuenta ni
+recordar contraseña. Un enlace que no es válido no muestra ningún dato y le dice cómo
+conseguir uno nuevo.
 
 **Why this priority**: sin acceso no hay portal ni cancelación; es la base de todo lo demás.
 
-**Independent Test**: con la semilla cargada, abrir el enlace vigente de un paciente y
-comprobar que da acceso a los datos de ese paciente y solo a ellos; abrir un enlace inventado
-y comprobar que no muestra ningún dato.
+**Independent Test**: con la semilla cargada, abrir el enlace vigente de un paciente,
+introducir las 4 últimas cifras de su teléfono y comprobar que da acceso a los datos de ese
+paciente y solo a ellos; con cifras erróneas, y con un enlace inventado, comprobar que no se
+muestra ningún dato.
 
 **Acceptance Scenarios**:
 
-1. **Given** un paciente con enlace personal vigente, **When** lo abre, **Then** accede a sus
-   datos sin cuenta ni contraseña y no ve datos de ningún otro paciente.
+1. **Given** un paciente con enlace personal vigente, **When** lo abre e introduce las 4
+   últimas cifras del teléfono de su ficha, **Then** accede a sus datos sin cuenta ni
+   contraseña y no ve datos de ningún otro paciente.
 2. **Given** un enlace que nunca ha existido (inventado o mal copiado), **When** alguien lo
    abre, **Then** no ve ningún dato de citas ni de pacientes (ni siquiera un nombre) y ve un
    mensaje que dice que el enlace no es válido y cómo pedir uno nuevo: nombre y teléfono de la
@@ -54,6 +66,21 @@ y comprobar que no muestra ningún dato.
 3. **Given** un paciente que ya tiene enlace, **When** lo abre varias veces durante semanas,
    reserva nuevas citas o cancela alguna, **Then** su enlace sigue siendo el mismo y sigue
    funcionando.
+4. **Given** un enlace vigente, **When** alguien lo abre e introduce cifras que no coinciden
+   con las 4 últimas del teléfono de la ficha, **Then** no ve ningún dato de citas ni de
+   pacientes (ni siquiera un nombre) y puede volver a intentarlo dentro del límite de
+   intentos (FR-006a).
+5. **Given** un enlace vigente con 4 fallos seguidos, **When** se introduce una quinta vez
+   una cifra errónea, **Then** durante 15 minutos se rechaza cualquier intento (incluso el
+   correcto) y se indica a qué hora se puede volver a intentar; **Given** 10 fallos seguidos,
+   **When** se abre el enlace, **Then** no se piden las cifras, se indica que el enlace está
+   bloqueado y se muestran el nombre y el teléfono de la clínica para pedir uno nuevo.
+6. **Given** un enlace con 3 fallos seguidos, **When** se introducen las cifras correctas,
+   **Then** se accede y la cuenta de fallos vuelve a cero.
+7. **Given** un paciente que entró con sus 4 cifras, **When** vuelve a usar el portal en ese
+   dispositivo a los 29 minutos sin actividad, **Then** sigue dentro; **When** lo hace a los
+   31 minutos, **Then** se le vuelven a pedir las 4 cifras y no ve ningún dato hasta
+   confirmarlas (FR-006b).
 
 ---
 
@@ -114,8 +141,10 @@ anterior ya no da acceso y el nuevo sí, y que las citas del paciente no cambian
    entregárselo.
 2. **Given** se ha generado B, **When** alguien abre A, **Then** ve el mismo mensaje que con un
    enlace que nunca existió y ningún dato.
-3. **Given** se ha generado B, **When** el paciente abre B, **Then** accede a sus datos con
-   todas sus citas intactas.
+3. **Given** se ha generado B, **When** el paciente abre B y confirma sus 4 cifras, **Then**
+   accede a sus datos con todas sus citas intactas.
+5. **Given** el enlace A está bloqueado por 10 fallos seguidos (FR-006a), **When** recepción
+   genera B, **Then** B empieza sin fallos y el paciente puede entrar con sus 4 cifras.
 4. **Given** el paciente tenía su portal abierto con A, **When** recepción genera B y el
    paciente intenta cancelar desde la pantalla abierta, **Then** la acción se rechaza como
    enlace no válido y la cita no cambia.
@@ -149,6 +178,18 @@ anterior ya no da acceso y el nuevo sí, y que las citas del paciente no cambian
   válido; el sistema no intenta adivinar el correcto.
 - **Correo antiguo con un enlace ya regenerado**: mismo mensaje que cualquier enlace no
   válido.
+- **Recepción cambia el teléfono de la ficha**: desde ese momento se piden las 4 últimas
+  cifras del teléfono nuevo; el enlace no cambia.
+- **Correo reenviado o enlace abierto por un analizador de enlaces**: sin las 4 cifras no se
+  muestra ningún dato (FR-006).
+- **Fallos desde varios dispositivos**: cuentan todos para el mismo enlace; el 5.º fallo
+  pausa y el 10.º bloquea el enlace en todos los dispositivos a la vez (FR-006a).
+- **Intento correcto durante la pausa de 15 minutos**: se rechaza igual, sin comprobarlo, y
+  no cuenta como fallo.
+- **Acceso caducado con la pantalla abierta**: el paciente confirma una cancelación tras más
+  de 30 minutos sin actividad; no se cancela nada, se le piden las 4 cifras y, tras
+  confirmarlas, tiene que volver a pedir la cancelación; el plazo se comprueba en ese nuevo
+  momento (FR-006b, FR-009).
 - **Cambio de hora** (último domingo de marzo y de octubre, de madrugada): la clínica solo
   tiene citas de lunes a viernes de 09:00 a 20:00, así que el vencimiento del plazo (24 h
   antes) cae siempre entre 09:00 y 20:00 de un día de diario o de domingo, después del cambio.
@@ -162,7 +203,8 @@ anterior ya no da acceso y el nuevo sí, y que las citas del paciente no cambian
 **Acceso del paciente**
 
 - **FR-001**: Cada ficha de paciente DEBE tener exactamente un enlace personal vigente, de la
-  forma `/p/[token]`. El paciente accede sin cuenta, sin usuario y sin contraseña.
+  forma `/p/[token]`. El paciente accede sin cuenta, sin usuario y sin contraseña, con ese
+  enlace y las 4 últimas cifras de su teléfono (FR-006).
 - **FR-002**: El token DEBE ser opaco: no contiene ni permite deducir el nombre, el teléfono,
   la clínica ni ningún otro dato del paciente, ni el enlace de otro paciente; adivinar un
   enlace válido DEBE ser impracticable.
@@ -176,10 +218,26 @@ anterior ya no da acceso y el nuevo sí, y que las citas del paciente no cambian
   entregárselo al paciente.
 - **FR-006**: Abrir un enlace vigente DEBE dar acceso a los datos de ese paciente y solo de
   ese paciente en su clínica; ninguna petición hecha con un enlace puede leer ni modificar
-  citas de otra ficha. Requisito de acceso: [NEEDS CLARIFICATION: ¿basta con el enlace, o el
-  paciente debe además confirmar las 4 últimas cifras de su teléfono, como fijó la spec del
-  portal con Sara? Afecta a todos los canales, incluidos los correos de recordatorio.] Qué
-  datos se muestran tras entrar lo define la 002.
+  citas de otra ficha. El acceso DEBE hacerse en dos pasos, igual en todos los canales
+  (portal, correos de recordatorio y canales futuros): (1) abrir el enlace vigente; (2)
+  confirmar las 4 últimas cifras del teléfono que figura en ese momento en la ficha. Hasta
+  completar ambos pasos NO DEBE mostrarse ningún dato de citas ni de pacientes (ni siquiera
+  un nombre) ni aceptarse ninguna acción; solo el nombre y el teléfono de la clínica. Los
+  intentos fallidos de las 4 cifras están limitados por enlace (FR-006a). Qué datos se
+  muestran tras entrar lo define la 002.
+- **FR-006a (RN intentos)**: Los fallos de las 4 cifras se cuentan por enlace, de forma
+  consecutiva (da igual desde qué dispositivo), y un acierto pone la cuenta a cero:
+  - Al 5.º fallo seguido, durante 15 minutos se rechaza cualquier intento sin comprobarlo
+    (incluso el correcto), indicando la hora a partir de la cual se puede volver a probar.
+  - Al 10.º fallo seguido, el enlace queda bloqueado: ya no pide las cifras, indica que el
+    enlace está bloqueado y muestra el nombre y el teléfono de la clínica. Solo se
+    desbloquea regenerándolo (FR-004); el enlace nuevo empieza sin fallos.
+  - Un enlace bloqueado no muestra ningún dato de pacientes ni de citas (FR-006).
+- **FR-006b (RN duración del acceso)**: Tras confirmar las 4 cifras, el acceso vale solo en
+  ese dispositivo y termina tras 30 minutos sin actividad; cada petición del paciente con el
+  acceso abierto reinicia los 30 minutos. Terminado, se vuelven a pedir las 4 cifras antes de
+  mostrar datos o aceptar acciones. Regenerar el enlace (FR-004) termina al instante todos
+  los accesos abiertos con el anterior. No hay opción de «recordar este dispositivo».
 - **FR-007**: Un enlace no válido (inventado, mal copiado o regenerado) NO DEBE mostrar ningún
   dato de citas ni de pacientes, ni siquiera un nombre. Todos los enlaces no válidos reciben
   la misma respuesta, de modo que no se puede distinguir un enlace regenerado de uno que
@@ -214,7 +272,10 @@ anterior ya no da acceso y el nuevo sí, y que las citas del paciente no cambian
 - **FR-013**: La cancelación del paciente DEBE ser la transición «reservada» → «cancelada» de
   la 001 (FR-017): definitiva e idéntica en efecto a la de recepción. El hueco queda libre de
   inmediato y admite una cita nueva (001 FR-006, FR-011). La cancelación queda registrada
-  como hecha por el paciente, con su momento, con el registro de origen que define la 001.
+  con origen «paciente» y su momento, con el registro de origen que define la 001. El
+  origen es uno solo para todos los canales del paciente: el sistema no distingue si llegó
+  desde el portal o desde un correo, porque el enlace es el mismo (FR-008), y los enlaces no
+  llevan ninguna marca de canal.
 - **FR-014**: Si el estado de la cita cambió desde que se mostró, la cancelación DEBE
   rechazarse mostrando el estado actual (001 FR-020). Ante cancelaciones simultáneas de la
   misma cita, exactamente una cambia el estado.
@@ -277,9 +338,14 @@ anterior ya no da acceso y el nuevo sí, y que las citas del paciente no cambian
 ### Key Entities *(include if feature involves data)*
 
 - **Enlace personal (acceso del paciente)**: credencial opaca que da acceso a los datos de una
-  ficha de paciente. Pertenece a exactamente una ficha y a su clínica; cada ficha tiene
-  exactamente un enlace vigente; se sabe cuándo se generó. Al regenerarse, el anterior deja
-  de existir como credencial válida.
+  ficha de paciente, junto con las 4 últimas cifras del teléfono de esa ficha (FR-006).
+  Pertenece a exactamente una ficha y a su clínica; cada ficha tiene exactamente un enlace
+  vigente; se sabe cuándo se generó, cuántos fallos seguidos de las 4 cifras lleva, hasta
+  cuándo está en pausa y si está bloqueado (FR-006a). Al regenerarse, el anterior deja de
+  existir como credencial válida.
+- **Acceso abierto**: lo que obtiene un dispositivo al confirmar las 4 cifras de un enlace
+  vigente. Pertenece a ese enlace; caduca a los 30 minutos sin actividad y termina al
+  regenerar el enlace (FR-006b).
 - **Política de cancelación del paciente**: el plazo (24 h antes del inicio, FR-009) y su
   enunciado canónico (FR-016). Única para todos los canales del paciente.
 - **Cita** *(de la 001)*: esta spec solo lee su inicio y su estado y aplica la transición
@@ -292,7 +358,9 @@ anterior ya no da acceso y el nuevo sí, y que las citas del paciente no cambian
 ### Measurable Outcomes
 
 - **SC-001**: Los criterios de aceptación pedidos tienen test automatizado y pasan al 100 %:
-  enlace válido, no válido y regenerado (US1 #1–#2, US3 #2–#3); cancelación a 25 h (procede)
+  enlace válido, no válido y regenerado (US1 #1–#2, US3 #2–#3); 4 cifras erróneas, pausa tras 5 fallos, bloqueo tras 10 y
+  puesta a cero tras un acierto (US1 #4–#6, US3 #5); caducidad del acceso a los 30 minutos
+  sin actividad (US1 #7); cancelación a 25 h (procede)
   y a 23 h (no procede) (US2 #1–#3); frontera exacta de 24 h (US2 #4); hueco liberado que
   admite una cita nueva (US2 #5).
 - **SC-002**: Tras regenerar un enlace, el 100 % de los intentos con el enlace anterior se
@@ -318,8 +386,11 @@ anterior ya no da acceso y el nuevo sí, y que las citas del paciente no cambian
 - Una sola clínica por instalación (001 FR-001): por eso un enlace no válido puede mostrar el
   nombre y el teléfono de la clínica sin revelar nada de ningún paciente.
 - El token es suficientemente largo y aleatorio para que no se pueda adivinar; por eso no se
-  limitan los intentos de abrir enlaces. Si se mantiene una confirmación adicional (FR-006),
-  su límite de intentos se define aquí.
+  limitan los intentos de abrir enlaces. Las 4 cifras (10.000 combinaciones) sí se pueden
+  adivinar por fuerza bruta, por eso sus intentos fallidos se limitan por enlace (FR-006a):
+  como mucho 10 intentos por enlace antes del bloqueo, un 0,1 % de probabilidad de acertar.
+- Las 4 cifras no son una contraseña: el paciente no las elige ni tiene que recordarlas,
+  porque son las de su propio teléfono.
 - La entrega del enlace al paciente en la v1 la hace recepción a mano (FR-005); los correos
   de recordatorio (003) lo incluyen cuando existan. CitaClara no envía SMS.
 - El paciente no puede reservar ni mover citas; solo ver (002) y cancelar (esta spec).
@@ -331,22 +402,25 @@ anterior ya no da acceso y el nuevo sí, y que las citas del paciente no cambian
 Esta spec no se puede aprobar mientras otras specs digan lo contrario (Principio I). Cambios
 que se piden a sus propietarios:
 
-- **001 Núcleo de agenda — bloqueante.** La copia de trabajo de la 001 contiene una enmienda
-  S1 (sin commit) que fija «Paciente – portal» y «Paciente – recordatorio» en «hasta la hora
-  de inicio» (opción A), afirma que FR-018 de la 001 es la única fuente del plazo y prohíbe a
-  otras specs fijar plazos propios. Eso contradice esta spec. Se pide: (a) sustituir las filas
-  de paciente de FR-018 por una única remisión a «005, FR-009»; (b) actualizar la
-  clarificación S1 para registrar la decisión de Sara sobre C1 (24 h); (c) en Key Entities,
-  cambiar «No tiene acceso al sistema» por una remisión a la 005; (d) en Assumptions, sacar
-  «cualquier acceso del paciente» de «Fuera de alcance» y remitir a la 005.
-- **001 — origen de la cancelación (S2) y teléfono de la clínica (S9).** Esta spec los usa y
-  no los define; deben quedar en la 001.
+- **001 Núcleo de agenda — resuelta (aprobada por su propietario el 2026-11-07).** La 001
+  tenía una enmienda S1 que fijaba el plazo del paciente en «hasta la hora de inicio»
+  (opción A), en contra de esta spec. Ya aplicado en la 001: (a) FR-018 tiene una única fila
+  «Paciente» que remite a «005, FR-009»; (b) la clarificación S1 registra la decisión de
+  Sara sobre C1 (24 h); (c) Key Entities remite a la 005 para el acceso del paciente; (d)
+  «Fuera de alcance» remite a la 005.
+- **001 — origen de la cancelación (S2) y teléfono de la clínica (S9) — resuelta.** Esta
+  spec los usa y no los define. La 001 (FR-018a) ya define exactamente dos valores de
+  origen, `recepcion` y `paciente` (FR-013), y el teléfono de la clínica (FR-022).
+  Consecuencia para la 002: «Cancelada por el paciente» y «Huecos liberados» filtran por
+  `paciente`.
 - **002 Portal del paciente.** Eliminar sus propias definiciones de acceso (FR-001 a FR-005,
   la entidad «Acceso de paciente») y de plazo (FR-012, FR-013 y el supuesto de 24 h) y citar
   la 005. Mantiene pantallas, datos visibles y la guía de textos.
 - **003 Recordatorios de cita** (hoy `002-recordatorios-cita`; renumerar según S3). Eliminar
   el enlace por cita (`/cancelar/[token]`, almacenamiento propio del token) y su plazo
-  (FR-012); cada correo lleva el enlace personal (FR-008) y el enunciado de FR-016. Riesgo a
+  (FR-012); cada correo lleva el enlace personal (FR-008) y el enunciado de FR-016. Abrirlo
+  pide las 4 cifras (FR-006), así que su objetivo de pulsaciones para cancelar debe
+  revisarse. Riesgo a
   decidir en la 003: con el envío actual a las 08:00 de la víspera, al paciente le quedan
   entre 1 h (cita a las 09:00) y 11 h (cita a las 19:00) para cancelar desde el correo; si
   se quiere más margen, la 003 debe adelantar el envío.

@@ -13,7 +13,7 @@
 
 ## Requirement Completeness
 
-- [ ] No [NEEDS CLARIFICATION] markers remain
+- [x] No [NEEDS CLARIFICATION] markers remain
 - [x] Requirements are testable and unambiguous
 - [x] Success criteria are measurable
 - [x] Success criteria are technology-agnostic (no implementation details)
@@ -31,11 +31,10 @@
 
 ## Notes
 
-- Pendiente: 1 marcador [NEEDS CLARIFICATION] en FR-006 (¿segundo factor de 4 cifras además
-  del enlace?).
+- Resuelto (clarificación 2026-11-07): FR-006 pide enlace + 4 últimas cifras del teléfono;
+  límite de intentos en FR-006a y duración del acceso en FR-006b.
 - La forma `/p/[token]` aparece en FR-001 a propósito: es el contrato visible que consumen 002
   y 003 (lo exige la descripción), no una decisión de implementación.
-- Bloqueo de aprobación (fuera del checklist de calidad): la enmienda S1 sin commit de la 001
-  (FR-018, opción A, «hasta la hora de inicio») contradice el plazo de 24 h de esta spec. Ver
-  «Dependencias y enmiendas requeridas».
+- Bloqueo de aprobación resuelto: la 001 aplicó la enmienda S1 (FR-018 remite a 005 FR-009)
+  el 2026-11-07. Ver «Dependencias y enmiendas requeridas».
 - Items marked incomplete require spec updates before `/speckit-clarify` or `/speckit-plan`

@@ -4,7 +4,7 @@
 
 **Created**: 2026-11-07
 
-**Status**: Aprobada (2026-11-07, MarceloMansilla) · Enmienda revisión cruzada S2–S5 aprobada (2026-11-07, MarceloMansilla)
+**Status**: Aprobada (2026-11-07, MarceloMansilla) · Enmienda revisión cruzada S2–S5 aprobada (2026-11-07, MarceloMansilla) · Enmienda S1 (plazo del paciente → 005) aprobada (2026-11-07, MarceloMansilla)
 
 **Input**: User description: "Núcleo de agenda de CitaClara. Contexto: clínicas pequeñas (2-5 profesionales); la recepción gestiona la agenda; los pacientes, de momento, solo existen como fichas. Alcance de la 001: entidades (clínica con clave de panel, profesionales, servicios, pacientes, citas); cita = profesional + servicio + paciente con inicio y fin = inicio + duración; estados reservada → completada | cancelada | no_asistida; RN1 sin solapes (también con reservas simultáneas); RN2 sin citas en el pasado; interfaz de recepción con agenda del día por profesional, alta de cita y acciones de estado; acceso con clave de clínica; semilla determinista de Clínica Eleva; fuera de alcance: acceso del paciente, recordatorios, analítica, pagos online."
 
@@ -22,7 +22,7 @@
 - Q: ¿Qué significa «datos idénticos» en la semilla? → A: Mismo contenido y mismos identificadores; solo puede variar el hash de la clave (la misma clave sigue funcionando).
 - Q: ¿La duración de los servicios debe ser múltiplo de 15 minutos? → A: Sí (15, 30, 45, 60…).
 - Q: ¿Cómo se verifican SC-002 y SC-003? → A: Prueba manual previa a la entrega: 2 personas que nunca han usado CitaClara realizan ambas tareas en portátil y móvil, cronometradas.
-- Q: ¿Hasta cuándo puede cancelar el paciente, desde el portal o desde el enlace del recordatorio? (S1 de la revisión cruzada) → A: Hasta la hora de inicio de la cita en todos los canales, igual que recepción (opción A); el portal deja su regla de 24 horas y el recordatorio no cambia. El plazo de cada canal se fija solo en FR-018 de la 001; las demás specs lo citan.
+- Q: ¿Hasta cuándo puede cancelar el paciente, desde el portal o desde el enlace del recordatorio? (S1 de la revisión cruzada) → A: Hasta 24 horas antes del inicio, en todos los canales del paciente (decisión de Sara sobre C1: «regla única y que se pueda explicar por teléfono»; sustituye a la opción A, «hasta la hora de inicio», que se había fijado antes). El plazo del paciente lo fija solo la spec 005 (FR-009); la 001 fija solo el de recepción (FR-018) y remite a la 005 para el del paciente.
 
 ### Enmienda revisión cruzada S2–S5, 2026-11-07
 
@@ -41,8 +41,19 @@ lo que pedían pasa a ser de la 001 o de la 005, y esas copias no se integran.
 - **S5 — No asistencia**: FR-023 y SC-005 hablan de «proporción de no asistidas sobre el total
   de citas de la historia»; la «tasa de no asistencia» como indicador es de la 004. La
   semilla y sus porcentajes no cambian.
-- Fuera de esta enmienda: el plazo de cancelación por canal (FR-018, punto S1), que sigue
-  abierto porque choca con la spec 005 (FR-009) y se resuelve aparte.
+- Fuera de esta enmienda: el plazo de cancelación por canal (FR-018, punto S1), que se
+  resuelve en la enmienda S1 siguiente.
+
+### Enmienda S1 (plazo del paciente), 2026-11-07
+
+Origen: petición de la spec 005-acceso-cancelacion-paciente («Dependencias y enmiendas
+requeridas») y decisión de Sara sobre C1 (24 h).
+
+- **FR-018**: las filas «Paciente – portal» y «Paciente – recordatorio» se sustituyen por
+  una única fila «Paciente» que remite a «005, FR-009». La 001 sigue fijando solo el plazo
+  de recepción (hasta la hora de inicio), que no cambia.
+- **Clarificación S1**: actualizada con la decisión de 24 h; la opción A queda sustituida.
+- Sin cambios de código en la 001: la 001 no implementa ningún canal de paciente.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -241,34 +252,28 @@ no están disponibles.
 
 - **FR-017**: Los únicos cambios de estado permitidos son desde «reservada» a «completada»,
   «cancelada» o «no asistida». Los tres estados finales son definitivos.
-- **FR-018** *(Enmienda S1, 2026-11-07)*: Política de cancelación. Este requisito es la
-  única fuente del plazo para cancelar una cita «reservada», canal por canal. En todos los
-  canales el plazo se comprueba con el reloj del servidor en el momento de procesar la
-  cancelación (al confirmar), no al mostrar la pantalla o el enlace, y compara instantes,
-  por lo que el cambio de hora no lo altera.
+- **FR-018** *(Enmienda S1, 2026-11-07)*: Política de cancelación. Este requisito fija el
+  plazo de recepción y remite a la spec 005 para el del paciente. En ambos casos el plazo se
+  comprueba con el reloj del servidor en el momento de procesar la cancelación (al
+  confirmar), no al mostrar la pantalla o el enlace, y compara instantes, por lo que el
+  cambio de hora no lo altera.
 
   **Plazo de cancelación por canal**
 
   | Canal | Se puede cancelar si | El plazo vence | Ejemplo: cita del lunes 16/11/2026 a las 10:00 |
   |-------|----------------------|----------------|------------------------------------------------|
   | Recepción (panel) | `ahora < inicio` | en el instante de inicio: con `ahora ≥ inicio` se rechaza | Último minuto permitido: lunes 16/11/2026 a las 09:59 (hasta las 09:59:59). Primer minuto rechazado: lunes 16/11/2026 a las 10:00 (desde las 10:00:00). |
-  | Paciente – portal | `ahora < inicio` | en el instante de inicio: con `ahora ≥ inicio` se rechaza | Último minuto permitido: lunes 16/11/2026 a las 09:59 (hasta las 09:59:59). Primer minuto rechazado: lunes 16/11/2026 a las 10:00 (desde las 10:00:00). |
-  | Paciente – recordatorio | `ahora < inicio` | en el instante de inicio: con `ahora ≥ inicio` se rechaza | Último minuto permitido: lunes 16/11/2026 a las 09:59 (hasta las 09:59:59). Primer minuto rechazado: lunes 16/11/2026 a las 10:00 (desde las 10:00:00). |
+  | Paciente (cualquier canal) | Lo fija la spec 005, FR-009 | Lo fija la spec 005, FR-009 | Ver 005, FR-010. |
 
   - *Recepción (panel)*: «Cancelar» solo DEBE estar disponible antes de la hora de inicio de
     la cita, y DEBE pedir confirmación. Un intento de cancelar a partir de la hora de inicio
     (p. ej., con la pantalla abierta desde antes) se rechaza indicando que debe marcarse como
-    completada o no asistida.
-  - *Filas de paciente*: rigen los canales de paciente que definen la spec del portal del
-    paciente (fila «Paciente – portal») y la spec de recordatorios de cita (fila «Paciente –
-    recordatorio»). La 001 no implementa ningún canal de paciente; solo fija su plazo. Esas
-    specs DEBEN citar «001, FR-018, fila Paciente – portal» o «001, FR-018, fila Paciente –
-    recordatorio» y NO DEBEN fijar plazos propios, ni en requisitos ni en supuestos ni en
-    ejemplos. Si un canal necesita otro plazo, se pide al propietario de la 001 como enmienda
-    de esta tabla.
-  - Las tres filas tienen hoy el mismo plazo por decisión de producto (S1, opción A); una fila
-    solo cambia por enmienda de este requisito. Lo que se muestra al paciente fuera de plazo y
-    cómo se registra quién canceló no forman parte de este requisito.
+    completada o no asistida. Recepción es la vía del paciente fuera de su plazo.
+  - *Fila «Paciente»*: la 001 no fija ni implementa el plazo del paciente. La única fuente es
+    «005, FR-009», que vale para todos sus canales (portal, correos de recordatorio y
+    futuros). Las demás specs citan la 005, no esta fila.
+  - La fila «Recepción» solo cambia por enmienda de este requisito. Lo que se muestra al
+    paciente fuera de plazo es de la 005; cómo se registra quién canceló, de FR-018a.
 - **FR-018a** *(Enmienda revisión cruzada S2–S5, 2026-11-07)*: Origen de la cancelación.
   Toda cancelación DEBE registrar quién la hizo y cuándo.
   - *Quién*: exactamente uno de dos valores, «recepción» (`recepcion`), cuando cancela el
