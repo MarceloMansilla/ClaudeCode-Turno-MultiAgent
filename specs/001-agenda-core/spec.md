@@ -224,6 +224,12 @@ no están disponibles.
   DEBE pedir confirmación. Un intento de cancelar a partir de la hora de inicio (p. ej., con
   la pantalla abierta desde antes) se rechaza indicando que debe marcarse como completada o
   no asistida.
+- **FR-018a** *(enmienda 2026-11-07, spec 002)*: Además de recepción, el propio paciente
+  puede cancelar una cita reservada desde el enlace de su recordatorio, con la misma regla de
+  plazo que FR-018 (solo antes de la hora de inicio) y con su propia confirmación; no
+  requiere intervención de recepción. La cita cancelada así se comporta como cualquier otra
+  cancelada (libera el hueco, estado definitivo) y queda registrado que la canceló el
+  paciente desde el recordatorio. El detalle de ese flujo pertenece a la spec 002.
 - **FR-019**: «Completada» y «No asistida» solo DEBEN estar disponibles a partir de la hora de
   inicio de la cita. «No asistida» significa exclusivamente que el paciente no se presentó a
   una cita que seguía reservada.
@@ -325,5 +331,6 @@ no están disponibles.
 - Las citas pasadas que sigan reservadas permanecen así hasta que recepción las marque; no
   hay cierre automático.
 - Fuera de alcance: cualquier acceso del paciente, recordatorios, analítica, pagos online y
-  varias clínicas en una misma instalación.
+  varias clínicas en una misma instalación. (Recordatorios y la cancelación por el paciente
+  desde el recordatorio se especifican en la spec 002; ver FR-018a.)
 - Dependencia: `specs/MAPA.md` se crea con esta spec y la registra.
