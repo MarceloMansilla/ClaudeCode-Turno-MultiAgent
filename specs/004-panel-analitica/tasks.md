@@ -225,4 +225,5 @@ Task: "T030 src/components/analitica/grafico-lineas.tsx"
 - Las cifras de los tests salen de la spec; si cambian, primero se corrige la spec (Principio I).
 - Los cambios en archivos de la 001 (`cabecera.tsx`, `agenda/layout.tsx`, `proxy.ts`,
   `formato.ts`, `catalogo.ts`, `globals.css`) son aditivos, para facilitar la integración con
-  las ramas `portal` y `recordatorio`.
+  las ramas `portal` (spec 002-portal-paciente), `recordatorio` (spec 003-recordatorios-cita)
+  y `005-acceso-cancelacion-paciente`.

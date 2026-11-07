@@ -50,7 +50,8 @@ tablas
 Puertas derivadas de `.specify/memory/constitution.md` (v1.0.0). Evaluación previa a la
 investigación y repetida tras el diseño (mismo resultado):
 
-- [x] **I. Spec primero**: ✅ spec registrada en `specs/MAPA.md` con propietario único
+- [x] **I. Spec primero**: ✅ spec con propietario único (fila en `specs/MAPA.md`, que
+      mantiene el propietario de la 001)
       (MarceloMansilla), clarificada (3 preguntas) y aprobada el 2026-11-07. El plan no añade
       comportamiento: el resumen de la clínica son los valores «de la clínica» de FR-006,
       FR-008 y FR-011; el cambio en la cabecera de la 001 es el que pide FR-002.
@@ -153,9 +154,12 @@ presentan. Los únicos archivos de la 001 que se tocan reciben cambios aditivos
 - **Cifras de referencia**: dependen de la semilla de la 001; si cambia antes de integrarse,
   recalcular las tablas de la spec y los tests (Principio V).
 - **Ramas en paralelo**: `cabecera.tsx`, `proxy.ts`, `formato.ts` y `globals.css` también
-  pueden tocarlos `portal` y `recordatorio`; los cambios aquí son aditivos para facilitar la
-  integración. Además, `portal` y `recordatorio` usan ambas el número de spec `002`
-  (colisión ajena a esta feature, a resolver por su propietario).
+  pueden tocarlos las ramas `portal` (spec 002-portal-paciente), `recordatorio` (spec
+  003-recordatorios-cita) y `005-acceso-cancelacion-paciente`. Los cambios aquí son aditivos
+  para facilitar la integración. La numeración de specs y `specs/MAPA.md` los mantiene el
+  propietario de la 001 (revisión cruzada, S3).
+- **Tasa de no asistencia**: esta spec es la propietaria de la definición (spec, FR-006).
+  Las demás specs la citan como «004, FR-006».
 
 ## Complexity Tracking
 

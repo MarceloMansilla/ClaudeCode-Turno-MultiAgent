@@ -167,8 +167,23 @@ es igual al total de ingresos de la US1.
   canceladas y las que siguen reservadas no entran ni en el numerador ni en el denominador.
   Junto a cada tasa DEBEN mostrarse el numerador y el denominador (p. ej., «41 de 390»).
   Ejemplo: María, 41 no asistidas y 349 completadas → 41 ÷ 390 = 10,51… % → «10,5 %».
+
+  **Definición canónica del producto**: esta FR es la única definición de «tasa de no
+  asistencia» en CitaClara, y esta spec es su propietaria (revisión cruzada, S5). Las demás
+  specs que usen o midan ese indicador la citan como «tasa de no asistencia (004, FR-006)» y
+  no pueden usar ese nombre con otra fórmula. Si necesitan otra magnitud, le dan otro
+  nombre. Si necesitan otra población (otro periodo o un subconjunto de citas), piden una
+  enmienda de esta spec.
 - **FR-007**: El sistema DEBE mostrar la misma tasa por semana (US2) con la misma
   definición.
+
+> **Aclaración: 10,0 % y 10,9 % no se contradicen.** Sobre la misma semilla 2026-11-09, la
+> spec 001 (FR-023, SC-005) y `docs/datos-demo.md` dan **10,0 %**: 143 no asistidas de las
+> 1.425 citas de la historia, es decir, la **proporción de no asistidas sobre el total de
+> citas**, canceladas incluidas. Esa es la magnitud que calibra la semilla. El panel da
+> **10,9 %**: 143 de 1.311 (completadas + no asistidas), la **tasa de no asistencia** de
+> FR-006. Son magnitudes distintas sobre los mismos 143 casos, y solo la segunda se llama
+> «tasa de no asistencia». En la renovación se enseña la del panel.
 
 **Ocupación**
 
@@ -214,7 +229,8 @@ es igual al total de ingresos de la US1.
 
 ### Constitution Requirements *(mandatory)*
 
-- **Owner**: MarceloMansilla (registrado en `specs/MAPA.md`).
+- **Owner**: MarceloMansilla. La fila de esta spec en `specs/MAPA.md` la integra el
+  propietario de la 001, que mantiene el MAPA (revisión cruzada, S3).
 - **Writes to the agenda?**: **No**. Esta feature es de solo lectura (FR-015); no requiere
   pruebas de solape, pero sí una prueba de que consultar la analítica deja los datos
   exactamente iguales.
@@ -284,7 +300,14 @@ Esta feature no añade datos almacenados; lee los de la spec 001 y calcula al vu
   spec los añada, la ocupación deberá descontarlos.
 - Los recuentos de citas por estado y profesional coinciden con `docs/datos-demo.md` de la
   spec 001; esta spec depende de que esa semilla no cambie (o de actualizar sus cifras).
-- Dependencias: spec 001 (acceso con clave, sesión, entidades y semilla).
+- **Fuera de alcance: citas con o sin recordatorio.** El panel no distingue entre citas con
+  recordatorio y citas sin él. Ni el periodo ni los agregados separan esa población. Medir
+  así el SC-005 de la spec 003-recordatorios-cita («tasa de no asistencia de las citas con
+  recordatorio») requiere una enmienda de esta spec, pedida por el propietario de la 003. La
+  003 no calcula el indicador por su cuenta.
+- Dependencias: spec 001 (acceso con clave, sesión, entidades y semilla). Otras specs en
+  paralelo: 002-portal-paciente, 003-recordatorios-cita y 005-acceso-cancelacion-paciente.
+  Ninguna es dependencia de esta.
 
 ## Cifras de referencia (semilla 2026-11-09)
 
