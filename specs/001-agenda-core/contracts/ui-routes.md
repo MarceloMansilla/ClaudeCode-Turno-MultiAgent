@@ -12,7 +12,8 @@ Fecha o profesional inexistentes → «No encontramos esa agenda» con enlace a 
 
 ## Agenda del día: elementos obligatorios
 
-- **Cabecera**: nombre de la clínica, botón «Cerrar sesión».
+- **Cabecera**: nombre de la clínica, botón «Cerrar sesión» y navegación del panel
+  («Agenda» / «Analítica», con la sección actual marcada), añadida por la spec 004 (FR-002).
 - **Selector de profesional**: pestañas en portátil, desplegable en móvil; muestra nombre y
   especialidad.
 - **Navegación de día**: «‹ Anterior», «Hoy», «Siguiente ›» y selector de fecha; etiqueta
