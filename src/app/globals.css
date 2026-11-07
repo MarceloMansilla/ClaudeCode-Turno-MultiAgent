@@ -42,6 +42,14 @@
   --hueco: oklch(0.985 0.01 190);
   --hueco-borde: oklch(0.72 0.06 190);
   --ahora: oklch(0.58 0.2 27);
+
+  /* Series de los gráficos de analítica (spec 004): María, Jorge, Lucía (azul, naranja,
+     verde azulado; validadas para daltonismo, ΔE OKLab ≥ 10 entre todas las parejas).
+     Contraste WCAG 1.4.11 (mínimo 3:1) contra --background / --card / --muted:
+     --grafico-1 4,23 / 4,42 / 3,94 · --grafico-2 3,72 / 3,88 / 3,46 · --grafico-3 3,68 / 3,84 / 3,42 */
+  --grafico-1: #2a78d6;
+  --grafico-2: #d95926;
+  --grafico-3: #14946a;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -77,6 +85,12 @@
     --hueco: oklch(0.2 0.02 200);
     --hueco-borde: oklch(0.55 0.07 190);
     --ahora: oklch(0.7 0.19 25);
+
+    /* Contraste contra --background / --card / --muted (tema oscuro):
+       --grafico-1 5,25 / 4,86 / 4,26 · --grafico-2 4,92 / 4,55 / 3,99 · --grafico-3 5,61 / 5,19 / 4,55 */
+    --grafico-1: #3987e5;
+    --grafico-2: #d95926;
+    --grafico-3: #199e70;
   }
   :root {
     color-scheme: dark;
@@ -118,6 +132,9 @@
   --color-estado-no-asistida: var(--estado-no-asistida);
   --color-estado-no-asistida-foreground: var(--estado-no-asistida-foreground);
   --color-hueco: var(--hueco);
+  --color-grafico-1: var(--grafico-1);
+  --color-grafico-2: var(--grafico-2);
+  --color-grafico-3: var(--grafico-3);
   --color-hueco-borde: var(--hueco-borde);
   --color-ahora: var(--ahora);
 }

@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { formatearFecha, formatearHora, formatearPrecio, formatearRango } from '@/lib/formato';
+import {
+  formatearEntero,
+  formatearFecha,
+  formatearHora,
+  formatearPorcentaje,
+  formatearPrecio,
+  formatearRango,
+} from '@/lib/formato';
 import { instanteLocal } from '@/lib/zona';
 
 const NBSP = ' ';
@@ -32,5 +39,39 @@ describe('Principio II — formato español', () => {
 
   it('rechaza importes que no sean céntimos enteros', () => {
     expect(() => formatearPrecio(40.5)).toThrow();
+  });
+});
+
+describe('Principio II — enteros y porcentajes (clarificación 2026-11-07: separador de miles siempre)', () => {
+  it.each([
+    [1311, '1.311'],
+    [3300, '3.300'],
+    [47, '47'],
+    [0, '0'],
+  ])('formatearEntero(%i) → «%s»', (n, esperado) => {
+    expect(formatearEntero(n)).toBe(esperado);
+  });
+
+  it.each([
+    [105, `10,5${NBSP}%`],
+    [800, `80,0${NBSP}%`],
+    [0, `0,0${NBSP}%`],
+    [1000, `100,0${NBSP}%`],
+  ])('formatearPorcentaje(%i décimas) → «%s»', (decimas, esperado) => {
+    expect(formatearPorcentaje(decimas)).toBe(esperado);
+  });
+
+  it('formatearPorcentaje(null) → «Sin datos» (denominador 0)', () => {
+    expect(formatearPorcentaje(null)).toBe('Sin datos');
+  });
+
+  it('importes con separador de miles: «5.540,00 €» y «47.140,00 €»', () => {
+    expect(formatearPrecio(554000)).toBe(`5.540,00${NBSP}€`);
+    expect(formatearPrecio(4714000)).toBe(`47.140,00${NBSP}€`);
+  });
+
+  it('solo acepta enteros', () => {
+    expect(() => formatearEntero(1.5)).toThrow();
+    expect(() => formatearPorcentaje(10.5)).toThrow();
   });
 });

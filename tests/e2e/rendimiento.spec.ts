@@ -13,3 +13,12 @@ test('cambiar de profesional y de día muestra la agenda en menos de 2 s', async
     expect(Date.now() - t0).toBeLessThan(2000);
   }
 });
+
+test('SC-004 — /analitica se muestra completa en menos de 2 s', async ({ page }) => {
+  await entrar(page);
+  const t0 = Date.now();
+  await page.goto('/analitica');
+  await expect(page.getByRole('table', { name: 'Ingresos por servicio' })).toBeVisible();
+  await expect(page.getByRole('table', { name: 'Evolución semanal de la clínica' })).toBeVisible();
+  expect(Date.now() - t0).toBeLessThan(2000);
+});

@@ -41,3 +41,35 @@ export function formatearPrecio(centimos: number): string {
 export function formatearDuracion(minutos: number): string {
   return `${minutos} min`;
 }
+
+const enteros = new Intl.NumberFormat('es-ES', { maximumFractionDigits: 0, useGrouping: 'always' });
+
+/** Entero con separador de miles siempre: «1.311», «47» (clarificación de la spec 004). */
+export function formatearEntero(n: number): string {
+  if (!Number.isInteger(n)) throw new Error('Solo se formatean números enteros.');
+  return enteros.format(n);
+}
+
+/**
+ * Porcentaje a partir de décimas enteras: 105 → «10,5 %» (espacio de no separación antes de
+ * «%», como en los importes). `null` (denominador 0) → «Sin datos».
+ */
+export function formatearPorcentaje(decimas: number | null): string {
+  if (decimas === null) return 'Sin datos';
+  if (!Number.isInteger(decimas)) throw new Error('El porcentaje debe expresarse en décimas enteras.');
+  const signo = decimas < 0 ? '-' : '';
+  const absoluto = Math.abs(decimas);
+  return `${signo}${formatearEntero(Math.trunc(absoluto / 10))},${absoluto % 10} %`;
+}
+
+/** «14/09/2026» a partir de 'AAAA-MM-DD' (spec 004: semanas y periodo). */
+export function formatearFechaNumerica(fecha: string): string {
+  const [a, m, d] = fecha.split('-');
+  return `${d}/${m}/${a}`;
+}
+
+/** «14/09» a partir de 'AAAA-MM-DD' (eje de los gráficos semanales). */
+export function formatearDiaMes(fecha: string): string {
+  const [, m, d] = fecha.split('-');
+  return `${d}/${m}`;
+}

@@ -8,7 +8,7 @@ export default async function LayoutAgenda({ children }: { children: React.React
 
   return (
     <div className="min-h-dvh bg-muted/40">
-      <Cabecera nombreClinica={clinica?.nombre ?? ''} />
+      <Cabecera nombreClinica={clinica?.nombre ?? ''} seccion="agenda" />
       <main className="mx-auto max-w-6xl px-4 pt-4 pb-16 sm:pt-6">{children}</main>
     </div>
   );

@@ -9,7 +9,8 @@ export async function proxy(peticion: NextRequest) {
   const clinicaId = await verificarToken(peticion.cookies.get(NOMBRE_COOKIE)?.value);
   const { pathname } = peticion.nextUrl;
 
-  if (pathname.startsWith('/agenda') && !clinicaId) {
+  const esPanel = pathname.startsWith('/agenda') || pathname.startsWith('/analitica');
+  if (esPanel && !clinicaId) {
     const destino = new URL('/entrar', peticion.url);
     if (peticion.cookies.has(NOMBRE_COOKIE)) destino.searchParams.set('motivo', 'sesion');
     return NextResponse.redirect(destino);
@@ -21,5 +22,5 @@ export async function proxy(peticion: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/', '/entrar', '/agenda/:path*'],
+  matcher: ['/', '/entrar', '/agenda/:path*', '/analitica', '/analitica/:path*'],
 };

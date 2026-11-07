@@ -57,3 +57,15 @@ test('el panel se maneja solo con teclado: entrar con Tab y Enter', async ({ pag
   await page.keyboard.press('Enter');
   await expect(page).toHaveURL(/\/agenda\//);
 });
+
+test('SC-006 — analítica: sin infracciones AA ni desplazamiento horizontal, en tema claro y oscuro', async ({ page }) => {
+  await entrar(page);
+  for (const colorScheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme });
+    await page.goto('/analitica');
+    await expect(page.getByRole('heading', { level: 1, name: 'Analítica' })).toBeVisible();
+    await page.getByText('Ver detalle por profesional').click();
+    await sinInfracciones(page);
+    await sinScrollHorizontal(page);
+  }
+});

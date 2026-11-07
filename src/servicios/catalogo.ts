@@ -76,3 +76,19 @@ export async function obtenerServicio(
     .limit(1);
   return fila;
 }
+
+/**
+ * Todos los servicios de la clínica (spec 004, ingresos por servicio), en el orden del
+ * catálogo: especialidad y, dentro de cada una, el mismo orden que
+ * `listarServiciosDeEspecialidad`.
+ */
+export async function listarServicios(
+  clinicaId: string,
+  bd: Ejecutor = obtenerBd(),
+): Promise<Servicio[]> {
+  return bd
+    .select()
+    .from(servicio)
+    .where(eq(servicio.clinicaId, clinicaId))
+    .orderBy(asc(servicio.especialidad), asc(servicio.duracionMinutos), asc(servicio.nombre));
+}
