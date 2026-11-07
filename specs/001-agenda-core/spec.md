@@ -4,7 +4,7 @@
 
 **Created**: 2026-11-07
 
-**Status**: Aprobada (2026-11-07, MarceloMansilla) · Enmienda 1 aprobada (2026-11-07, MarceloMansilla), solicitada por [002-portal-paciente](../002-portal-paciente/spec.md)
+**Status**: Aprobada (2026-11-07, MarceloMansilla)
 
 **Input**: User description: "Núcleo de agenda de CitaClara. Contexto: clínicas pequeñas (2-5 profesionales); la recepción gestiona la agenda; los pacientes, de momento, solo existen como fichas. Alcance de la 001: entidades (clínica con clave de panel, profesionales, servicios, pacientes, citas); cita = profesional + servicio + paciente con inicio y fin = inicio + duración; estados reservada → completada | cancelada | no_asistida; RN1 sin solapes (también con reservas simultáneas); RN2 sin citas en el pasado; interfaz de recepción con agenda del día por profesional, alta de cita y acciones de estado; acceso con clave de clínica; semilla determinista de Clínica Eleva; fuera de alcance: acceso del paciente, recordatorios, analítica, pagos online."
 
@@ -22,16 +22,6 @@
 - Q: ¿Qué significa «datos idénticos» en la semilla? → A: Mismo contenido y mismos identificadores; solo puede variar el hash de la clave (la misma clave sigue funcionando).
 - Q: ¿La duración de los servicios debe ser múltiplo de 15 minutos? → A: Sí (15, 30, 45, 60…).
 - Q: ¿Cómo se verifican SC-002 y SC-003? → A: Prueba manual previa a la entrega: 2 personas que nunca han usado CitaClara realizan ambas tareas en portátil y móvil, cronometradas.
-
-### Enmienda 1 (2026-11-07), solicitada por 002-portal-paciente
-
-- El paciente deja de estar fuera del sistema: puede consultar y cancelar sus citas desde el
-  portal definido en la spec 002. Las reglas de recepción de esta spec no cambian.
-- La clínica tiene un teléfono de contacto (Key Entities, FR-022).
-- Toda cancelación registra su origen (recepción o paciente) y el momento en que se produjo
-  (FR-018a).
-- La implementación de estos cambios (esquema, semilla y panel) se planifica y ejecuta en la
-  002, sobre el código de la 001, sin alterar el comportamiento ya especificado aquí.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -234,9 +224,6 @@ no están disponibles.
   DEBE pedir confirmación. Un intento de cancelar a partir de la hora de inicio (p. ej., con
   la pantalla abierta desde antes) se rechaza indicando que debe marcarse como completada o
   no asistida.
-- **FR-018a** *(Enmienda 1)*: Toda cancelación DEBE registrar quién la hizo (recepción, o el
-  paciente desde el portal de la spec 002) y en qué momento. Las canceladas desde recepción
-  siguen mostrándose como «Cancelada»; la presentación de las del paciente la define la 002.
 - **FR-019**: «Completada» y «No asistida» solo DEBEN estar disponibles a partir de la hora de
   inicio de la cita. «No asistida» significa exclusivamente que el paciente no se presentó a
   una cita que seguía reservada.
@@ -250,8 +237,7 @@ no están disponibles.
   todos los registros (así las direcciones de la agenda citadas en documentación y tests son
   reproducibles). La única excepción es el hash de la clave de panel, que puede variar entre
   ejecuciones; la clave en sí es siempre la misma.
-- **FR-022**: La semilla DEBE contener: «Clínica Eleva», con teléfono de contacto
-  «911 234 567» *(Enmienda 1)*; 3 profesionales (María y Jorge,
+- **FR-022**: La semilla DEBE contener: «Clínica Eleva»; 3 profesionales (María y Jorge,
   Fisioterapia; Lucía, Nutrición); 4 servicios (Sesión de fisioterapia, 45 min, 40,00 €;
   Primera visita de fisioterapia, 60 min, 50,00 €; Consulta de nutrición, 30 min, 35,00 €;
   Primera visita de nutrición, 45 min, 45,00 €); 40 pacientes con nombres, teléfonos (todos
@@ -291,18 +277,16 @@ no están disponibles.
 
 ### Key Entities *(include if feature involves data)*
 
-- **Clínica**: nombre, teléfono de contacto *(Enmienda 1)*, zona horaria, horario de apertura
-  y clave de panel. Agrupa todo lo demás.
+- **Clínica**: nombre, zona horaria, horario de apertura y clave de panel. Agrupa todo lo
+  demás.
 - **Profesional**: nombre y especialidad; pertenece a una clínica.
 - **Servicio**: nombre, especialidad, duración en minutos (siempre múltiplo de 15: 15, 30,
   45, 60…) y precio en euros (con céntimos); pertenece a una clínica. Solo lo atienden profesionales de su misma especialidad.
 - **Paciente (ficha)**: nombre y teléfono (obligatorios; teléfono único por clínica) y
-  correo electrónico (opcional); pertenece a una clínica. No tiene acceso al panel de
-  recepción; su acceso al portal del paciente lo define la spec 002 *(Enmienda 1)*.
+  correo electrónico (opcional); pertenece a una clínica. No tiene acceso al sistema.
 - **Cita**: une profesional, servicio y paciente de la misma clínica; inicio, fin (= inicio +
   duración del servicio en el momento de reservar) y estado (reservada, completada,
-  cancelada, no asistida). Si está cancelada, también quién la canceló y cuándo
-  *(Enmienda 1, FR-018a)*.
+  cancelada, no asistida).
 
 ## Success Criteria *(mandatory)*
 
@@ -340,6 +324,6 @@ no están disponibles.
   afectan a citas existentes.
 - Las citas pasadas que sigan reservadas permanecen así hasta que recepción las marque; no
   hay cierre automático.
-- Fuera de alcance de la 001: el acceso del paciente (lo cubre la spec 002, Enmienda 1),
-  recordatorios, analítica, pagos online y varias clínicas en una misma instalación.
+- Fuera de alcance: cualquier acceso del paciente, recordatorios, analítica, pagos online y
+  varias clínicas en una misma instalación.
 - Dependencia: `specs/MAPA.md` se crea con esta spec y la registra.

@@ -37,4 +37,9 @@
   profesionales, servicios, rango de fechas). Los pacientes concretos aún no existen porque la
   semilla no se ha generado; el plan los fijará desde `docs/datos-demo.md`.
 - Antes del plan: solicitar el cambio en la spec 001 (ver «Dependencias» en la spec).
+- Revisión cruzada S2–S4 (2026-11-07): la spec ya no define el acceso (pasa a la 005,
+  FR-001–FR-008) ni el origen de la cancelación o el teléfono de la clínica (001 FR-018a,
+  FR-022). La spec no tiene marcadores [NEEDS CLARIFICATION] propios, pero depende de uno
+  ajeno: 005 FR-006 (¿confirmación de 4 cifras?). La aportación de la 002 está en
+  «Dependencias y enmiendas requeridas».
 - Items marked incomplete require spec updates before `/speckit-clarify` or `/speckit-plan`

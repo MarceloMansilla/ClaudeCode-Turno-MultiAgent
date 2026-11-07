@@ -4,7 +4,10 @@
 
 **Created**: 2026-11-07
 
-**Status**: Aprobada (2026-11-07, MarceloMansilla)
+**Status**: Aprobada (2026-11-07, MarceloMansilla) · Revisión cruzada S2–S4 (2026-11-07): el
+acceso del paciente pasa a `005-acceso-cancelacion-paciente`
+y el origen de la cancelación y el teléfono de la clínica, a la 001 (ver «Dependencias y
+enmiendas requeridas»)
 
 **Input**: User description: "Portal del paciente. Los pacientes de la clínica quieren ver sus citas y cancelarlas sin llamar por teléfono (Sonia, recepción de Eleva, dedica «la mitad de la mañana» a esto). Alcance: un paciente accede a una página personal moderna donde ve sus citas futuras y pasadas y puede cancelar una cita futura. Interfaz limpia y responsive, pensada para móvil. Preguntas que la spec debe dejar decididas (formúlalas cerradas, para Sara): cómo accede el paciente sin crear cuentas ni contraseñas (las clínicas pequeñas no van a gestionar altas), hasta cuándo puede cancelar, y qué pasa con el hueco liberado. Datos: Cita casos reales de la semilla en los ejemplos. Fuera de alcance v1: reservar o mover citas online, pagos."
 
@@ -27,11 +30,11 @@ al viernes 20/11/2026.
 
 ### Session 2026-11-07
 
-- Q: ¿Cómo accede el paciente sin crear cuentas ni contraseñas? → A: Enlace personal + confirmar las 4 últimas cifras de su teléfono (opción C).
+- Q: ¿Cómo accede el paciente sin crear cuentas ni contraseñas? → A: Enlace personal + confirmar las 4 últimas cifras de su teléfono (opción C). *(Revisión cruzada S4: el acceso lo define ahora la 005, FR-001–FR-008; la confirmación de 4 cifras se aporta a la clarificación pendiente de 005 FR-006, ver «Dependencias y enmiendas requeridas».)*
 - Q: ¿Hasta cuándo puede cancelar el paciente desde el portal? → A: Hasta 24 horas antes del inicio de la cita (opción A).
 - Q: ¿Qué pasa con el hueco que libera el paciente? → A: Queda libre al instante y recepción ve en el panel un aviso con los huecos liberados por pacientes (opción B).
-- Q: ¿Cuánto tiempo vale el enlace personal del paciente? → A: No caduca; recepción puede generar uno nuevo, que anula el anterior (opción B).
-- Q: ¿Cómo recibe el paciente su enlace personal en la v1? → A: Recepción lo copia desde la agenda y lo envía por el canal habitual de la clínica; los recordatorios podrán incluirlo cuando existan (opción B).
+- Q: ¿Cuánto tiempo vale el enlace personal del paciente? → A: No caduca; recepción puede generar uno nuevo, que anula el anterior (opción B). *(Revisión cruzada S4: recogido en 005, FR-003 y FR-004.)*
+- Q: ¿Cómo recibe el paciente su enlace personal en la v1? → A: Recepción lo copia desde la agenda y lo envía por el canal habitual de la clínica; los recordatorios podrán incluirlo cuando existan (opción B). *(Revisión cruzada S4: recogido en 005, FR-005 y FR-008.)*
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -59,14 +62,15 @@ en la semilla, y que no aparece ninguna cita de otro paciente.
    («Realizada», «Cancelada» o «No asistida»).
 3. **Given** un paciente sin ninguna cita futura, **When** entra en su portal, **Then** ve
    «No tienes próximas citas» y el teléfono de la clínica para pedir una.
-4. **Given** alguien abre el enlace personal de un paciente, **When** escribe unas cifras que
-   no son las 4 últimas del teléfono de la ficha, **Then** ve «Las cifras no coinciden.
-   Revísalas e inténtalo de nuevo.» y no ve ningún dato de ninguna cita ni de ningún paciente.
-5. **Given** recepción ha generado un enlace nuevo para un paciente, **When** alguien abre
-   el enlace anterior, **Then** se muestra «Este enlace ya no es válido. Pide uno nuevo a
-   Clínica Eleva en el 911 234 567.» y ningún dato.
+4. *(Retirado en la revisión cruzada S4: la confirmación de las 4 cifras depende de la
+   clarificación pendiente de 005 FR-006. El escenario y su texto se aportan como propuesta en
+   «Dependencias y enmiendas requeridas».)*
+5. **Given** recepción ha generado un enlace nuevo para un paciente (005 FR-004), **When**
+   alguien abre el enlace anterior, **Then** no ve ningún dato (005 FR-007) y el portal
+   muestra «Este enlace ya no es válido. Pide uno nuevo a Clínica Eleva en el 911 234 567.».
 6. **Given** un paciente con el portal abierto, **When** recepción genera un enlace nuevo
-   para él, **Then** su siguiente acción en el portal le lleva al mensaje de US1 #5.
+   para él, **Then** su siguiente acción en el portal le lleva al mensaje de US1 #5
+   (005 US3 #4).
 
 ---
 
@@ -107,7 +111,8 @@ cancelar otra fuera de plazo y comprobar que se rechaza.
 
 ### User Story 3 - Recepción se entera de los huecos que liberan los pacientes (Priority: P2)
 
-Sonia ve en la agenda qué citas canceló el propio paciente desde el portal, para no llamarle
+Sonia ve en la agenda qué citas canceló el propio paciente (desde el portal o desde cualquier
+otro canal del paciente: el origen de 001 FR-018a no distingue canales), para no llamarle
 a confirmar, y un aviso en el panel le reúne los huecos liberados que siguen libres, para
 ofrecérselos a otros pacientes.
 
@@ -146,7 +151,8 @@ aviso de huecos liberados, hasta que recepción vuelve a ocupar ese hueco.
 - Cita pasada que recepción aún no ha marcado (sigue «reservada», spec 001): en «Historial»
   aparece como «Pasada», sin afirmar si se realizó o no.
 - Paciente cuyo teléfono comparten varios miembros de una familia: imposible, el teléfono es
-  único por clínica (FR-016b de la 001); cada ficha tiene su propio acceso.
+  único por clínica (FR-016b de la 001); cada ficha tiene su propio enlace personal (005
+  FR-001).
 - Cambio de hora (último domingo de marzo/octubre): ningún plazo de 24 horas cruza el cambio
   (ver «Amounts and dates»); el plazo se muestra en la hora local de la clínica.
 - Plazo vencido con la cita aún futura: cita del martes 10/11/2026 a las 10:00 vista el lunes
@@ -159,38 +165,40 @@ aviso de huecos liberados, hasta que recepción vuelve a ocupar ese hueco.
 
 ### Functional Requirements
 
-**Acceso sin cuentas**
+**Acceso del paciente (de la 005)**
 
-- **FR-001**: El paciente DEBE acceder a su portal sin crear cuenta ni contraseña y sin que la
-  clínica tenga que darle de alta en nada distinto de su ficha de paciente (spec 001).
-- **FR-002**: El acceso DEBE hacerse en dos pasos: (1) el paciente abre su enlace personal,
-  único por ficha e imposible de deducir a partir de otro; (2) confirma las 4 últimas cifras
-  del teléfono de su ficha. Solo con ambos se muestran sus citas. Ejemplo: para una ficha con
-  teléfono «612 345 678», el paciente escribe «5678». El enlace por sí solo no muestra ningún
-  dato, ni siquiera el nombre del paciente.
-- **FR-002a**: El enlace personal NO DEBE caducar por tiempo: cada ficha tiene un único enlace
-  válido. Recepción DEBE poder generar un enlace nuevo para un paciente desde cualquiera de
-  sus citas en la agenda («Generar nuevo enlace del portal», con confirmación); al hacerlo,
-  el enlace anterior deja de funcionar al instante y cualquier sesión abierta con él se
-  cierra.
-- **FR-002b**: En la v1 el sistema no envía el enlace por sí mismo. Recepción DEBE poder
-  copiar el enlace vigente de un paciente desde cualquiera de sus citas en la agenda
-  («Copiar enlace del portal») para enviárselo por el canal habitual de la clínica (WhatsApp,
-  correo…). Cuando exista la spec de recordatorios, sus mensajes podrán incluirlo.
-- **FR-003**: Sin haber completado el acceso, el sistema NO DEBE mostrar ningún dato de citas
-  ni de pacientes, ni siquiera el nombre. Ante un enlace, lo único que DEBE distinguir es si
-  sigue vigente (pide las 4 cifras) o no (mensaje de US1 #5); como el enlace es imposible de
-  deducir (FR-002), esa distinción no permite descubrir pacientes. El portal nunca pide el
-  teléfono completo, así que no sirve para averiguar si un teléfono es de un paciente.
-- **FR-004**: Un acceso solo DEBE dar visibilidad sobre las citas de la ficha de ese paciente
-  en esa clínica; jamás sobre las de otro paciente.
-- **FR-005**: Los intentos fallidos de confirmar las 4 cifras DEBEN limitarse por enlace:
-  tras 5 fallos seguidos, el enlace se bloquea 15 minutos («Has superado los intentos.
-  Vuelve a probar a las [hora].»); tras 10 fallos acumulados sin un acceso correcto entre
-  medias, el enlace queda bloqueado hasta que recepción genere uno nuevo (FR-002a) («Por
-  seguridad, este enlace se ha bloqueado. Llama a Clínica Eleva al 911 234 567.»). Así, quien
-  tenga un enlace ajeno acierta las 4 cifras como mucho en 10 de 10.000 combinaciones (0,1 %).
-- **FR-006**: El paciente DEBE poder salir del portal; después necesita volver a acceder.
+El acceso del paciente (credencial, enlace, validez, regeneración, respuesta ante un enlace
+no válido y qué se muestra sin acceso) lo define únicamente
+`005-acceso-cancelacion-paciente`, FR-001–FR-008.
+Esta spec no define ninguna credencial ni regla de acceso: las consume. Los identificadores
+FR-001 a FR-006 se conservan para no romper referencias.
+
+- **FR-001** *(Revisión cruzada S4)*: El paciente entra en su portal con su enlace personal
+  `/p/[token]`, sin cuenta ni contraseña: 005, FR-001.
+- **FR-002** *(Revisión cruzada S4)*: Credencial y requisito de acceso: 005, FR-001, FR-002 y
+  FR-006. La posible confirmación de las 4 últimas cifras del teléfono está pendiente de
+  clarificar en 005 FR-006; la propuesta de esta spec figura en «Dependencias y enmiendas
+  requeridas».
+- **FR-002a** *(Revisión cruzada S4)*: Validez y regeneración del enlace: 005, FR-003 y
+  FR-004. Presentación en el panel (propia de esta spec): la acción «Generar nuevo enlace del
+  portal», con confirmación, está disponible desde cualquiera de las citas del paciente en la
+  agenda.
+- **FR-002b** *(Revisión cruzada S4)*: Obtención y entrega del enlace: 005, FR-005 y FR-008.
+  Presentación en el panel (propia de esta spec): la acción «Copiar enlace del portal» está
+  disponible desde cualquiera de las citas del paciente en la agenda, para enviárselo por el
+  canal habitual de la clínica (WhatsApp, correo…). Los correos de
+  `003-recordatorios-cita` llevan el mismo enlace (005, FR-008).
+- **FR-003** *(Revisión cruzada S4)*: Sin acceso válido no se muestra ningún dato de citas ni
+  de pacientes, y todos los enlaces no válidos reciben la misma respuesta: 005, FR-006 y
+  FR-007. El texto de esa respuesta en el portal es el de US1 #5.
+- **FR-004** *(Revisión cruzada S4)*: Un enlace solo da acceso a las citas de su ficha en su
+  clínica: 005, FR-006.
+- **FR-005** *(Retirado en la revisión cruzada S4)*: El límite de intentos de la confirmación
+  de 4 cifras depende de 005 FR-006; se aporta como propuesta en «Dependencias y enmiendas
+  requeridas».
+- **FR-006** *(Retirado en la revisión cruzada S4)*: «Salir del portal» solo tiene sentido si
+  005 FR-006 establece una confirmación con sesión; se aporta como propuesta en «Dependencias
+  y enmiendas requeridas».
 
 **Consulta de citas**
 
@@ -202,7 +210,7 @@ aviso de huecos liberados, hasta que recepción vuelve a ocupar ese hueco.
   completada → «Realizada», cancelada → «Cancelada», no asistida → «No asistida», reservada
   con inicio pasado → «Pasada».
 - **FR-009**: El portal DEBE mostrar el nombre y el teléfono de la clínica en todas sus
-  pantallas.
+  pantallas. El teléfono es el de la clínica que define la 001, FR-022.
 - **FR-010**: El portal NO DEBE mostrar importes, notas internas ni datos de otros pacientes o
   de la agenda de los profesionales.
 
@@ -233,9 +241,12 @@ aviso de huecos liberados, hasta que recepción vuelve a ocupar ese hueco.
   con el número de huecos y, al abrirlo, la lista de esos huecos: profesional, día, hora de
   inicio y fin, y momento de la cancelación, en orden cronológico del hueco. Un hueco sale de
   la lista sin intervención de recepción en cuanto vuelve a ocuparse (total o parcialmente)
-  o su hora de inicio llega. Sin huecos pendientes, el aviso no se muestra.
-- **FR-016**: Toda cancelación DEBE registrar quién la hizo (paciente desde el portal o
-  recepción) y cuándo.
+  o su hora de inicio llega. Sin huecos pendientes, el aviso no se muestra. «Liberado por un
+  paciente» significa `cita.cancelada_por = 'paciente'` (001, FR-018a).
+- **FR-016** *(Revisión cruzada S2)*: El origen y el momento de cada cancelación los define y
+  registra la 001, FR-018a (`cita.cancelada_por ∈ {'recepcion','paciente'}`). Esta spec no
+  define el valor ni su esquema: la cancelación desde el portal escribe `'paciente'`, y la
+  etiqueta «Cancelada por el paciente» (US3) y el aviso de FR-015a lo leen.
 
 **Calidad de interfaz (Principio VII)**
 
@@ -246,7 +257,9 @@ aviso de huecos liberados, hasta que recepción vuelve a ocupar ese hueco.
 
 ### Constitution Requirements *(mandatory)*
 
-- **Owner**: MarceloMansilla (se registra en `specs/MAPA.md` como borrador).
+- **Owner**: MarceloMansilla. El registro en `specs/MAPA.md` lo hace el propietario de la
+  001, que mantiene el MAPA (revisión cruzada S3); hoy la 002 no figura en el MAPA del
+  tronco.
 - **Writes to the agenda?**: Sí — solo la cancelación desde el portal («reservada» →
   «cancelada»). No crea ni mueve citas, por lo que no puede crear solapes por sí misma, pero
   libera huecos que recepción vuelve a ocupar. Pruebas obligatorias (Principio III):
@@ -271,24 +284,22 @@ aviso de huecos liberados, hasta que recepción vuelve a ocupar ese hueco.
 - **Demo data**: usa la semilla de la 001 sin cambiar su contenido de citas (fecha de
   referencia 09/11/2026). El plan DEBE fijar, a partir de `docs/datos-demo.md`, al menos dos
   pacientes concretos de la semilla para ejemplos y tests: uno con citas futuras y de
-  historial en varios estados, y uno sin citas futuras. La semilla DEBE generar de forma
-  determinista el enlace personal de cada uno de sus 40 pacientes, para que los ejemplos y
-  tests puedan citar enlaces reproducibles (ampliación de la semilla que hace esta spec).
+  historial en varios estados, y uno sin citas futuras. Los enlaces personales reproducibles
+  de los 40 pacientes los genera la semilla según 005, FR-019; el teléfono de la clínica y el
+  origen de las cancelaciones de la historia, según la 001 (FR-022, FR-018a). Esta spec no
+  amplía la semilla por su cuenta.
 
 ### Key Entities *(include if feature involves data)*
 
-- **Paciente (ficha)** — de la 001: nombre, teléfono único por clínica, correo opcional. Esta
-  spec le da, por primera vez, acceso de solo lectura a sus propias citas y la capacidad de
-  cancelarlas.
-- **Acceso de paciente**: enlace personal que, junto con las 4 últimas cifras del teléfono de
-  la ficha, permite al paciente entrar en su portal sin cuenta (FR-002); pertenece a una ficha
-  y a una clínica y registra los intentos fallidos (FR-005). Cada ficha tiene exactamente un
-  enlace válido; no caduca por tiempo y solo deja de valer cuando recepción genera otro
-  (FR-002a).
-- **Cita** — de la 001: se añade a la cancelación el origen (paciente o recepción) y el
-  momento en que se produjo (FR-016).
-- **Clínica** — de la 001: necesita además un teléfono de contacto que mostrar al paciente
-  (FR-009, FR-013).
+- **Paciente (ficha)** — de la 001: nombre, teléfono único por clínica, correo opcional. Su
+  acceso lo define la 005; esta spec define qué ve en el portal una vez dentro (FR-007–FR-010)
+  y presenta la cancelación de sus citas.
+- **Enlace personal (acceso del paciente)** — de la 005 (Key Entities, FR-001–FR-008): esta
+  spec solo lo usa para saber de qué ficha y clínica son las citas que muestra.
+- **Cita** — de la 001: esta spec lee el origen y el momento de la cancelación
+  (`cancelada_por`, 001 FR-018a) para US3 y FR-015a.
+- **Clínica** — de la 001: esta spec lee su nombre y su teléfono de contacto (001 FR-022)
+  para mostrarlos al paciente (FR-009, FR-013).
 
 ## Success Criteria *(mandatory)*
 
@@ -316,29 +327,72 @@ aviso de huecos liberados, hasta que recepción vuelve a ocupar ese hueco.
 - El paciente ya tiene ficha en la clínica (creada por recepción en la 001) con un teléfono
   español válido; el correo puede faltar, así que el acceso no puede depender solo del correo.
 - Una instalación sirve a una sola clínica, como en la 001.
-- Tras confirmar las 4 cifras, la sesión del portal dura hasta que el paciente sale o pasan
-  30 minutos sin actividad; después vuelve a pedir las 4 cifras (el enlace sigue valiendo).
+- *(Retirado en la revisión cruzada S4: la sesión de 30 minutos tras confirmar las 4 cifras
+  depende de 005 FR-006; se aporta como propuesta en «Dependencias y enmiendas requeridas».)*
 - El historial muestra todas las citas registradas del paciente en la clínica, sin límite
   temporal (en la semilla, desde el 14/09/2026).
 - Cancelar desde el portal es definitivo: no hay «deshacer». Para recuperar la cita, el
   paciente llama a la clínica y recepción crea una nueva si el hueco sigue libre.
-- El enlace personal se entrega a mano desde recepción (FR-002b); CitaClara no envía SMS ni
-  correos en esta spec. La spec de recordatorios, en paralelo, podrá incluirlo en sus
-  mensajes sin cambiar esta spec.
+- El enlace personal se entrega a mano desde recepción (FR-002b; 005, FR-005); CitaClara no
+  envía SMS ni correos en esta spec. Los correos de `003-recordatorios-cita` llevan ese
+  mismo enlace (005, FR-008) sin cambiar esta spec.
 - Fuera de alcance v1: reservar citas online, moverlas o cambiarlas, pagos, lista de espera y
   avisos automáticos a otros pacientes cuando se libera un hueco, editar los datos de la ficha,
   y portal para varias clínicas a la vez.
 
-## Dependencias
+## Dependencias y enmiendas requeridas
 
-- **Spec 001, Enmienda 1 (aprobada el 2026-11-07, MarceloMansilla)** (Principio I): la 001
-  ya admite el acceso del paciente mediante esta spec, el teléfono de la clínica
-  («911 234 567» en la semilla, FR-009) y el origen y momento de cada cancelación (FR-016,
-  FR-018a de la 001). El enlace personal de cada paciente y su generación en la semilla
-  (FR-002) son propios de esta spec. **La implementación de la 002 requiere la de la 001**
-  (agenda, panel y semilla), sobre la que se construye. Además, esta spec añade al
-  panel de recepción de la 001 la indicación «Cancelada por el paciente», el aviso de huecos
-  liberados (US3, FR-015a) y las acciones «Copiar enlace del portal» y «Generar nuevo enlace
-  del portal» (FR-002a, FR-002b).
-- **Spec de recordatorios (en paralelo)**: canal futuro, no necesario, para enviar el enlace
-  personal (FR-002b). Esta spec no depende de ella para entregarse.
+Revisión cruzada S2–S4 (2026-11-07, `specs/000-revision-cruzada-jul2026.md`): esta spec deja
+de definir lo que pertenece a otras y lo cita (Principio I). La «Enmienda 1» que esta rama
+llevaba sobre la copia de la 001 se ha retirado: la 001 queda idéntica a la rama
+`001-agenda-core`, y lo que pedía se solicita aquí a su propietario.
+
+- **001 Núcleo de agenda (propietario de la 001; bloqueante para implementar).**
+  - **001 FR-018a — origen de la cancelación**: `cita.cancelada_por ∈ {'recepcion','paciente'}`,
+    con el momento en `estado_cambiado_en`. La 001 define el enum, la restricción y la
+    migración (incluidas las cancelaciones ya existentes); esta spec escribe `'paciente'` al
+    cancelar desde el portal y lo lee en US3 y FR-015a. Como el valor no distingue canales,
+    las cancelaciones que un paciente haga desde otro canal (p. ej., `003-recordatorios-cita`)
+    también aparecerán como «Cancelada por el paciente» y en el aviso de huecos liberados.
+  - **001 FR-022 — teléfono de la clínica** («911 234 567» en la semilla): esta spec lo
+    muestra (FR-009, FR-013) y no lo define.
+  - Estado: ninguno de los dos figura todavía en la 001 de la rama `001-agenda-core`. Hasta
+    que su propietario los incorpore, las citas «001 FR-018a» y «001 FR-022» de esta spec son
+    referencias pendientes.
+  - **La implementación de la 002 requiere la de la 001** (agenda, panel y semilla), sobre la
+    que se construye. Esta spec añade al panel de recepción la indicación «Cancelada por el
+    paciente», el aviso de huecos liberados (US3, FR-015a) y la presentación de las acciones
+    «Copiar enlace del portal» y «Generar nuevo enlace del portal» (FR-002a, FR-002b).
+- **005 Acceso y cancelación del paciente (propietario de la 005; bloqueante para
+  implementar).** Esta spec consume 005 FR-001–FR-008 (acceso) y FR-019 (enlaces en la
+  semilla).
+  - **Aportación a la clarificación pendiente de 005 FR-006** (no se decide aquí): Sara eligió
+    en la clarificación de esta spec (2026-11-07, opción C) «enlace personal + confirmar las 4
+    últimas cifras de su teléfono». Si la 005 la mantiene, esta spec propone, tal como estaba
+    especificado:
+    1. *Confirmación*: tras abrir el enlace, el paciente escribe las 4 últimas cifras del
+       teléfono de su ficha (para «612 345 678», «5678»). Sin ellas no se muestra ningún dato,
+       ni siquiera el nombre; nunca se pide el teléfono completo. Cifras incorrectas: «Las
+       cifras no coinciden. Revísalas e inténtalo de nuevo.» (antiguo US1 #4).
+    2. *Límite de intentos por enlace*: tras 5 fallos seguidos, bloqueo de 15 minutos («Has
+       superado los intentos. Vuelve a probar a las [hora].»); tras 10 fallos acumulados sin
+       un acierto entre medias, bloqueo hasta que recepción regenere el enlace («Por
+       seguridad, este enlace se ha bloqueado. Llama a Clínica Eleva al 911 234 567.»).
+       Probabilidad máxima de acierto con un enlace ajeno: 10 de 10.000 (0,1 %) (antiguo
+       FR-005).
+    3. *Sesión*: tras confirmar, dura hasta que el paciente sale («Salir») o pasan 30 minutos
+       sin actividad; después vuelve a pedir las cifras. Regenerar el enlace cierra las
+       sesiones abiertas (antiguos FR-006 y Assumption de sesión).
+    Datos para decidir: la 005 extiende el mismo enlace a los correos de recordatorio (005
+    FR-008), así que la confirmación también se pediría desde el correo; y la 005 decide no
+    limitar intentos de abrir enlaces (Assumptions), que es compatible con limitar solo la
+    confirmación.
+  - **Aportación al plan de la 005** (almacenamiento del enlace): «Copiar enlace del portal»
+    (005 FR-005) requiere poder volver a obtener el enlace vigente; la propuesta de esta spec
+    era guardar el token en claro (32 bytes aleatorios, base64url).
+  - Mientras 005 FR-006 siga sin clarificar, las tareas de acceso de esta spec quedan
+    bloqueadas (ver `tasks.md`).
+- **`003-recordatorios-cita` (en paralelo)**: canal futuro, no necesario, que lleva el enlace
+  personal a los pacientes (005, FR-008). Esta spec no depende de ella para entregarse.
+- **`specs/MAPA.md`**: registrar la 002 con su propietario (lo hace el propietario de la 001,
+  que mantiene el MAPA).

@@ -1,16 +1,23 @@
 # Contrato: rutas y pantallas del portal y del panel
 
+**Revisión cruzada S4 (2026-11-07)**: la forma del enlace (`/p/[token]`), su validez y qué se
+muestra sin acceso los define la 005 (FR-001–FR-008). Este contrato fija las pantallas y los
+textos del portal. Lo marcado **[005 FR-006]** solo existe si la 005 mantiene la confirmación
+de 4 cifras (clarificación pendiente).
+
 ## Portal del paciente
 
 | Ruta | Acceso | Contenido |
 |------|--------|-----------|
-| `/p/[token]` | público | Sin sesión válida para ese token: pantalla de cifras. Con sesión: portal (próximas e historial). Token no vigente: mensaje de `ENLACE_NO_VALIDO`. |
+| `/p/[token]` | público (enlace personal, 005 FR-001) | Enlace vigente: portal (próximas e historial), precedido de la pantalla de cifras si no hay sesión válida [005 FR-006]. Enlace no válido: mensaje de `ENLACE_NO_VALIDO` (005 FR-007). |
 
-La ruta no muestra datos del paciente (ni su nombre) hasta que se confirman las cifras
-(FR-002, FR-003). `proxy.ts` renueva la cookie del portal en cada petición a `/p/*` y no
-aplica a `/p/*` la protección de `/agenda/*`.
+La ruta no muestra ningún dato de citas ni de pacientes (ni el nombre) sin acceso válido
+(005 FR-006, FR-007). `/p/*` queda fuera de la protección de `/agenda/*`; si la 005 exige
+sesión, `proxy.ts` la renueva en cada petición a `/p/*` [005 FR-006].
 
-### Pantalla de cifras
+### Pantalla de cifras — [005 FR-006]
+
+Propuesta, solo si la 005 mantiene la confirmación:
 
 - Cabecera con el nombre de la clínica.
 - Texto: «Para ver tus citas, escribe las 4 últimas cifras de tu teléfono.»
@@ -21,8 +28,8 @@ aplica a `/p/*` la protección de `/agenda/*`.
 
 ### Portal
 
-- **Cabecera**: nombre de la clínica, teléfono como enlace `tel:` («Llamar a la clínica») y
-  botón «Salir».
+- **Cabecera**: nombre de la clínica, teléfono como enlace `tel:` («Llamar a la clínica») y,
+  si hay sesión [005 FR-006], botón «Salir».
 - **Pestañas** «Próximas citas» (por defecto) e «Historial».
 - **Tarjeta de cita próxima**: fecha («lunes, 16/11/2026»), hora («10:00–10:45»), servicio y
   profesional. Si es cancelable: «Puedes cancelarla hasta el domingo, 15/11/2026 a las
@@ -43,13 +50,14 @@ aplica a `/p/*` la protección de `/agenda/*`.
   panel lateral (pantalla completa en móvil) con la lista «María · lunes, 16/11/2026 ·
   10:00–10:45 · cancelada el 09/11/2026 a las 12:10», cada una enlazada a la agenda de ese
   profesional y día.
-- **Bloque de cita cancelada por el paciente**: etiqueta «Cancelada por el paciente» y
-  «el 09/11/2026 a las 12:10».
-- **Acciones de cualquier cita** (en todos los estados): «Copiar enlace del portal» (aviso
-  «Enlace copiado. Envíaselo al paciente por WhatsApp o correo.»; si no se puede copiar, se
-  muestra el enlace seleccionable) y «Generar nuevo enlace del portal» (diálogo: «Se creará
-  un enlace nuevo para [nombre del paciente] y el anterior dejará de funcionar. ¿Continuar?»; después,
-  muestra el enlace nuevo con «Copiar»).
+- **Bloque de cita cancelada por el paciente** (`cancelada_por = 'paciente'`, 001 FR-018a):
+  etiqueta «Cancelada por el paciente» y «el 09/11/2026 a las 12:10».
+- **Acciones de cualquier cita** (en todos los estados; comportamiento de 005 FR-004 y
+  FR-005): «Copiar enlace del portal» (aviso «Enlace copiado. Envíaselo al paciente por
+  WhatsApp o correo.»; si no se puede copiar, se muestra el enlace seleccionable) y «Generar
+  nuevo enlace del portal» (diálogo: «Se creará un enlace nuevo para [nombre del paciente] y
+  el anterior dejará de funcionar. ¿Continuar?»; después, muestra el enlace nuevo con
+  «Copiar»).
 
 ## Calidad (Principio VII, FR-017, FR-018, SC-006)
 
