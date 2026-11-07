@@ -29,6 +29,11 @@ type Resultado<T> =
 | `CANCELACION_TARDIA` | cancelar con ahora ≥ inicio (FR-018) | «Esta cita ya ha empezado. Márcala como completada o no asistida.» |
 | `TRANSICION_NO_PERMITIDA` | completar/no asistida antes del inicio | «Esta cita todavía no ha empezado.» |
 | `ESTADO_CAMBIADO` | estado ya no es `reservada` (FR-020) | «Esta cita ya figura como cancelada. Hemos actualizado la agenda.» `detalle`: estado actual |
+| `NO_ENCONTRADO` | cita, profesional, servicio o paciente inexistente (o de otra clínica) | «No encontramos esa cita. Actualiza la agenda e inténtalo de nuevo.» |
+
+`SOLAPE` / `HUECO_OCUPADO_A_LA_VEZ`: si PostgreSQL aborta una de dos altas simultáneas por
+interbloqueo al comprobar `cita_sin_solape` (40P01), la transacción se repite (máx. 3 veces) y
+la perdedora recibe el rechazo normal; nunca se guarda un solape.
 
 `SOLAPE` y `HUECO_OCUPADO_A_LA_VEZ` proceden ambos de la misma restricción de la BD
 (código PostgreSQL `23P01`); el segundo se usa cuando la comprobación previa no encontró
@@ -48,8 +53,10 @@ Borra la cookie (FR-003).
 Busca por nombre (sin distinguir mayúsculas ni tildes) o por teléfono normalizado; máximo 10
 resultados. `PacienteResumen = { id, nombre, telefono }`.
 
-### `crearPaciente({ nombre, telefono, email? }) → Resultado<PacienteResumen>`
-FR-016a/b. Errores: `DATOS_NO_VALIDOS`, `TELEFONO_DUPLICADO`.
+### Alta de paciente (dentro de `crearCita`)
+FR-016a/b/c. No se expone como acción independiente: la ficha nueva solo se crea junto con
+su cita (`paciente: { nuevo }`), en la misma transacción. Errores: `DATOS_NO_VALIDOS`,
+`TELEFONO_DUPLICADO` (con `detalle: { pacienteId, nombre, telefono }`).
 
 ### `crearCita(entrada) → Resultado<CitaVista>`
 ```ts
