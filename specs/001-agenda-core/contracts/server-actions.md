@@ -76,6 +76,13 @@ cita falla, no queda ficha creada. Errores: todos los de alta anteriores.
 FR-017–FR-020. Cancelar exige confirmación en la interfaz. Errores: `CANCELACION_TARDIA`,
 `TRANSICION_NO_PERMITIDA`, `ESTADO_CAMBIADO`.
 
+*(Enmienda revisión cruzada S2–S5, FR-018a)* Esta acción es la cancelación de recepción:
+con `accion: 'cancelar'` escribe, en el mismo `UPDATE` condicional,
+`estado = 'cancelada'`, `estado_cambiado_en = ahora` y `cancelada_por = 'recepcion'`. El
+origen no es un parámetro de entrada: el cliente no puede elegirlo. `completar` y
+`no_asistida` dejan `cancelada_por` nulo. La cancelación del paciente (`cancelada_por =
+'paciente'`) no pasa por esta acción; la define la spec 005.
+
 ## Lectura (Server Component, no acción)
 
 ### `obtenerAgendaDia({ profesionalId, fecha }) → AgendaDia`

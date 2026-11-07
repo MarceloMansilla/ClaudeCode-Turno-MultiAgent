@@ -266,3 +266,34 @@ solapes), C con US3 (coordinando con B los archivos `citas.ts`).
 - Ningún test se desactiva para integrar (Principio VI); si una regla cambia, primero la spec
 - La spec debe figurar como «Aprobada» en `spec.md` y `specs/MAPA.md` antes de `/speckit-implement` (Principio I)
 - Commit tras cada tarea o grupo lógico
+
+---
+
+## Enmienda revisión cruzada (S2)
+
+**Purpose**: implementar FR-018a (origen de la cancelación) de la Enmienda revisión cruzada
+S2–S5 (2026-11-07). Pendiente: no se ha tocado código.
+
+### Tests (MANDATORY - Principle VI) ⚠️
+
+- [ ] T067 [P] [S2] Escribir `tests/integration/origen-cancelacion.test.ts` (FR-018a): cancelar desde recepción deja `cancelada_por = 'recepcion'` y `estado_cambiado_en` con el momento de la cancelación; completar y no asistida dejan `cancelada_por` nulo; un `UPDATE` SQL directo a `cancelada` sin origen, o con origen en una cita no cancelada, es rechazado por `cita_origen_cancelacion`; un valor fuera de `recepcion` | `paciente` es rechazado por el enum
+- [ ] T068 [P] [S2] Ampliar `tests/integration/estados.test.ts`: `cambiarEstadoCita` no acepta el origen como entrada (siempre escribe `recepcion`) y, en dos cancelaciones simultáneas, la que prospera deja un único origen y la otra recibe `ESTADO_CAMBIADO` (FR-020)
+- [ ] T069 [P] [S2] Ampliar `tests/integration/semilla.test.ts` y `tests/unit/semilla.test.ts`: las 114 canceladas de la semilla (fecha 2026-11-09) tienen `cancelada_por = 'recepcion'`, ninguna otra cita tiene origen, y las cifras de `docs/datos-demo.md` no cambian (Principio V)
+- [ ] T070 [S2] Escribir una prueba de migración: sobre una BD con citas canceladas creadas con el esquema anterior, aplicar la migración deja todas con `cancelada_por = 'recepcion'` y la restricción activa
+
+### Implementation
+
+- [ ] T071 [S2] Añadir en `src/db/esquema.ts` el enum `origen_cancelacion` (`recepcion`, `paciente`), la columna `cita.cancelada_por` y la restricción `cita_origen_cancelacion`, y generar la migración `src/db/migraciones/0002_origen_cancelacion.sql` con el relleno previo `UPDATE cita SET cancelada_por = 'recepcion' WHERE estado = 'cancelada'` antes del `CHECK` (data-model.md)
+- [ ] T072 [S2] En `src/servicios/citas.ts`, `cambiarEstadoCita` con `accion: 'cancelar'` escribe `cancelada_por = 'recepcion'` en el mismo `UPDATE … WHERE estado = 'reservada'` (contracts/server-actions.md) (depende de T071)
+- [ ] T073 [S2] En `src/semilla/generar.ts` y `src/semilla/cargar.ts`, generar las citas canceladas con `cancelada_por = 'recepcion'` sin alterar identificadores ni recuentos (FR-021, FR-024) (depende de T071)
+- [ ] T074 [S2] Ejecutar `pnpm lint`, `pnpm typecheck`, `pnpm test` y `pnpm test:e2e` en verde (depende de T067–T073)
+
+---
+
+## Enmienda revisión cruzada (S3)
+
+**Purpose**: teléfono de contacto de la clínica (FR-022, Key Entities), que lee la spec 005.
+Pendiente: no se ha tocado código.
+
+- [ ] T075 [P] [S3] Ampliar `tests/integration/semilla.test.ts`: Clínica Eleva tiene teléfono «911 234 567»
+- [ ] T076 [S3] Añadir `clinica.telefono` (obligatorio) en `src/db/esquema.ts` con su migración y rellenarlo en la semilla con «911 234 567» (data-model.md) (depende de T075)

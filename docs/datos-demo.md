@@ -27,6 +27,13 @@ Solo cambia el hash de la clave de panel; la clave sigue siendo `CLAVE_DEMO` (po
 | Historia | 1425 citas: 1168 completadas, 114 canceladas (8,0 %), 143 no asistidas (10,0 %) |
 | Futuro | 280 citas reservadas |
 
+Los porcentajes de la historia son **proporciones sobre el total de citas de la historia**
+(spec 001, FR-023): no asistidas 143 de 1425 = 10,0 %; canceladas 114 de 1425 = 8,0 %. No son
+la «tasa de no asistencia» del panel de analítica: esa la define la spec 004, FR-006, como
+no asistidas ÷ (completadas + no asistidas), y sobre estos mismos datos vale **10,9 %**
+(143 de 1.311). Las canceladas de la historia son todas de recepción
+(`cancelada_por = 'recepcion'`, spec 001, FR-018a).
+
 ### Por profesional
 
 | Profesional | Reservadas | Completadas | Canceladas | No asistidas |
