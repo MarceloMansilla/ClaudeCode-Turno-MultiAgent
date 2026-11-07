@@ -26,7 +26,7 @@ type Resultado<T> =
 | `SERVICIO_INCOMPATIBLE` | especialidad distinta (FR-009a) | «María no atiende "Consulta de nutrición". Elige un servicio de Fisioterapia.» |
 | `TELEFONO_DUPLICADO` | teléfono ya registrado (FR-016b) | «Ya hay un paciente con este teléfono: Ana Pérez.» `detalle`: `{ pacienteId, nombre }` |
 | `DATOS_NO_VALIDOS` | validación de campos | Teléfono (FR-016c): «Revisa el teléfono: debe ser un número español de 9 cifras.»; nombre: «Escribe el nombre del paciente.» |
-| `CANCELACION_TARDIA` | cancelar con ahora ≥ inicio (FR-018) | «Esta cita ya ha empezado. Márcala como completada o no asistida.» |
+| `CANCELACION_TARDIA` | cancelar con ahora ≥ inicio (FR-018, fila «Recepción (panel)») | «Esta cita ya ha empezado. Márcala como completada o no asistida.» |
 | `TRANSICION_NO_PERMITIDA` | completar/no asistida antes del inicio | «Esta cita todavía no ha empezado.» |
 | `ESTADO_CAMBIADO` | estado ya no es `reservada` (FR-020) | «Esta cita ya figura como cancelada. Hemos actualizado la agenda.» `detalle`: estado actual |
 | `NO_ENCONTRADO` | cita, profesional, servicio o paciente inexistente (o de otra clínica) | «No encontramos esa cita. Actualiza la agenda e inténtalo de nuevo.» |

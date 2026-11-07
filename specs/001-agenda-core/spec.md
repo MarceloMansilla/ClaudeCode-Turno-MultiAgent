@@ -22,6 +22,7 @@
 - Q: ¿Qué significa «datos idénticos» en la semilla? → A: Mismo contenido y mismos identificadores; solo puede variar el hash de la clave (la misma clave sigue funcionando).
 - Q: ¿La duración de los servicios debe ser múltiplo de 15 minutos? → A: Sí (15, 30, 45, 60…).
 - Q: ¿Cómo se verifican SC-002 y SC-003? → A: Prueba manual previa a la entrega: 2 personas que nunca han usado CitaClara realizan ambas tareas en portátil y móvil, cronometradas.
+- Q: ¿Hasta cuándo puede cancelar el paciente, desde el portal o desde el enlace del recordatorio? (S1 de la revisión cruzada) → A: Hasta la hora de inicio de la cita en todos los canales, igual que recepción (opción A); el portal deja su regla de 24 horas y el recordatorio no cambia. El plazo de cada canal se fija solo en FR-018 de la 001; las demás specs lo citan.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -220,10 +221,34 @@ no están disponibles.
 
 - **FR-017**: Los únicos cambios de estado permitidos son desde «reservada» a «completada»,
   «cancelada» o «no asistida». Los tres estados finales son definitivos.
-- **FR-018**: «Cancelar» solo DEBE estar disponible antes de la hora de inicio de la cita, y
-  DEBE pedir confirmación. Un intento de cancelar a partir de la hora de inicio (p. ej., con
-  la pantalla abierta desde antes) se rechaza indicando que debe marcarse como completada o
-  no asistida.
+- **FR-018** *(Enmienda S1, 2026-11-07)*: Política de cancelación. Este requisito es la
+  única fuente del plazo para cancelar una cita «reservada», canal por canal. En todos los
+  canales el plazo se comprueba con el reloj del servidor en el momento de procesar la
+  cancelación (al confirmar), no al mostrar la pantalla o el enlace, y compara instantes,
+  por lo que el cambio de hora no lo altera.
+
+  **Plazo de cancelación por canal**
+
+  | Canal | Se puede cancelar si | El plazo vence | Ejemplo: cita del lunes 16/11/2026 a las 10:00 |
+  |-------|----------------------|----------------|------------------------------------------------|
+  | Recepción (panel) | `ahora < inicio` | en el instante de inicio: con `ahora ≥ inicio` se rechaza | Último minuto permitido: lunes 16/11/2026 a las 09:59 (hasta las 09:59:59). Primer minuto rechazado: lunes 16/11/2026 a las 10:00 (desde las 10:00:00). |
+  | Paciente – portal | `ahora < inicio` | en el instante de inicio: con `ahora ≥ inicio` se rechaza | Último minuto permitido: lunes 16/11/2026 a las 09:59 (hasta las 09:59:59). Primer minuto rechazado: lunes 16/11/2026 a las 10:00 (desde las 10:00:00). |
+  | Paciente – recordatorio | `ahora < inicio` | en el instante de inicio: con `ahora ≥ inicio` se rechaza | Último minuto permitido: lunes 16/11/2026 a las 09:59 (hasta las 09:59:59). Primer minuto rechazado: lunes 16/11/2026 a las 10:00 (desde las 10:00:00). |
+
+  - *Recepción (panel)*: «Cancelar» solo DEBE estar disponible antes de la hora de inicio de
+    la cita, y DEBE pedir confirmación. Un intento de cancelar a partir de la hora de inicio
+    (p. ej., con la pantalla abierta desde antes) se rechaza indicando que debe marcarse como
+    completada o no asistida.
+  - *Filas de paciente*: rigen los canales de paciente que definen la spec del portal del
+    paciente (fila «Paciente – portal») y la spec de recordatorios de cita (fila «Paciente –
+    recordatorio»). La 001 no implementa ningún canal de paciente; solo fija su plazo. Esas
+    specs DEBEN citar «001, FR-018, fila Paciente – portal» o «001, FR-018, fila Paciente –
+    recordatorio» y NO DEBEN fijar plazos propios, ni en requisitos ni en supuestos ni en
+    ejemplos. Si un canal necesita otro plazo, se pide al propietario de la 001 como enmienda
+    de esta tabla.
+  - Las tres filas tienen hoy el mismo plazo por decisión de producto (S1, opción A); una fila
+    solo cambia por enmienda de este requisito. Lo que se muestra al paciente fuera de plazo y
+    cómo se registra quién canceló no forman parte de este requisito.
 - **FR-019**: «Completada» y «No asistida» solo DEBEN estar disponibles a partir de la hora de
   inicio de la cita. «No asistida» significa exclusivamente que el paciente no se presentó a
   una cita que seguía reservada.
