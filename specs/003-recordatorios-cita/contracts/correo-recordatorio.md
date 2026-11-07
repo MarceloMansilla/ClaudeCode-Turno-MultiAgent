@@ -1,7 +1,7 @@
 # Contrato: correo de recordatorio
 
-Contenido exacto del recordatorio (FR-007, FR-008) y forma del fichero del modo simulado
-(FR-009). Ejemplo con la cita de los escenarios de la spec.
+Contenido exacto del recordatorio (FR-007, FR-008, FR-019, FR-020) y forma del fichero del
+modo simulado (FR-009). Ejemplo con la cita de los escenarios de la spec.
 
 ## Cabeceras
 
@@ -30,20 +30,39 @@ Le recordamos su cita en Clínica Eleva:
   Servicio:    Sesión de fisioterapia
 
 Si no puede venir, cancele la cita para que otra persona pueda aprovechar el hueco:
-<URL_PUBLICA>/cancelar/<token>
+<URL_PUBLICA>/p/<token>
 
-Puede cancelar hasta la hora de inicio de la cita. Si tiene cualquier duda, llame a la
-clínica.
+<enunciado de la política de cancelación de esta cita — 005, FR-016>
 
 Clínica Eleva
 ```
 
+### Enunciado de la política (FR-020)
+
+Se deriva de **005, FR-016** y contiene sus tres elementos y ningún otro plazo: la regla, el
+límite concreto de esa cita («antes del [día de la semana], [dd/mm/aaaa] a las [hh:mm]», con
+el vencimiento de 005 FR-009) y la alternativa de llamar a la clínica con su nombre y
+teléfono. Esta spec no redacta el plazo ni lo calcula: toma el límite de la 005. Solo adapta el
+trato al del correo (usted, FR-008). Ejemplo de referencia derivado de 005 FR-016 para la cita
+de Ana:
+
+```text
+Puede cancelar esta cita desde su enlace antes del domingo, 15/11/2026 a las 10:00.
+Después, llame a Clínica Eleva al <teléfono de la clínica>.
+```
+
+El teléfono procede de la 001 (pendiente de S9). Si la 005 cambia el enunciado o el plazo, este
+ejemplo cambia con ella; el texto final y el trato los revisa la guía de textos de la 002 (S10).
+
 Reglas:
 
 - Saludo con el **nombre de pila** de la ficha (primera palabra del nombre).
+- El único enlace a CitaClara es el enlace personal vigente del paciente (`/p/<token>`, 005
+  FR-001 y FR-008). No hay enlaces por cita.
 - No incluye precio, teléfono del paciente ni ningún otro dato de la ficha.
-- En HTML, el enlace es un botón «Cancelar mi cita» (texto ≥ 16 px, contraste AA, área
-  táctil ≥ 44 px) y debajo la URL en texto por si el botón no se muestra.
+- En HTML, el enlace es un botón «Ver o cancelar mi cita» (texto ≥ 16 px, contraste AA, área
+  táctil ≥ 44 px) y debajo la URL en texto por si el botón no se muestra. El texto del botón
+  es provisional hasta la guía de textos de la 002 (S10).
 - Una columna, ancho máximo 600 px, sin imágenes ni recursos externos; legible desde 360 px
   (SC-006).
 

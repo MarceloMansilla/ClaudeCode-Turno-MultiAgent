@@ -4,7 +4,7 @@
 [modelo de la 001](../001-agenda-core/data-model.md)
 
 Mismas convenciones que la 001: identificadores `uuid`, instantes `timestamptz` (UTC), nombres
-en español con guion bajo. Todo cambio va en una migración nueva de la 002, generada tras
+en español con guion bajo. Todo cambio va en una migración nueva de la 003, generada tras
 rebasar sobre `main` (research R11).
 
 ## Diagrama
@@ -14,20 +14,14 @@ clinica 1───* ejecucion_recordatorios
 clinica 1───* recordatorio *───1 cita      (como máximo un recordatorio por cita)
 ```
 
-## Cambio en `cita` (de la 001)
+## Lo que esta feature NO añade (revisión cruzada S2 y S4)
 
-| Campo nuevo | Tipo | Reglas |
-|-------------|------|--------|
-| cancelada_desde_recordatorio | boolean | `NOT NULL DEFAULT false`; `true` solo si la canceló el paciente desde el recordatorio (FR-013) |
-
-```sql
-ALTER TABLE cita ADD COLUMN cancelada_desde_recordatorio boolean NOT NULL DEFAULT false;
-ALTER TABLE cita ADD CONSTRAINT cita_cancelada_desde_recordatorio_coherente
-  CHECK (NOT cancelada_desde_recordatorio OR estado = 'cancelada');
-```
-
-El momento de la cancelación es `estado_cambiado_en` (ya existe). Las cancelaciones de
-recepción y de la semilla siguen igual (`false`): el código de la 001 no cambia.
+- **Ningún cambio en `cita`**: la 003 no escribe estados de cita ni el origen de una
+  cancelación (spec FR-021). El origen lo define la 001 (FR-018a, `cita.cancelada_por`) y lo
+  escribe la 005. Se retira la antigua columna `cancelada_desde_recordatorio`.
+- **Ningún enlace ni credencial de paciente**: el enlace del correo es el enlace personal de
+  la 005 (FR-001, FR-008), que se lee al componer el correo. Su almacenamiento lo define la
+  005. Se retiran `recordatorio.token_hash` y su índice.
 
 ## recordatorio
 
@@ -39,7 +33,6 @@ recepción y de la semilla siguen igual (`false`): el código de la 001 no cambi
 | destinatario | texto | correo de la ficha en el momento del envío |
 | modo | enum `modo_correo` | `simulado` \| `smtp` |
 | estado | enum `estado_recordatorio` | `enviando` \| `enviado` \| `fallido` |
-| token_hash | texto | SHA-256 (hex) del token del enlace; **UNIQUE**; cambia en cada intento |
 | intentos | smallint | ≥ 1 |
 | generado_en | timestamptz | primera reclamación |
 | ultimo_intento_en | timestamptz | última reclamación |
@@ -47,7 +40,10 @@ recepción y de la semilla siguen igual (`false`): el código de la 001 no cambi
 | ultimo_error | texto | nulo salvo `fallido`; texto técnico solo para el resumen |
 | fichero | texto | ruta relativa del `.eml` en modo simulado; nulo en `smtp` |
 
-Índices: único `(cita_id)`, único `(token_hash)`.
+Índices: único `(cita_id)`.
+
+`estado = 'enviado'` define la población de SC-005 («citas con recordatorio enviado»); la
+fórmula de la tasa es la de la 004 (FR-006).
 
 ### Estados
 
@@ -104,6 +100,11 @@ Para cada una, en orden de inicio:
 
 Las citas canceladas, completadas o no asistidas no se seleccionan (escenario US1 #4).
 
+Datos que se leen para componer cada correo (solo lectura): la cita, su paciente, profesional
+y servicio (001); la clínica, con nombre, zona y teléfono (001; teléfono pendiente de S9); el
+enlace personal vigente de la ficha y el límite de cancelación de la cita (005, FR-001 y
+FR-009, a través de lo que exponga la 005: el plazo no se calcula aquí).
+
 ## Ventana: ejemplos (Europe/Madrid)
 
 | «Ahora» de la ejecución | fecha_objetivo | ventana_desde (UTC) | ventana_hasta (UTC) | Horas |
@@ -112,15 +113,4 @@ Las citas canceladas, completadas o no asistidas no se seleccionan (escenario US
 | sáb 27/03/2027 08:00 | dom 28/03/2027 | 2027-03-27T23:00Z | 2027-03-28T22:00Z | 23 |
 | sáb 30/10/2027 08:00 | dom 31/10/2027 | 2027-10-30T22:00Z | 2027-10-31T23:00Z | 25 |
 
-## Cancelación desde el recordatorio (FR-012–FR-015)
-
-```sql
-UPDATE cita
-   SET estado = 'cancelada', estado_cambiado_en = $ahora, cancelada_desde_recordatorio = true
- WHERE id = $citaId AND estado = 'reservada' AND inicio > $ahora
-RETURNING id;
-```
-
-0 filas → se relee la cita: `estado ≠ 'reservada'` → se muestra su estado (`ESTADO_CAMBIADO`
-o «ya cancelada»); `inicio ≤ ahora` → `CANCELACION_TARDIA`. Al pasar a `cancelada`, la fila
-sale de `cita_sin_solape` y el hueco queda libre para la agenda de la 001.
+La ventana puede cambiar según la pregunta abierta P1 de la spec.

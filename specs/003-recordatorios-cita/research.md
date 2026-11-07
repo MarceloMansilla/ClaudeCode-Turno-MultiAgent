@@ -75,57 +75,40 @@ axe. Aquí solo se decide lo nuevo. Formato: Decisión / Razón / Alternativas.
 
 - **Decisión**: una función pura `componerRecordatorio(datos) → { asunto, texto, html }`, con
   versión de **texto plano** y **HTML** sencillo (una columna, estilos en línea, ancho máximo
-  600 px, botón «Cancelar mi cita» con contraste AA y texto ≥ 16 px). Fechas con el
+  600 px, botón con el enlace personal, contraste AA y texto ≥ 16 px). Fechas con el
   formateador de la 001 («lunes, 16/11/2026», «10:00–10:45»). Trato de usted. Sin imágenes
   ni recursos externos (se ven igual con las imágenes bloqueadas).
 - **Razón**: pocas líneas, fáciles de probar con instantáneas; sin motor de plantillas.
 - **Alternativas**: React Email / MJML: buenas para catálogos de correos; para uno solo es
   dependencia innecesaria (Principio IV).
 
-## R5. Enlace de cancelación (FR-011, FR-016, SC-004)
+## R5. Enlace y enunciado de la política en el correo (FR-019, FR-020; revisión cruzada S4)
 
-- **Decisión**: un **token aleatorio de 32 bytes** (`crypto.randomBytes`) en base64url
-  (43 caracteres), uno por recordatorio. En la BD solo se guarda su **SHA-256**
-  (`token_hash`, único); el token en claro solo existe en el correo. Se genera de nuevo en
-  cada intento de envío (un fallido reintentado lleva un enlace nuevo). URL:
-  `${URL_PUBLICA}/cancelar/<token>`. La validez se decide al usarlo: el enlace siempre muestra
-  el estado de su cita y solo permite cancelar mientras siga «reservada» y `ahora < inicio`.
-- **Razón**: 256 bits hacen inviable adivinar un enlace (SC-004) sin limitar intentos; guardar
-  solo el hash evita que una copia de la BD permita cancelar citas.
-- **Alternativas**: JWT firmado con `jose`: enlaces más largos, revocación imposible y una
-  clave más que custodiar. Usar el `id` de la cita: adivinable.
+- **Decisión**: el correo lleva el **enlace personal** vigente del paciente
+  (`${URL_PUBLICA}/p/<token>`, 005 FR-001 y FR-008), leído al componer el correo, y el
+  **enunciado** de la política de cancelación derivado de 005 FR-016. La 003 no genera, guarda
+  ni valida tokens, y no calcula el plazo: toma de la 005 el enlace y el límite de cada cita.
+  Un fallido reintentado lleva el enlace vigente en el momento del reintento.
+- **Razón**: 005 FR-008 prohíbe a otras specs definir enlaces o credenciales de paciente, y
+  005 FR-017 exige que todo texto sobre el plazo se derive de FR-016. Así el límite que dice el
+  correo y el que aplica el portal son el mismo instante (SC-007).
+- **Alternativas**: enlace por cita con token propio (diseño anterior, `/cancelar/[token]` con
+  `token_hash`): retirado por S4; duplicaba la credencial del paciente con otras reglas de
+  exposición. Calcular aquí `inicio − 24 h`: retirado; sería un plazo redactado por su cuenta.
+- **Pendiente**: cómo expone la 005 el enlace vigente y el límite (su plan). Si 005 FR-006
+  pide además las 4 cifras, el correo no cambia; cambia el número de pasos de SC-002.
 
-## R6. Página pública de cancelación (US2, FR-012, FR-014, FR-015)
+## R6. Página pública de cancelación — *Retirada (S4)*
 
-- **Decisión**: ruta **`/cancelar/[token]`**, fuera del `matcher` de `proxy.ts` (que en la
-  001 solo cubre `/`, `/entrar` y `/agenda/*`), sin sesión. La carga (GET) **solo lee**: busca
-  el recordatorio por hash y muestra la cita y su estado. La cancelación es una **Server
-  Action** (`cancelarDesdeRecordatorio`) disparada por el botón «Cancelar mi cita», así que
-  los analizadores de enlaces de los proveedores de correo no pueden cancelar nada. Cabeceras:
-  `Cache-Control: no-store`, `Referrer-Policy: no-referrer`, `X-Robots-Tag: noindex`.
-  Interfaz con los componentes de la 001 (shadcn/ui), mobile-first desde 360 px.
-- **Razón**: separa ver de cancelar (escenario US2 #1) y reutiliza la protección CSRF de las
-  Server Actions.
-- **Alternativas**: cancelar en el propio GET: lo dispararían los analizadores de enlaces.
-  Formulario HTML con ruta POST propia: equivale a la Server Action con más código.
+La 003 no tiene páginas. Lo que ve el paciente al abrir el enlace lo define la 002 con las
+reglas de la 005.
 
-## R7. Cancelación en la base de datos (FR-012, FR-013, FR-015; Principio III)
+## R7. Cancelación en la base de datos — *Retirada (S2)*
 
-- **Decisión**: actualización condicional en un **servicio nuevo**
-  (`src/servicios/recordatorios.ts`), sin modificar el servicio de citas de la 001:
-  `UPDATE cita SET estado = 'cancelada', estado_cambiado_en = $ahora,
-  cancelada_desde_recordatorio = true WHERE id = $citaId AND estado = 'reservada'
-  AND inicio > $ahora`. Si no afecta a ninguna fila, se relee la cita y se responde con su
-  estado (ya cancelada, completada, no asistida) o con «fuera de plazo». Nueva columna
-  `cita.cancelada_desde_recordatorio boolean NOT NULL DEFAULT false` (FR-013); el momento es
-  `estado_cambiado_en`, que ya existe.
-- **Razón**: la misma técnica que la 001 (FR-020): de varias cancelaciones o cambios
-  simultáneos solo prospera uno. Cancelar saca la cita de la restricción `cita_sin_solape`,
-  así que no puede crear solapes; el hueco liberado se vuelve a reservar con las garantías de
-  la 001. Con `DEFAULT false`, el código y la semilla de la 001 no cambian.
-- **Alternativas**: columna `cancelada_por` (`recepcion` | `paciente`) obligatoria al
-  cancelar: más expresiva, pero obliga a tocar el servicio de citas y la semilla de la 001,
-  que se están implementando en paralelo; se descarta por coste de coordinación.
+La 003 no escribe en la agenda: no hay `UPDATE` de `cita` ni columna
+`cancelada_desde_recordatorio`. La cancelación del paciente la ejecuta la 005 y su origen se
+registra en el campo de la 001 (FR-018a, `cita.cancelada_por`). La afirmación anterior «el
+código de la 001 no cambia» queda retirada: no es una garantía de esta spec.
 
 ## R8. Resumen de cada ejecución (FR-005)
 
@@ -151,19 +134,18 @@ axe. Aquí solo se decide lo nuevo. Formato: Decisión / Razón / Alternativas.
 
 - **Decisión**:
   - **Unitarias**: cálculo de la ventana (incluidos los días de cambio de hora, 28/03/2027 y
-    31/10/2027), composición del correo (asunto y campos exactos, texto y HTML), generación y
-    hash del token, clasificación de resultados.
+    31/10/2027), composición del correo (asunto y campos exactos, texto y HTML, enlace personal
+    y enunciado de la política con el límite que da la 005), clasificación de resultados.
   - **Integración (PostgreSQL real con Testcontainers)**: 10 ejecuciones repetidas y
     2 ejecuciones simultáneas sobre la semilla → 0 duplicados (SC-001); fallido reintentado
     con un transporte de prueba que falla; envío interrumpido no reintentado; citas no
-    reservadas y fichas sin correo o con correo inválido; cancelación simultánea paciente ×
-    recepción y paciente × paciente (solo una prospera); alta en el hueco liberado sin solape
-    (Principio III); 100 tokens inventados → ninguno muestra datos (SC-004). Modo simulado:
-    el `.eml` se vuelve a leer con el analizador de Nodemailer (`mailparser`, solo en
-    desarrollo) y se comprueban cabeceras y cuerpo.
-  - **E2E (Playwright, móvil 360×800 y portátil)**: abrir enlace → ver datos → cancelar →
-    mensaje de confirmación; enlace fuera de plazo y enlace inválido; axe sin infracciones AA
-    (SC-006); la agenda de recepción muestra el hueco libre (SC-003).
+    reservadas y fichas sin correo o con correo inválido; cada correo lleva el enlace personal
+    vigente de su paciente y ningún otro enlace (FR-019); el límite del enunciado coincide al
+    minuto con el de la 005 (SC-007); una ejecución no cambia ninguna fila de `cita` (FR-021).
+    Modo simulado: el `.eml` se vuelve a leer con el analizador de Nodemailer (`mailparser`,
+    solo en desarrollo) y se comprueban cabeceras y cuerpo.
+  - **E2E**: ninguno propio (la 003 no tiene pantallas). El recorrido correo → portal →
+    cancelar es de la 005 y la 002; SC-002 se verifica a mano (quickstart).
   Cada test cita su FR/escenario en el nombre, como en la 001.
 - **Alternativas**: servidor SMTP de pruebas (MailHog/Mailpit) en Docker: útil para mirar
   correos a mano, pero el modo simulado ya da los `.eml`; no se añade.
@@ -171,17 +153,19 @@ axe. Aquí solo se decide lo nuevo. Formato: Decisión / Razón / Alternativas.
 ## R11. Trabajo en paralelo con otras features
 
 - **Dependencia de la 001**: esta rama no contiene aún el código de la 001 (se implementa en
-  otra copia de trabajo). La implementación de la 002 empieza cuando la 001 esté integrada en
+  otra copia de trabajo). La implementación de la 003 empieza cuando la 001 esté integrada en
   `main` y se rebase esta rama sobre ella.
 - **Migraciones**: Drizzle numera las migraciones y mantiene `meta/_journal.json`; otras
-  features en paralelo también añadirán migraciones. La migración de la 002 se genera
+  features en paralelo también añadirán migraciones. La migración de la 003 se genera
   **después** de rebasar sobre `main`, nunca antes, para evitar números y diarios
   conflictivos.
-- **`proxy.ts`**: no se modifica (el `matcher` de la 001 ya deja fuera `/cancelar`). Si la
-  feature de portal del paciente cambia el `matcher`, debe seguir excluyendo `/cancelar/*`.
-- **Portal del paciente**: si define otra forma de cancelar, debe usar la misma regla
-  (FR-018/FR-018a de la 001) y, preferiblemente, el mismo servicio de cancelación.
+- **005 (acceso y cancelación) y 002 (portal)**: la 003 necesita de la 005 el enlace personal
+  vigente de cada ficha (y los enlaces de la semilla, 005 FR-019) y el límite de cancelación
+  de cada cita. La implementación de FR-019/FR-020 empieza cuando la 005 los exponga. La 003 no
+  añade rutas ni toca `proxy.ts`.
 
 ## Asuntos sin resolver
 
-Ninguno. No queda ningún «NEEDS CLARIFICATION».
+- Pregunta abierta P1 de la spec (envío a las 08:00 de la víspera frente al plazo de 24 h de la
+  005; depende de S1). Puede cambiar R1 (hora de ejecución y ventana).
+- Cómo expone la 005 el enlace vigente y el límite de cancelación (R5).

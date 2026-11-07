@@ -76,3 +76,11 @@ documentación y tests, y se copian también a este apartado. Comprobación: eje
 dos veces y comparar los resúmenes y los identificadores (deben ser idénticos; solo cambia el
 hash de la clave), y verificar no asistidas = 10 % ± 1 y canceladas = 8 % ± 1 de la
 historia.
+
+### Cifras de referencia (2026-11-09)
+
+Detalle en [docs/datos-demo.md](../../docs/datos-demo.md). Con `pnpm seed --fecha-referencia 2026-11-09`:
+40 pacientes y 1705 citas; historia de 1425 citas (1168 completadas, 114 canceladas = 8,0 %,
+143 no asistidas = 10,0 %) y 280 reservadas en las 2 semanas futuras. Por profesional
+(reservadas / completadas / canceladas / no asistidas): María 84 / 349 / 34 / 41,
+Jorge 87 / 335 / 32 / 50, Lucía 109 / 484 / 48 / 52.

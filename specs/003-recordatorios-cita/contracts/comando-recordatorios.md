@@ -22,7 +22,7 @@ CRON_TZ=Europe/Madrid
 | Variable | Obligatoria | Uso |
 |----------|-------------|-----|
 | `DATABASE_URL` | sí | la misma de la 001 |
-| `URL_PUBLICA` | sí | base de los enlaces de cancelación, p. ej. `https://citas.clinicaeleva.es` (en desarrollo `http://localhost:3000`) |
+| `URL_PUBLICA` | sí | base del enlace personal del paciente (`/p/<token>`, 005 FR-001), p. ej. `https://citas.clinicaeleva.es` (en desarrollo `http://localhost:3000`) |
 | `CORREO_REMITENTE` | sí | dirección del remitente; el nombre mostrado es el de la clínica |
 | `SMTP_URL` | no | p. ej. `smtps://usuario:clave@smtp.ejemplo.es:465`. **Si falta → modo simulado** |
 | `SALIDA_CORREO_DIR` | no | carpeta del modo simulado; por defecto `datos/salida-correo` |

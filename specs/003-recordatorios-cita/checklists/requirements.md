@@ -13,7 +13,7 @@
 
 ## Requirement Completeness
 
-- [x] No [NEEDS CLARIFICATION] markers remain
+- [ ] No [NEEDS CLARIFICATION] markers remain *(pregunta abierta P1, revisión cruzada 2026-11-07)*
 - [x] Requirements are testable and unambiguous
 - [x] Success criteria are measurable
 - [x] Success criteria are technology-agnostic (no implementation details)
@@ -37,6 +37,11 @@
 - El fichero `.eml` y la carpeta `datos/salida-correo/` (FR-009) son una restricción de
   producto pedida explícitamente para el modo simulado (demostrable y reproducible,
   Principio V), no una decisión de implementación.
-- Dependencia de la 001: la cancelación por el paciente amplía las reglas de estado de la
-  001 (mismo propietario); debe reflejarse allí antes del plan (Principio I).
+- ~~Dependencia de la 001: la cancelación por el paciente amplía las reglas de estado de la
+  001 (mismo propietario); debe reflejarse allí antes del plan (Principio I).~~ Retirada en la
+  revisión cruzada (2026-11-07): la 003 ya no escribe en la agenda ni pide enmienda a la 001.
+- Iteración 2 (revisión cruzada S2–S5, 2026-11-07): renumerada de 002 a 003; sin enlace ni
+  flujo de cancelación propios (dependen de la 005 y la 002); SC-005 cita la tasa de la 004.
+  Queda abierta la pregunta P1 para Sara (envío de la víspera frente al plazo de 24 h de la
+  005; depende de S1).
 - Items marked incomplete require spec updates before `/speckit-clarify` or `/speckit-plan`

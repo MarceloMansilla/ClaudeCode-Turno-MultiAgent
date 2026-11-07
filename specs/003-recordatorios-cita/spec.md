@@ -4,7 +4,9 @@
 
 **Created**: 2026-11-07
 
-**Status**: Aprobada (2026-11-07, MarceloMansilla)
+**Status**: En revisión (2026-11-07): renumerada de 002 a 003 y adaptada a la revisión cruzada
+S2–S5; pendiente de la pregunta abierta P1. Se aprobó antes como 002 (2026-11-07,
+MarceloMansilla).
 
 **Input**: User description: "Recordatorios de cita. El dolor número uno del cliente piloto: la no asistencia. Alcance: un proceso diario genera un recordatorio por email para cada cita reservada de las próximas 24-48 horas, sin duplicar envíos; el email incluye los datos de la cita y una forma de que el paciente cancele si no va a ir (mejor un hueco libre que un no-show). Correo en modo simulado sin SMTP configurado: se escriben ficheros .eml en datos/salida-correo/. Preguntas cerradas para Sara: antelación exacta, qué pasa si el paciente cancela desde el email y con cuánta antelación puede, y si el recordatorio se reenvía cuando la cita se mueve. Fuera de alcance v1: SMS y WhatsApp."
 
@@ -13,8 +15,24 @@
 ### Session 2026-11-07
 
 - Q: ¿Con cuánta antelación exacta se envía el recordatorio? → A: La víspera: la ejecución diaria de las 08:00 (hora local de la clínica) recuerda todas las citas reservadas del día natural siguiente.
-- Q: ¿Qué pasa si el paciente cancela desde el correo y con cuánta antelación puede? → A: Cancelación directa (la cita pasa a «cancelada» y el hueco se libera al instante), permitida hasta la hora de inicio de la cita, igual que recepción (FR-018 de la 001).
-- Q: ¿Se reenvía el recordatorio cuando la cita se mueve? → A: No hay nada adicional en v1: mover es cancelar y crear otra cita (001), y la nueva recibe su propio recordatorio según FR-002; el enlace del correo antiguo muestra que la cita está cancelada. Sin aviso de anulación al paciente.
+- Q: ¿Qué pasa si el paciente cancela desde el correo y con cuánta antelación puede? → A: *(Retirada en la revisión cruzada S4, 2026-11-07.)* El acceso del paciente y su cancelación los define la 005 (FR-001–FR-018) y los presenta el portal (002); esta spec ya no tiene flujo de cancelación propio ni fija plazo. La respuesta anterior («hasta la hora de inicio») forma parte de S1, aún abierto, y no rige en esta spec.
+- Q: ¿Se reenvía el recordatorio cuando la cita se mueve? → A: No hay nada adicional en v1: mover es cancelar y crear otra cita (001), y la nueva recibe su propio recordatorio según FR-002; el enlace del correo antiguo muestra que la cita está cancelada. Sin aviso de anulación al paciente. *(S4: el enlace es ahora el enlace personal de la 005; lo que muestra el portal al abrirlo lo define la 002.)*
+
+## Preguntas abiertas
+
+- **P1 (para Sara; depende de S1).** ¿Debe poder el paciente cancelar desde el correo con el
+  plazo de la 005? Con el envío a las 08:00 de la víspera (FR-002) y el plazo de 24 h de la
+  005 (FR-009), el límite para cancelar una cita cae la víspera a la misma hora que la cita.
+  Desde que sale el correo, al paciente le quedan entre 1 h (cita a las 09:00) y unas 11 h
+  (citas a partir de las 19:00); quien lee el correo después de ese límite ya no puede
+  cancelar desde el enlace. Ejemplo: cita de Ana del lunes 16/11/2026 a las 10:00 → correo
+  el domingo 15/11/2026 a las 08:00 → puede cancelar desde su enlace antes del domingo,
+  15/11/2026 a las 10:00 (2 h de margen); después, solo llamando a la clínica. Opciones:
+  (a) adelantar el envío a más de 24 h antes del inicio (p. ej., 48 h; cambia FR-002 y la
+  ventana); (b) mantener la víspera y aceptar que el correo sirva sobre todo para recordar y
+  remitir al teléfono (el enlace personal y el enunciado de FR-019 y FR-020 siguen siendo
+  obligatorios). Depende también de S1, aún abierto: si el plazo del paciente cambia, cambia
+  la pregunta. **Sin decidir.**
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -22,11 +40,13 @@
 
 Cada día, sin que nadie de recepción tenga que hacer nada, CitaClara envía un correo de
 recordatorio a cada paciente con una cita reservada dentro de la ventana de antelación. El
-correo contiene los datos de la cita (clínica, profesional, servicio, día y hora) y nunca
-llega dos veces para la misma cita.
+correo contiene los datos de la cita (clínica, profesional, servicio, día y hora), el enlace
+personal del paciente y el enunciado de la política de cancelación, y nunca llega dos veces
+para la misma cita.
 
 **Why this priority**: es el remedio directo al principal dolor del cliente piloto, la no
-asistencia. Por sí solo, sin cancelación desde el correo, ya reduce olvidos.
+asistencia. Por sí solo ya reduce olvidos; además lleva al paciente a su portal, donde puede
+cancelar con las reglas de la 005.
 
 **Independent Test**: con la semilla cargada y sin servidor de correo configurado, ejecutar
 el proceso diario en una fecha concreta y comprobar que en la carpeta de salida aparece
@@ -58,44 +78,20 @@ los datos correctos; ejecutarlo de nuevo y comprobar que no aparece ninguno más
    **When** termina la ejecución, **Then** ese recordatorio no cuenta como enviado, figura
    en el resumen como «fallido» y la siguiente ejecución lo reintenta si la cita sigue
    reservada y dentro de la ventana.
+8. **Given** el recordatorio de la cita de Ana del escenario 1, **When** se lee el correo,
+   **Then** contiene el enlace personal vigente de Ana (`/p/[token]`, 005 FR-001 y FR-008),
+   ningún otro enlace a CitaClara, y el enunciado de la política de cancelación de esa cita
+   derivado de 005 FR-016, con el límite que fija 005 FR-009 para el lunes 16/11/2026 a las
+   10:00 (FR-020).
 
 ---
 
-### User Story 2 - El paciente cancela desde el recordatorio (Priority: P2)
+### User Story 2 - El paciente cancela desde el recordatorio — *Retirada (revisión cruzada S4, 2026-11-07)*
 
-El paciente que sabe que no va a ir abre el enlace del correo, ve los datos de su cita y
-confirma la cancelación. La cita pasa a «Cancelada» y el hueco queda libre en la agenda de
-recepción, que puede ofrecerlo a otro paciente.
-
-**Why this priority**: convierte un futuro «no asistido» en un hueco aprovechable («mejor un
-hueco libre que un no-show»). Depende de que exista el recordatorio (US1).
-
-**Independent Test**: generar el recordatorio de una cita reservada, abrir su enlace de
-cancelación desde un móvil, confirmar, y comprobar que la cita aparece cancelada y su hueco
-libre en la agenda; volver a abrir el enlace y comprobar que informa de que ya está
-cancelada.
-
-**Acceptance Scenarios**:
-
-1. **Given** Ana recibió el recordatorio de su cita del lunes 16/11/2026 a las 10:00,
-   **When** abre el enlace de cancelación, **Then** ve los datos de su cita y un botón
-   «Cancelar mi cita», y la cita NO se cancela solo por abrir el enlace.
-2. **Given** Ana está en la página de cancelación dentro del plazo permitido, **When** pulsa
-   «Cancelar mi cita», **Then** la cita pasa a «Cancelada», Ana ve «Su cita del lunes,
-   16/11/2026 a las 10:00 ha quedado cancelada. Gracias por avisar.» y el hueco de 10:00 a
-   10:45 de María aparece libre en la agenda de recepción.
-3. **Given** ya ha llegado la hora de inicio de la cita (lunes 16/11/2026, 10:00), aunque
-   Ana tuviera la página abierta desde antes, **When** Ana abre el enlace o pulsa cancelar,
-   **Then** no se cancela nada y ve «Ya no es posible cancelar esta cita desde aquí. Por
-   favor, llame a Clínica Eleva.».
-4. **Given** la cita ya fue cancelada (por Ana o por recepción) o ya está completada o no
-   asistida, **When** Ana abre el enlace, **Then** ve el estado actual de la cita y ninguna
-   acción disponible.
-5. **Given** recepción cambia el estado de la cita mientras Ana tiene abierta la página,
-   **When** Ana pulsa «Cancelar mi cita», **Then** la acción se rechaza y se le muestra el
-   estado actual (misma regla que FR-020 de la 001).
-6. **Given** un enlace manipulado o inexistente, **When** se abre, **Then** se muestra
-   «Este enlace no es válido.» sin revelar ningún dato de ninguna cita.
+Esta spec ya no tiene página ni flujo de cancelación propios. El paciente cancela desde su
+portal (002), al que llega con el enlace personal del correo, con las reglas de acceso y
+cancelación de la 005 (FR-001–FR-018). Lo que queda en esta spec es lo que lleva el correo:
+el enlace personal (FR-019) y el enunciado de la política (FR-020).
 
 ---
 
@@ -113,26 +109,25 @@ cancelada.
   porque las citas del lunes se recuerdan en la ejecución del domingo a las 08:00.
 - **Cita cancelada y vuelta a crear a otra hora** (en la 001 una cita no se mueve; se cancela
   y se crea otra): la nueva cita es otra cita y recibe su propio recordatorio si cae en una
-  ventana; el enlace del recordatorio antiguo muestra que esa cita está cancelada (FR-017).
-  Si la nueva cita es para mañana y se crea después de las 08:00, no recibe recordatorio
-  (misma regla que cualquier reserva tardía).
+  ventana (FR-017). El correo antiguo lleva el enlace personal del paciente; lo que muestra el
+  portal de la cita cancelada lo define la 002. Si la nueva cita es para mañana y se crea
+  después de las 08:00, no recibe recordatorio (misma regla que cualquier reserva tardía).
 - **Cita cancelada entre la generación del recordatorio y la lectura del correo**: el enlace
-  muestra «Esta cita ya está cancelada».
-- **Varias citas del mismo paciente en la ventana**: un recordatorio por cita, cada uno con
-  su propio enlace de cancelación (que solo cancela esa cita).
+  personal abre el portal, que muestra el estado actual de la cita (002); esta spec no añade
+  nada.
+- **Varias citas del mismo paciente en la ventana**: un recordatorio por cita; todos llevan
+  el mismo enlace personal (005 FR-001) y cada uno el enunciado con el límite de su propia
+  cita (FR-020).
+- **Enlace personal regenerado después del envío**: el correo ya enviado lleva el enlace
+  anterior, que deja de valer (005 FR-004, FR-007). El recordatorio no se reenvía.
 - **Correo del paciente con formato inválido**: no se genera recordatorio y figura en el
   resumen como «correo no válido».
-- **Analizadores de enlaces de los proveedores de correo** que abren automáticamente los
-  enlaces: nunca cancelan nada, porque abrir el enlace no cancela; hace falta pulsar el
-  botón de confirmación.
 - **Cambio de hora (último domingo de marzo/octubre)**: la ejecución y la ventana se fijan en
   hora local de la clínica (08:00; día natural siguiente), y el cambio ocurre de madrugada,
   así que no afecta a qué citas se recuerdan. La hora mostrada en el correo es siempre la
   hora local de la cita. Ejemplo: el domingo 28/03/2027 a las 02:00 se adelanta el reloj;
   la ejecución de ese día sigue siendo a las 08:00 (hora de verano) y recuerda la cita del
   lunes 29/03/2027 a las 10:00 con el texto «10:00».
-- **Cancelación simultánea** del paciente y de recepción, o del paciente desde dos
-  dispositivos: solo una prospera; la otra ve el estado actual.
 
 ## Requirements *(mandatory)*
 
@@ -149,7 +144,7 @@ cancelada.
   recordatorio generado. Ventana de antelación: la víspera. La ejecución diaria es a las
   08:00, hora local de la clínica, y su ventana es el día natural siguiente completo (de
   00:00 a 23:59 de mañana, hora local). Una ejecución manual usa la misma ventana: el día
-  natural siguiente al de la ejecución.
+  natural siguiente al de la ejecución. *(Pendiente de la pregunta abierta P1.)*
 - **FR-003 (sin duplicados)**: Cada cita DEBE recibir como máximo un recordatorio,
   independientemente de cuántas veces o con qué solapamiento se ejecute el proceso, incluidas
   ejecuciones simultáneas.
@@ -167,7 +162,8 @@ cancelada.
 
 - **FR-007**: El recordatorio DEBE incluir: nombre de la clínica, nombre del paciente,
   profesional, servicio, día de la semana y fecha («lunes, 16/11/2026»), hora de inicio y fin
-  («10:00–10:45») en hora local de la clínica, y el enlace para cancelar. No incluye precio.
+  («10:00–10:45») en hora local de la clínica, el enlace personal del paciente (FR-019) y el
+  enunciado de la política de cancelación de esa cita (FR-020). No incluye precio.
 - **FR-008**: El correo DEBE estar en español de España, con trato de usted, sin jerga
   técnica, y DEBE leerse correctamente en un móvil. Asunto: «Recordatorio de su cita en
   [clínica]: [día], [fecha], [hora de inicio]».
@@ -188,26 +184,10 @@ cancelada.
 
 **Cancelación desde el correo**
 
-- **FR-011**: Cada recordatorio DEBE contener un enlace personal, no adivinable y exclusivo
-  de esa cita. El enlace solo permite ver los datos de esa cita y cancelarla; no da acceso a
-  ningún otro dato ni a otras citas del paciente o de la clínica.
-- **FR-012**: Abrir el enlace NO DEBE cancelar la cita: muestra los datos de la cita y pide
-  confirmación explícita («Cancelar mi cita»). Al confirmar dentro del plazo, la cita pasa de
-  «reservada» a «cancelada» y su hueco queda libre al instante (FR-006 de la 001), sin
-  intervención de recepción. Plazo: hasta la hora de inicio de la cita, la misma regla que
-  rige para recepción (FR-018 de la 001); la comprobación se hace en el momento de
-  confirmar. Ejemplo: cita a las 10:00 → se puede cancelar a las 09:59; a las 10:00 ya no.
-- **FR-013**: Una cancelación desde el correo DEBE quedar registrada como hecha por el
-  paciente desde el recordatorio, con su momento, para distinguirla de las cancelaciones de
-  recepción.
-- **FR-014**: Fuera de plazo, o si la cita ya no está reservada, la página DEBE mostrar el
-  estado actual de la cita y no ofrecer ninguna acción; fuera de plazo, además, indica que
-  llame a la clínica.
-- **FR-015**: Si el estado de la cita cambió desde que se mostró la página, la cancelación
-  DEBE rechazarse mostrando el estado actual. Cancelaciones simultáneas de la misma cita:
-  exactamente una prospera.
-- **FR-016**: Un enlace inválido DEBE mostrar «Este enlace no es válido.» sin revelar datos.
-  El enlace deja de permitir cancelar cuando vence el plazo de FR-012.
+- **FR-011 a FR-016**: *Retirados (revisión cruzada S4, 2026-11-07).* Definían un enlace por
+  cita, su página y un flujo y plazo de cancelación propios. Los sustituyen la 005 (acceso y
+  cancelación del paciente) y la 002 (pantallas), y en esta spec FR-019 a FR-021. Estos
+  números no se reutilizan.
 
 **Citas que cambian**
 
@@ -215,7 +195,8 @@ cancelada.
   Como en la 001 una cita no se mueve (se cancela y se crea otra), la cita nueva es una cita
   distinta y recibe su propio recordatorio según FR-002, aunque la cancelada ya tuviera uno.
   No se envía ningún aviso al paciente cuando recepción cancela una cita, haya recibido o no
-  recordatorio; el enlace del correo antiguo muestra que la cita está cancelada (FR-014).
+  recordatorio; el correo antiguo lleva el enlace personal del paciente, y lo que muestra el
+  portal de esa cita lo define la 002.
   Ejemplo: cita de Ana del lunes 16/11/2026 a las 10:00, recordada el domingo; el lunes a las
   08:30 recepción la cancela y crea otra para el miércoles 18/11/2026 a las 12:00 → Ana
   recibe el recordatorio de la nueva el martes 17/11/2026 a las 08:00 y ningún correo más.
@@ -225,15 +206,30 @@ cancelada.
 - **FR-018**: En v1 los recordatorios solo se envían por correo electrónico. SMS y WhatsApp
   quedan fuera de alcance.
 
+**Enlace personal y política de cancelación en el correo** *(revisión cruzada S4, 2026-11-07)*
+
+- **FR-019**: Cada recordatorio DEBE llevar el enlace personal vigente del paciente en el
+  momento del envío (`/p/[token]`, 005 FR-001 y FR-008), y ningún otro enlace a CitaClara.
+  Esta spec no define, genera ni guarda enlaces ni credenciales de paciente; si necesitara
+  otro tipo de enlace, lo pediría como enmienda de la 005 (005 FR-008).
+- **FR-020**: Cada recordatorio DEBE incluir el enunciado de la política de cancelación del
+  paciente para esa cita, derivado de «005, FR-016», con sus tres elementos y en el trato del
+  correo (FR-008). Esta spec no redacta ni calcula ningún plazo: el límite que muestra es el
+  que fija 005 FR-009 para esa cita y coincide al minuto con el que se aplica al cancelar
+  (005 FR-017).
+- **FR-021**: Cancelar se hace en el portal (002) con las reglas de la 005. Esta spec no
+  ofrece pantalla ni acción de cancelación y no escribe en la agenda: no cambia el estado de
+  ninguna cita ni registra el origen de una cancelación (lo registra la 005 con el campo de
+  la 001, FR-018a: `cita.cancelada_por`). El proceso de recordatorios solo lee citas, fichas
+  y la clínica.
+
 ### Constitution Requirements *(mandatory)*
 
 - **Owner**: MarceloMansilla (registrado en `specs/MAPA.md`).
-- **Writes to the agenda?**: Sí — la cancelación desde el correo cambia una cita de
-  «reservada» a «cancelada» y libera su hueco. No crea ni mueve citas, por lo que no puede
-  generar solapes por sí misma, pero las pruebas DEBEN cubrir: cancelación desde el correo
-  simultánea con un cambio de estado de recepción (solo uno prospera), y alta de una cita
-  nueva en el hueco recién liberado sin solape con la cancelada. El proceso de recordatorios
-  solo lee la agenda.
+- **Writes to the agenda?**: No. El proceso de recordatorios solo lee la agenda (citas
+  reservadas de la ventana, fichas y clínica) y escribe únicamente sus propias tablas de
+  recordatorios y ejecuciones. La cancelación que el correo facilita la ejecuta la 005 desde
+  el portal (002), con el origen `'paciente'` de 001 FR-018a (FR-021).
 - **Amounts and dates**:
   - Sin importes: el correo no muestra precio.
   - Fechas y horas con convenciones españolas y en hora local de la clínica: «lunes,
@@ -243,25 +239,29 @@ cancelada.
     la de Ana de 10:00–10:45; la del martes 17/11/2026 a las 09:00 se recuerda el lunes
     16/11/2026 a las 08:00. La ejecución del viernes cubre las del sábado (ninguna: la clínica
     cierra) y las del lunes las recuerda la ejecución del domingo.
+  - El límite de cancelación que aparece en el correo usa el formato de 005 FR-016
+    («antes del domingo, 15/11/2026 a las 10:00»); su valor lo fija 005 FR-009.
   - Cambio de hora: ver Edge Cases (ejemplo del 28–29/03/2027).
 - **Demo data**: esta feature no cambia la semilla de la 001 (40 pacientes, de los que
-  aproximadamente 3 de cada 4 tienen correo; 2 semanas de citas reservadas futuras). El plan
-  DEBE documentar, para la fecha de referencia usada en ejemplos y tests, cuántos
-  recordatorios genera la primera ejecución, cuántas citas quedan «sin correo» y cuántos
-  genera la segunda (0). El caso «correo no válido» se prueba con fichas creadas por los
-  propios tests.
+  aproximadamente 3 de cada 4 tienen correo; 2 semanas de citas reservadas futuras). Necesita
+  los enlaces personales que la 005 añade a la semilla (005 FR-019). El plan DEBE documentar,
+  para la fecha de referencia usada en ejemplos y tests, cuántos recordatorios genera la
+  primera ejecución, cuántas citas quedan «sin correo» y cuántos genera la segunda (0). El
+  caso «correo no válido» se prueba con fichas creadas por los propios tests.
 
 ### Key Entities *(include if feature involves data)*
 
 - **Recordatorio**: aviso por correo de una cita concreta. Cita a la que pertenece (como
   máximo uno por cita), destinatario, momento de generación, modo (simulado o real) y
   resultado (enviado o fallido).
-- **Enlace de cancelación**: credencial personal y no adivinable ligada a una única cita;
-  permite ver esa cita y cancelarla dentro del plazo.
 - **Ejecución del proceso de recordatorios**: momento, ventana cubierta y resumen de
   resultados por cita.
-- **Cita** (de la 001): se añade a su historia el origen de una cancelación (recepción o
-  paciente desde el recordatorio) y su momento.
+- **Enlace personal** *(de la 005)*: se lee el vigente de la ficha al componer el correo; esta
+  spec no lo crea, no lo guarda ni lo regenera.
+- **Cita** *(de la 001)*: solo se lee (estado, inicio, fin, paciente, profesional,
+  servicio). Esta spec no le añade nada.
+- **Clínica** *(de la 001)*: se leen su nombre, su zona horaria y su teléfono de contacto
+  (este último, para el enunciado de 005 FR-016; ver Dependencias).
 
 ## Success Criteria *(mandatory)*
 
@@ -270,43 +270,69 @@ cancelada.
 - **SC-001**: Sobre los datos de demostración, el 100 % de las citas reservadas de la
   ventana cuyo paciente tiene correo reciben exactamente 1 recordatorio, y 10 ejecuciones
   repetidas más 2 ejecuciones simultáneas generan 0 duplicados.
-- **SC-002**: Un paciente que nunca ha usado CitaClara cancela su cita desde el correo, en
-  un móvil, en menos de 1 minuto y con no más de 2 pulsaciones (abrir el enlace y
-  confirmar).
-- **SC-003**: Tras la cancelación del paciente, el hueco aparece libre en la agenda de
-  recepción en cuanto esta se consulta o actualiza.
-- **SC-004**: En 100 intentos automatizados con enlaces inventados o manipulados, ninguno
-  muestra datos de una cita ni cancela nada.
-- **SC-005**: En el piloto, la tasa de no asistencia de las citas con recordatorio baja al
-  menos un 30 % respecto a las 8 semanas anteriores a la puesta en marcha (medido con los
-  estados registrados por recepción).
-- **SC-006**: El correo y la página de cancelación se leen sin desplazamiento horizontal
-  desde 360 px de ancho y la página cumple el contraste mínimo AA.
+- **SC-002** *(sustituye al anterior, S4)*: Un paciente que nunca ha usado CitaClara, con una
+  cita dentro del plazo de la 005, pasa del correo a tener la cita cancelada en el portal, en
+  un móvil, en menos de 1 minuto. Pasos: pulsar el enlace del correo más los que fijan la 005
+  y la 002 para cancelar (hoy: pedir cancelar y confirmar, 005 FR-012). **Dependencia**: si
+  005 FR-006 acaba pidiendo las 4 últimas cifras del teléfono, se añade ese paso y cambia el
+  número de pasos; el objetivo de tiempo se mantiene.
+- **SC-003**: *Retirado (S4).* Que el hueco liberado aparezca libre lo cubre la 005 (US2 #5).
+- **SC-004**: *Retirado (S4).* La resistencia a enlaces inventados la cubre la 005 (FR-002,
+  FR-007, US1 #2).
+- **SC-005** *(S5)*: En el piloto, la tasa de no asistencia (004, FR-006) de las citas con
+  recordatorio en estado `'enviado'` baja al menos un 30 % respecto a las 8 semanas
+  anteriores a la puesta en marcha. Población: citas cuyo recordatorio quedó «enviado»
+  (FR-006). Esta spec no define fórmula propia.
+- **SC-006**: El correo se lee sin desplazamiento horizontal desde 360 px de ancho y su
+  enlace cumple el contraste mínimo AA.
+- **SC-007**: En la revisión de textos previa a la entrega, el límite de cancelación de cada
+  correo de prueba coincide al minuto con el que aplica la 005 (005 SC-004): 0
+  discrepancias.
 
 ## Assumptions
 
 - Destinatario: el correo de la ficha del paciente (opcional en la 001). Los pacientes sin
   correo no reciben recordatorio.
 - Una sola clínica por instalación (como en la 001); el remitente muestra el nombre de la
-  clínica. La 001 no guarda teléfono ni dirección de la clínica, así que el correo y la
-  página de cancelación dicen «llame a la clínica» sin número; añadir esos datos sería un
-  cambio de la 001.
-- La página de cancelación es la única pantalla para pacientes en esta spec; no hay acceso
-  del paciente ni cuentas. Si la feature de portal del paciente (desarrollada en paralelo)
-  define otra forma de cancelar, ambas DEBEN aplicar el mismo plazo y las mismas reglas.
+  clínica. El enunciado de 005 FR-016 incluye el teléfono de la clínica; hoy la 001 del
+  tronco no lo guarda y su origen se resuelve aparte (S9). Mientras no exista, el correo no
+  puede cumplir ese elemento del enunciado.
+- Esta spec no tiene pantallas para pacientes. El acceso del paciente y su cancelación los
+  define la 005; las pantallas, la 002 (portal). El correo solo lleva el enlace personal y el
+  enunciado de la política.
 - La hora de ejecución diaria es las 08:00, hora local de la clínica (FR-002), antes de la
   apertura de las 09:00; así recepción dispone de toda la jornada para reasignar los huecos
-  que liberen los pacientes.
+  que liberen los pacientes. Su relación con el plazo de la 005 está en la pregunta abierta
+  P1.
 - No hay reintentos dentro de la misma ejecución ni seguimiento de lectura o rebotes del
   correo.
-- La cancelación por el paciente amplía la regla de estados de la 001. Ya está recogida en la
-  001 como FR-018a (enmienda del 2026-11-07, hecha por su propietario, que es el mismo): el
-  paciente puede cancelar desde el enlace del recordatorio con el mismo plazo, confirmándolo
-  él mismo, y queda registrado.
 - La ejecución automática diaria (FR-001) la pone en marcha el planificador de la
   instalación (el del sistema o el del hosting), que se configura al desplegar, como el resto
   de la instalación. El sistema aporta el comando, las instrucciones para planificarlo y el
   registro de cada ejecución, con el que se comprueba que la ejecución diaria ha tenido lugar.
-- Fuera de alcance v1: SMS, WhatsApp, reprogramar desde el correo, confirmar asistencia,
-  recordatorios múltiples por cita, avisos de anulación o de cambio de cita y
-  personalización del texto por la clínica.
+- Fuera de alcance v1: SMS, WhatsApp, cancelar sin pasar por el portal, reprogramar desde el
+  correo, confirmar asistencia, recordatorios múltiples por cita, avisos de anulación o de
+  cambio de cita y personalización del texto por la clínica.
+
+## Dependencias y enmiendas pedidas
+
+Esta spec no escribe en la agenda ni define el acceso del paciente; depende de:
+
+- **005 Acceso y cancelación del paciente** (única fuente de verdad): enlace personal
+  (FR-001, FR-008), plazo (FR-009), enunciado canónico (FR-016, FR-017) y enlaces en la
+  semilla (FR-019). Abierto en la 005: FR-006 (¿4 cifras?), que afecta a SC-002. Petición al
+  plan de la 005: exponer el límite de cancelación de una cita para que el correo lo muestre
+  sin calcularlo por su cuenta (FR-020).
+- **002 Portal del paciente**: la pantalla a la que lleva el enlace del correo y lo que
+  muestra de cada cita; la guía de textos y el trato al paciente (S10, aparte).
+- **001 Núcleo de agenda**: estados de la cita; origen de la cancelación (FR-018a,
+  `cita.cancelada_por ∈ {'recepcion','paciente'}`, acordado y aún no presente en el tronco),
+  que esta spec no escribe; teléfono de la clínica (S9). El plazo del paciente por canal (S1)
+  sigue abierto; esta spec cita solo a la 005 y no toma partido. Esta spec ya no pide
+  enmienda a la 001: se retira la antigua FR-018a de recordatorios.
+- **MAPA** (lo mantiene el propietario de la 001): registrar la 003 como
+  `003-recordatorios-cita`, propietario MarceloMansilla, **Escribe en la agenda: No**, en
+  orden 002, 003, 004 (S3).
+- **004 Panel de analítica**: SC-005 usa su tasa de no asistencia (FR-006). Si se quiere ver
+  en el panel la tasa de las citas con recordatorio enviado, es una petición de enmienda a la
+  004 (segmentar por recordatorio); esta spec no calcula el indicador.
