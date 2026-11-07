@@ -25,7 +25,7 @@ type Resultado<T> =
 | `HORA_NO_VALIDA` | inicio no múltiplo de 15 min | «Las citas empiezan en punto, y cuarto, y media o menos cuarto.» |
 | `SERVICIO_INCOMPATIBLE` | especialidad distinta (FR-009a) | «María no atiende "Consulta de nutrición". Elige un servicio de Fisioterapia.» |
 | `TELEFONO_DUPLICADO` | teléfono ya registrado (FR-016b) | «Ya hay un paciente con este teléfono: Ana Pérez.» `detalle`: `{ pacienteId, nombre }` |
-| `DATOS_NO_VALIDOS` | validación de campos | «Revisa el teléfono: debe tener 9 cifras.» |
+| `DATOS_NO_VALIDOS` | validación de campos | Teléfono (FR-016c): «Revisa el teléfono: debe ser un número español de 9 cifras.»; nombre: «Escribe el nombre del paciente.» |
 | `CANCELACION_TARDIA` | cancelar con ahora ≥ inicio (FR-018) | «Esta cita ya ha empezado. Márcala como completada o no asistida.» |
 | `TRANSICION_NO_PERMITIDA` | completar/no asistida antes del inicio | «Esta cita todavía no ha empezado.» |
 | `ESTADO_CAMBIADO` | estado ya no es `reservada` (FR-020) | «Esta cita ya figura como cancelada. Hemos actualizado la agenda.» `detalle`: estado actual |
@@ -38,7 +38,8 @@ conflicto y la BD sí (carrera).
 
 ### `entrar(clave: string) → Resultado<void>`
 Comprueba la clave contra el hash de la clínica y crea la cookie de sesión (12 h). Errores:
-`CLAVE_INCORRECTA`. Con una sola clínica en la 001, la clave identifica la clínica.
+`CLAVE_INCORRECTA`. En la 001 cada instalación tiene una sola clínica (FR-001): la clave se
+compara con el hash de esa clínica.
 
 ### `salir() → Resultado<void>`
 Borra la cookie (FR-003).

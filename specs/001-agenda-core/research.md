@@ -79,8 +79,11 @@ formato Decisión / Razón / Alternativas.
 
 - **Decisión**: la clave se guarda con hash **Argon2id** (`@node-rs/argon2`). Al acertar se
   emite una cookie de sesión `httpOnly`, `Secure`, `SameSite=Lax`, firmada con **jose**
-  (HS256), que contiene el `clinica_id` y caduca a las 12 h. Un middleware de Next.js protege
-  todas las rutas del panel; cada consulta filtra por el `clinica_id` de la sesión.
+  (HS256), que contiene el `clinica_id` y caduca a las 12 h. En la 001 cada instalación sirve
+  a **una sola clínica** (clarificación 2026-11-07): `entrar` compara la clave con el hash de
+  esa única clínica. El `proxy.ts` de Next.js 16 (antes `middleware.ts`) protege todas las
+  rutas del panel, y cada consulta sigue filtrando por el `clinica_id` de la sesión para que
+  el futuro soporte multiclínica no obligue a reescribir los servicios.
 - **Razón**: lo mínimo seguro para «auth simplificada v1» sin tabla de sesiones ni
   proveedor externo. El aislamiento por clínica se aplica en una única función de acceso.
 - **Alternativas**: Auth.js / Better Auth: pensados para usuarios individuales; exceso para
@@ -96,7 +99,10 @@ formato Decisión / Razón / Alternativas.
   barajando con el PRNG y fijando exactamente `round(0,10·N)` no asistidas y
   `round(0,08·N)` canceladas; el resto, completadas. Todas las citas del futuro, reservadas.
   El script inserta en la misma BD con las mismas restricciones (si generase un solape,
-  fallaría).
+  fallaría). **Identificadores deterministas** (FR-021): cada `uuid` se construye con 16 bytes
+  del PRNG (formato v4 válido), generados en un orden fijo (clínica → profesionales →
+  servicios → pacientes → citas). Solo el hash Argon2 de la clave varía (sal aleatoria); la
+  comparación de dos ejecuciones lo excluye.
 - **Razón**: misma fecha + misma semilla ⇒ mismos datos; porcentajes exactos dentro de la
   tolerancia de SC-005. Fecha de referencia de documentación y tests: **lunes 09/11/2026**.
 - **Alternativas**: faker con semilla: añade dependencia grande y su salida puede cambiar

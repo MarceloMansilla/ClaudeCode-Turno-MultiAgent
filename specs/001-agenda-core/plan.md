@@ -40,8 +40,9 @@ tarea de usuario (SC-002)
 **Constraints**: 0 solapes bajo concurrencia (SC-001); sin scroll horizontal desde 360 px y
 WCAG 2.2 AA (SC-006); hora local de la clínica en toda la interfaz
 
-**Scale/Scope**: 1–N clínicas de 2–5 profesionales; semilla ≈ 40 pacientes y ~10 semanas de
-citas; 3 pantallas (entrar, agenda del día, alta de cita)
+**Scale/Scope**: una clínica por instalación (FR-001), de 2–5 profesionales; semilla con
+40 pacientes y 10 semanas de citas (8 de historia y 2 futuras); 3 pantallas (entrar, agenda
+del día, alta de cita)
 
 ## Constitution Check
 
@@ -51,9 +52,9 @@ Puertas derivadas de `.specify/memory/constitution.md` (v1.0.0). Evaluación pre
 investigación y repetida tras el diseño (mismo resultado):
 
 - [x] **I. Spec primero**: ✅ spec registrada en `specs/MAPA.md` con propietario único
-      (MarceloMansilla) y clarificada; el plan no añade comportamiento fuera de la spec.
-      ⚠ Condición: el propietario debe marcar la spec como «Aprobada» (spec y MAPA) antes de
-      `/speckit-implement`.
+      (MarceloMansilla), clarificada (10 preguntas) y aprobada el 2026-11-07; el plan no añade
+      comportamiento fuera de la spec (las reglas de teléfono, duración e identificadores
+      deterministas están ahora en FR-014, FR-016c y FR-021).
 - [x] **II. Números**: ✅ importes en céntimos enteros, solo se muestran (sin redondeos);
       instantes en UTC y presentación en la zona IANA de la clínica con formato español
       (R5, R6); cambio de hora fuera del horario; Canarias cubierta por la zona de la clínica.
@@ -115,7 +116,7 @@ src/
 │   └── migraciones/                          # incluye SQL de exclusión e índice único
 ├── lib/
 │   ├── reloj.ts  zona.ts  formato.ts  sesion.ts
-└── middleware.ts                             # protege /agenda/*
+└── proxy.ts                                  # protege /agenda/* (en Next.js 16 sustituye a middleware.ts; confirmar en T001)
 
 scripts/
 └── seed.ts                                   # semilla determinista (R8)

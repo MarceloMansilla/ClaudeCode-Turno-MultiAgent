@@ -4,7 +4,7 @@
 
 **Created**: 2026-11-07
 
-**Status**: Draft
+**Status**: Aprobada (2026-11-07, MarceloMansilla)
 
 **Input**: User description: "Núcleo de agenda de CitaClara. Contexto: clínicas pequeñas (2-5 profesionales); la recepción gestiona la agenda; los pacientes, de momento, solo existen como fichas. Alcance de la 001: entidades (clínica con clave de panel, profesionales, servicios, pacientes, citas); cita = profesional + servicio + paciente con inicio y fin = inicio + duración; estados reservada → completada | cancelada | no_asistida; RN1 sin solapes (también con reservas simultáneas); RN2 sin citas en el pasado; interfaz de recepción con agenda del día por profesional, alta de cita y acciones de estado; acceso con clave de clínica; semilla determinista de Clínica Eleva; fuera de alcance: acceso del paciente, recordatorios, analítica, pagos online."
 
@@ -17,6 +17,11 @@
 - Q: ¿Hasta cuándo se puede cancelar una cita? → A: Solo antes de su hora de inicio; después solo cabe «Completada» o «No asistida».
 - Q: ¿Cómo se evitan fichas de paciente duplicadas? → A: El teléfono es único por clínica; crear una ficha con un teléfono ya registrado se rechaza.
 - Q: ¿Qué servicios puede atender cada profesional? → A: Cada servicio pertenece a una especialidad y solo se reserva con profesionales de esa especialidad.
+- Q: ¿Cómo identifica la clave a la clínica al entrar? → A: Una sola clínica por instalación en la 001; la clave se comprueba contra esa clínica. El soporte multiclínica va en una spec propia.
+- Q: ¿Qué teléfonos se aceptan? → A: Solo españoles: 9 cifras que empiezan por 6, 7, 8 o 9, con o sin prefijo +34.
+- Q: ¿Qué significa «datos idénticos» en la semilla? → A: Mismo contenido y mismos identificadores; solo puede variar el hash de la clave (la misma clave sigue funcionando).
+- Q: ¿La duración de los servicios debe ser múltiplo de 15 minutos? → A: Sí (15, 30, 45, 60…).
+- Q: ¿Cómo se verifican SC-002 y SC-003? → A: Prueba manual previa a la entrega: 2 personas que nunca han usado CitaClara realizan ambas tareas en portátil y móvil, cronometradas.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -148,14 +153,16 @@ no están disponibles.
 **Acceso**
 
 - **FR-001**: El panel DEBE exigir la clave de la clínica antes de mostrar o modificar
-  cualquier dato. Una clave es válida para todo el personal de esa clínica (autenticación
-  simplificada v1; deuda técnica consciente, sin usuarios individuales).
+  cualquier dato. En la 001 cada instalación sirve a una sola clínica y la clave se comprueba
+  contra ella; es válida para todo su personal (autenticación simplificada v1; deuda técnica
+  consciente, sin usuarios individuales).
 - **FR-002**: Con clave incorrecta, el sistema DEBE mostrar un mensaje comprensible y no
   revelar ningún dato de la clínica.
 - **FR-003**: Recepción DEBE poder cerrar la sesión; tras cerrarla, el panel vuelve a pedir
   la clave.
-- **FR-004**: Cada clínica DEBE ver exclusivamente sus propios profesionales, servicios,
-  pacientes y citas.
+- **FR-004**: Todos los profesionales, servicios, pacientes y citas DEBEN pertenecer a una
+  clínica, y el panel solo muestra y modifica los de la clínica de la instalación. (La
+  convivencia de varias clínicas en una instalación queda fuera de la 001.)
 
 **Agenda del día**
 
@@ -187,7 +194,8 @@ no están disponibles.
   reciben un rechazo claro. Ninguna vía de escritura puede saltarse esta regla.
 - **FR-013 (RN2)**: El sistema NO DEBE permitir registrar una cita cuyo inicio sea anterior
   al momento actual en la hora local de la clínica, comprobado en el momento de registrar.
-- **FR-014**: Las citas DEBEN empezar en múltiplos de 15 minutos y quedar completamente
+- **FR-014**: La duración de todo servicio DEBE ser múltiplo de 15 minutos. Las citas DEBEN
+  empezar en múltiplos de 15 minutos y quedar completamente
   dentro del horario de la clínica: lunes a viernes de 09:00 a 20:00, sin pausa, igual para
   todos sus profesionales.
 - **FR-015**: Todo rechazo DEBE explicar en lenguaje de clínica qué ha pasado y qué puede
@@ -203,6 +211,10 @@ no están disponibles.
   «+34 612345678» son el mismo teléfono). Si ya existe una ficha con ese teléfono, la
   creación se rechaza con el mensaje «Ya hay un paciente con este teléfono: [nombre].» y se
   ofrece seleccionar esa ficha.
+- **FR-016c**: Solo se aceptan teléfonos españoles: 9 cifras que empiezan por 6, 7, 8 o 9,
+  con o sin prefijo +34 / 0034. Cualquier otro valor se rechaza con «Revisa el teléfono: debe
+  ser un número español de 9 cifras.» (p. ej., «512 345 678» o «+44 7700 900123» se
+  rechazan).
 
 **Estados**
 
@@ -221,7 +233,10 @@ no están disponibles.
 **Datos de demostración**
 
 - **FR-021**: El sistema DEBE poder generar una semilla determinista: con la misma fecha de
-  referencia, produce exactamente los mismos datos, siempre.
+  referencia, produce exactamente los mismos datos, siempre, incluidos los identificadores de
+  todos los registros (así las direcciones de la agenda citadas en documentación y tests son
+  reproducibles). La única excepción es el hash de la clave de panel, que puede variar entre
+  ejecuciones; la clave en sí es siempre la misma.
 - **FR-022**: La semilla DEBE contener: «Clínica Eleva»; 3 profesionales (María y Jorge,
   Fisioterapia; Lucía, Nutrición); 4 servicios (Sesión de fisioterapia, 45 min, 40,00 €;
   Primera visita de fisioterapia, 60 min, 50,00 €; Consulta de nutrición, 30 min, 35,00 €;
@@ -265,8 +280,8 @@ no están disponibles.
 - **Clínica**: nombre, zona horaria, horario de apertura y clave de panel. Agrupa todo lo
   demás.
 - **Profesional**: nombre y especialidad; pertenece a una clínica.
-- **Servicio**: nombre, especialidad, duración en minutos y precio en euros (con céntimos);
-  pertenece a una clínica. Solo lo atienden profesionales de su misma especialidad.
+- **Servicio**: nombre, especialidad, duración en minutos (siempre múltiplo de 15: 15, 30,
+  45, 60…) y precio en euros (con céntimos); pertenece a una clínica. Solo lo atienden profesionales de su misma especialidad.
 - **Paciente (ficha)**: nombre y teléfono (obligatorios; teléfono único por clínica) y
   correo electrónico (opcional); pertenece a una clínica. No tiene acceso al sistema.
 - **Cita**: une profesional, servicio y paciente de la misma clínica; inicio, fin (= inicio +
@@ -284,10 +299,13 @@ no están disponibles.
   hueco libre en menos de 1 minuto en el primer intento, en portátil y en móvil.
 - **SC-003**: Una recepcionista identifica correctamente los huecos libres de un profesional
   en un día en menos de 10 segundos.
+- *Verificación de SC-002 y SC-003*: prueba manual previa a la entrega con 2 personas que
+  nunca han usado CitaClara, cronometradas en portátil y en móvil; ambas DEBEN cumplir los
+  dos tiempos. El resultado se registra junto a la entrega.
 - **SC-004**: La agenda del día se muestra completa en menos de 2 segundos tras elegir
   profesional o día.
 - **SC-005**: Regenerar la semilla con la misma fecha de referencia produce datos idénticos
-  en el 100 % de las ejecuciones, y sus porcentajes de no asistencia y cancelación quedan en
+  (contenido e identificadores, salvo el hash de la clave) en el 100 % de las ejecuciones, y sus porcentajes de no asistencia y cancelación quedan en
   10 % ± 1 y 8 % ± 1.
 - **SC-006**: Todas las pantallas se usan sin desplazamiento horizontal desde 360 px de ancho
   y cumplen el contraste mínimo AA.
@@ -306,5 +324,6 @@ no están disponibles.
   afectan a citas existentes.
 - Las citas pasadas que sigan reservadas permanecen así hasta que recepción las marque; no
   hay cierre automático.
-- Fuera de alcance: cualquier acceso del paciente, recordatorios, analítica, pagos online.
+- Fuera de alcance: cualquier acceso del paciente, recordatorios, analítica, pagos online y
+  varias clínicas en una misma instalación.
 - Dependencia: `specs/MAPA.md` se crea con esta spec y la registra.

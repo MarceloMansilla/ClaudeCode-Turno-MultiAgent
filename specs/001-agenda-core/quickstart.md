@@ -54,12 +54,25 @@ Con `pnpm seed --fecha-referencia 2026-11-09` y el reloj de la app fijado con
 | 13 | En una cita reservada de hoy anterior a las 12:10, ver acciones | «Completar» y «No asistió»; sin «Cancelar» | US3 #2–#4 |
 | 14 | Dos pestañas, reservar el mismo hueco a la vez | Una reserva; la otra, «Este hueco se acaba de ocupar…» | US2 #7 |
 | 15 | Repetir con ventana de 360 px | Todo usable sin scroll horizontal | SC-006 |
+| 16 | Paciente nuevo con teléfono «+44 7700 900123» | «Revisa el teléfono: debe ser un número español de 9 cifras.» | FR-016c |
+
+## Prueba de usabilidad previa a la entrega (SC-002, SC-003)
+
+Dos personas que nunca han usado CitaClara, sin explicación previa, en portátil y en móvil:
+
+1. «Reserva una sesión de fisioterapia con María el lunes 16/11/2026 a las 11:00 para un
+   paciente nuevo» → cronometrar; DEBE ser < 1 min en el primer intento.
+2. «Dime qué huecos libres tiene Jorge el martes 10/11/2026» → cronometrar; DEBE ser < 10 s
+   y la respuesta correcta.
+
+Registrar tiempos y observaciones en `docs/usabilidad-001.md`.
 
 ## Datos de demostración
 
 `pnpm seed --fecha-referencia 2026-11-09` debe imprimir un resumen con el total de citas por
 estado y profesional, y generar el mismo resumen en cada ejecución (SC-005). Esas cifras se
 copian a `docs/datos-demo.md` en la implementación y son las únicas que se citan en
-documentación y tests. Comprobación: ejecutar el seed dos veces y comparar los resúmenes
-(deben ser idénticos), y verificar no asistidas = 10 % ± 1 y canceladas = 8 % ± 1 de la
+documentación y tests, y se copian también a este apartado. Comprobación: ejecutar el seed
+dos veces y comparar los resúmenes y los identificadores (deben ser idénticos; solo cambia el
+hash de la clave), y verificar no asistidas = 10 % ± 1 y canceladas = 8 % ± 1 de la
 historia.
