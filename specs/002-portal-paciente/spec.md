@@ -178,7 +178,10 @@ aviso de huecos liberados, hasta que recepción vuelve a ocupar ese hueco.
   («Copiar enlace del portal») para enviárselo por el canal habitual de la clínica (WhatsApp,
   correo…). Cuando exista la spec de recordatorios, sus mensajes podrán incluirlo.
 - **FR-003**: Sin haber completado el acceso, el sistema NO DEBE mostrar ningún dato de citas
-  ni de pacientes, ni revelar si un teléfono o enlace pertenece a un paciente de la clínica.
+  ni de pacientes, ni siquiera el nombre. Ante un enlace, lo único que DEBE distinguir es si
+  sigue vigente (pide las 4 cifras) o no (mensaje de US1 #5); como el enlace es imposible de
+  deducir (FR-002), esa distinción no permite descubrir pacientes. El portal nunca pide el
+  teléfono completo, así que no sirve para averiguar si un teléfono es de un paciente.
 - **FR-004**: Un acceso solo DEBE dar visibilidad sobre las citas de la ficha de ese paciente
   en esa clínica; jamás sobre las de otro paciente.
 - **FR-005**: Los intentos fallidos de confirmar las 4 cifras DEBEN limitarse por enlace:
@@ -208,8 +211,9 @@ aviso de huecos liberados, hasta que recepción vuelve a ocupar ese hueco.
 - **FR-011**: El paciente DEBE poder cancelar cualquier cita propia en estado «reservada»
   dentro del plazo de FR-012, con un paso de confirmación que repite día, hora, servicio y
   profesional.
-- **FR-012**: El paciente DEBE poder cancelar desde el portal solo mientras falten al menos
-  24 horas para el inicio de la cita (el plazo vence exactamente 24 horas antes del inicio).
+- **FR-012**: El paciente DEBE poder cancelar desde el portal solo mientras falten más de
+  24 horas para el inicio de la cita: el plazo vence exactamente 24 horas antes del inicio y,
+  desde ese instante, ya no se puede cancelar desde el portal.
   Para cada cita futura el portal DEBE mostrar el plazo como fecha y hora local concretas, y
   comprobarlo en el momento de confirmar. Ejemplos con el reloj a las 12:10 del lunes
   09/11/2026: cita del martes 10/11/2026 a las 10:00 → plazo vencido el lunes 09/11/2026 a
