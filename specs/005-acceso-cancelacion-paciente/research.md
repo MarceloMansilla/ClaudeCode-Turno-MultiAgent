@@ -32,7 +32,7 @@ Cada decisión sigue el formato Decisión / Razón / Alternativas.
      (FR-006b).
   2. El **flujo de cancelar**: confirmación con día, hora, servicio y profesional (FR-012),
      rechazo fuera de plazo con el enunciado (FR-011, FR-016) y confirmación final.
-  3. Una **lista mínima y provisional** tras entrar, «Tus próximas citas», que solo muestra
+  3. Una **lista mínima y provisional** tras entrar, «Sus próximas citas», que solo muestra
      las citas reservadas futuras con los cuatro datos de FR-012 y el botón «Cancelar» o el
      enunciado. La 002 la sustituye por sus pantallas al integrarse y reutiliza los
      componentes de los puntos 1 y 2.

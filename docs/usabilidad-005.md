@@ -22,8 +22,8 @@ CITACLARA_AHORA=2026-11-09T12:10:00+01:00 pnpm dev
 
 ## Tareas
 
-1. **SC-005 (política)**: la persona lee una vez el enunciado de una cita de P («Puedes cancelar
-   esta cita desde tu enlace antes del… Después, llama a Clínica Eleva al 911 234 567.») y, sin
+1. **SC-005 (política)**: la persona lee una vez el enunciado de una cita de P («Puede cancelar
+   esta cita desde su enlace antes del… Después, llame a Clínica Eleva al 911 234 567.») y, sin
    volver a mirarlo, lo explica con sus palabras. Pasa si dice el límite (24 h antes) y qué hacer
    después (llamar a la clínica).
 2. **SC-006 (cancelar en móvil)**: con el cronómetro en marcha, abre el enlace de P, escribe las

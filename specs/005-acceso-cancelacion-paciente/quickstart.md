@@ -39,16 +39,16 @@ Todas en verde (Principio VI). Recuentos de la semilla de la 001 sin cambios (FR
 
 | # | Pasos | Resultado esperado | Cubre |
 |---|-------|--------------------|-------|
-| 1 | Abrir `/p/<token de P>` | «Confirma que eres tú», con el nombre y el teléfono de la clínica y ningún dato de P | FR-006 |
-| 2 | Escribir las 4 cifras de P | «Tus próximas citas», solo con citas de P | US1 #1 |
+| 1 | Abrir `/p/<token de P>` | «Confirme que es usted», con el nombre y el teléfono de la clínica y ningún dato de P | FR-006 |
+| 2 | Escribir las 4 cifras de P | «Sus próximas citas», solo con citas de P | US1 #1 |
 | 3 | Abrir `/p/` + 43 caracteres inventados | «Enlace no válido» con el teléfono; ningún nombre | US1 #2, FR-007 |
-| 4 | En una ventana privada, abrir el enlace de P y escribir 4 cifras erróneas 5 veces | 5.º intento: «Has hecho demasiados intentos. Podrás volver a intentarlo a las HH:mm» (HH:mm = ahora + 15 min); el intento correcto también se rechaza | US1 #5, FR-006a |
+| 4 | En una ventana privada, abrir el enlace de P y escribir 4 cifras erróneas 5 veces | 5.º intento: «Ha hecho demasiados intentos. Podrá volver a intentarlo a las HH:mm» (HH:mm = ahora + 15 min); el intento correcto también se rechaza | US1 #5, FR-006a |
 | 5 | Repetir hasta 10 fallos (con `CITACLARA_AHORA` 16 min después) | «Enlace bloqueado»; no se piden cifras | US1 #5 |
 | 6 | En el panel, en una cita de P, «Enlace del paciente» → «Generar enlace nuevo» → confirmar | Aviso «Enlace nuevo generado»; el enlace antiguo da «Enlace no válido»; el nuevo pide cifras y deja entrar | US3 #1–#3, #5 |
 | 7 | Con la pestaña de P abierta, regenerar desde el panel y pulsar «Cancelar cita» → «Sí» | «Enlace no válido»; la cita sigue reservada | US3 #4 |
-| 8 | Con `CITACLARA_AHORA=2026-11-09T09:00:00+01:00`, en el panel, dar de alta para P una «Sesión de fisioterapia» con María en un hueco libre del lunes 16/11/2026 (hora **H**, p. ej. 10:00). Reiniciar con el reloj en **H − 25 h** (domingo 15/11), entrar como P y cancelarla | Diálogo con servicio, profesional, día y hora; tras confirmar, «Tu cita del lunes, 16/11/2026 a las H está cancelada.» | US2 #1, FR-012 |
+| 8 | Con `CITACLARA_AHORA=2026-11-09T09:00:00+01:00`, en el panel, dar de alta para P una «Sesión de fisioterapia» con María en un hueco libre del lunes 16/11/2026 (hora **H**, p. ej. 10:00). Reiniciar con el reloj en **H − 25 h** (domingo 15/11), entrar como P y cancelarla | Diálogo con servicio, profesional, día y hora; tras confirmar, «Su cita del lunes, 16/11/2026 a las H está cancelada.» | US2 #1, FR-012 |
 | 9 | En el panel (mismo reloj), alta para otro paciente con María el 16/11 a la hora H | Se registra | US2 #5 |
-| 10 | Dar de alta para P otra cita con María el lunes 16/11 (hora **H2**). Reiniciar con el reloj en **H2 − 23 h** y entrar como P | Sin botón «Cancelar». Enunciado: «Puedes cancelar esta cita desde tu enlace antes del domingo, 15/11/2026 a las H2. Después, llama a Clínica Eleva al 911 234 567.» | US2 #2, FR-016 |
+| 10 | Dar de alta para P otra cita con María el lunes 16/11 (hora **H2**). Reiniciar con el reloj en **H2 − 23 h** y entrar como P | Sin botón «Cancelar». Enunciado: «Puede cancelar esta cita desde su enlace antes del domingo, 15/11/2026 a las H2. Después, llame a Clínica Eleva al 911 234 567.» | US2 #2, FR-016 |
 | 11 | Con ese mismo reloj, recepción cancela esa cita desde el panel | Se cancela | US2 #6 |
 | 12 | Móvil de 360 px, cronometrado: abrir el enlace, escribir las cifras y cancelar una cita en plazo | Menos de 1 minuto, sin ayuda | SC-006 |
 

@@ -18,7 +18,7 @@ import {
 import { Button } from '@/components/ui/button';
 
 /**
- * «¿Cancelar tu cita?» (spec 005, FR-012): repite día, hora, servicio y profesional; sin
+ * «¿Cancelar su cita?» (spec 005, FR-012): repite día, hora, servicio y profesional; sin
  * confirmar no se cancela nada. El foco empieza en «No, mantener cita» y Escape cierra sin
  * cancelar. El plazo se vuelve a comprobar en el servidor al confirmar (FR-009).
  */
@@ -57,7 +57,7 @@ export function DialogoCancelarCita({
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>¿Cancelar tu cita?</AlertDialogTitle>
+          <AlertDialogTitle>¿Cancelar su cita?</AlertDialogTitle>
           <AlertDialogDescription>
             {cita.servicio} con {cita.profesional}, el {cita.fecha} a las {cita.hora}. El hueco quedará libre para
             otro paciente.

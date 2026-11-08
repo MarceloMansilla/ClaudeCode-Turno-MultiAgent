@@ -10,8 +10,8 @@ const eleva = { zonaHoraria: Z, clinicaNombre: 'Clínica Eleva', clinicaTelefono
 describe('FR-016 — enunciado canónico de la política', () => {
   it('texto exacto para la cita de referencia (lunes 16/11/2026 10:00)', () => {
     expect(enunciadoPoliticaCancelacion({ ...eleva, inicio: instanteLocal('2026-11-16', '10:00', Z) })).toBe(
-      'Puedes cancelar esta cita desde tu enlace antes del domingo, 15/11/2026 a las 10:00. ' +
-        'Después, llama a Clínica Eleva al 911 234 567.',
+      'Puede cancelar esta cita desde su enlace antes del domingo, 15/11/2026 a las 10:00. ' +
+        'Después, llame a Clínica Eleva al 911 234 567.',
     );
   });
 
@@ -35,6 +35,6 @@ describe('FR-016 — enunciado canónico de la política', () => {
     const inicio = instanteLocal('2026-11-16', '10:00', 'Atlantic/Canary');
     expect(
       enunciadoPoliticaCancelacion({ inicio, zonaHoraria: 'Atlantic/Canary', clinicaNombre: 'Clínica Teide', clinicaTelefono: '922 000 111' }),
-    ).toBe('Puedes cancelar esta cita desde tu enlace antes del domingo, 15/11/2026 a las 10:00. Después, llama a Clínica Teide al 922 000 111.');
+    ).toBe('Puede cancelar esta cita desde su enlace antes del domingo, 15/11/2026 a las 10:00. Después, llame a Clínica Teide al 922 000 111.');
   });
 });

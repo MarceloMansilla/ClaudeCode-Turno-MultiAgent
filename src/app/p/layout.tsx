@@ -8,7 +8,7 @@ import { clinicaDeLaInstalacion } from '@/servicios/enlaces';
 export async function generateMetadata(): Promise<Metadata> {
   const clinica = await clinicaDeLaInstalacion();
   return {
-    title: { absolute: `CitaClara · ${clinica?.nombre ?? 'tu clínica'}` },
+    title: { absolute: `CitaClara · ${clinica?.nombre ?? 'su clínica'}` },
     robots: { index: false, follow: false },
     referrer: 'no-referrer',
   };

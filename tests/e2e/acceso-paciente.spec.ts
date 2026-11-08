@@ -20,7 +20,7 @@ const fijarFallos = (n: number) =>
   conBd((bd) => bd.update(enlacePaciente).set({ fallosSeguidos: n }).where(eq(enlacePaciente.pacienteId, ENLACE_P.pacienteId)));
 
 async function escribirCifras(page: Page, cifras: string) {
-  await page.getByLabel('Escribe las 4 últimas cifras de tu teléfono').fill(cifras);
+  await page.getByLabel('Escriba las 4 últimas cifras de su teléfono').fill(cifras);
   await page.getByRole('button', { name: 'Entrar' }).click();
 }
 
@@ -29,14 +29,14 @@ test.beforeEach(recargarSemilla);
 test('quickstart 1–2 — US1 #1: enlace + 4 cifras dan acceso solo a las citas de P', async ({ page }) => {
   await page.goto(ENLACE_P.ruta);
   await expect(page).toHaveTitle('CitaClara · Clínica Eleva');
-  await expect(page.getByRole('heading', { name: 'Confirma que eres tú' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Confirme que es usted' })).toBeVisible();
   await expect(page.getByText('Clínica Eleva').first()).toBeVisible();
   await expect(page.getByRole('link', { name: '911 234 567' })).toHaveAttribute('href', 'tel:+34911234567');
   await expect(page.getByText(ENLACE_P.nombre)).toHaveCount(0);
   await sinInfracciones(page);
 
   await escribirCifras(page, ENLACE_P.cifras);
-  await expect(page.getByRole('heading', { name: 'Tus próximas citas' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Sus próximas citas' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Salir' })).toBeVisible();
   await sinInfracciones(page);
 });
@@ -45,7 +45,7 @@ test('quickstart 3 — US1 #2: un enlace inventado da «Enlace no válido» (404
   const respuesta = await page.goto(INVENTADO);
   expect(respuesta?.status()).toBe(404);
   await expect(page.getByRole('heading', { name: 'Enlace no válido' })).toBeVisible();
-  await expect(page.getByText('Este enlace no es válido. Pide uno nuevo a Clínica Eleva en el 911 234 567.')).toBeVisible();
+  await expect(page.getByText('Este enlace no es válido. Pida uno nuevo a Clínica Eleva en el 911 234 567.')).toBeVisible();
   await expect(page.getByRole('link', { name: '911 234 567' })).toHaveAttribute('href', 'tel:+34911234567');
   await sinInfracciones(page);
 });
@@ -61,30 +61,30 @@ test('research R10 — las respuestas de /p/* no filtran el token ni se indexan 
 test('US1 #4: cifras erróneas → mensaje bajo el campo y el foco vuelve a él', async ({ page }) => {
   await page.goto(ENLACE_P.ruta);
   await escribirCifras(page, '0000');
-  await expect(page.getByText('Esas cifras no coinciden con el teléfono de tu ficha. Revísalas e inténtalo de nuevo.')).toBeVisible();
-  await expect(page.getByLabel('Escribe las 4 últimas cifras de tu teléfono')).toBeFocused();
-  await expect(page.getByRole('heading', { name: 'Tus próximas citas' })).toHaveCount(0);
+  await expect(page.getByText('Esas cifras no coinciden con el teléfono de su ficha. Revíselas e inténtelo de nuevo.')).toBeVisible();
+  await expect(page.getByLabel('Escriba las 4 últimas cifras de su teléfono')).toBeFocused();
+  await expect(page.getByRole('heading', { name: 'Sus próximas citas' })).toHaveCount(0);
 });
 
 test('quickstart 4–5 — US1 #5: 5 fallos pausan hasta las 12:25; con 10, «Enlace bloqueado»', async ({ page }) => {
   await page.goto(ENLACE_P.ruta);
-  const campo = page.getByLabel('Escribe las 4 últimas cifras de tu teléfono');
+  const campo = page.getByLabel('Escriba las 4 últimas cifras de su teléfono');
   for (let i = 0; i < 5; i++) {
     await escribirCifras(page, '0000');
     // Esperar a que el intento termine (el formulario vacía el campo) antes de escribir el
     // siguiente; si no, el vaciado llega después de `fill` y se envía el campo vacío.
     if (i < 4) await expect(campo).toHaveValue('');
   }
-  await expect(page.getByText('Has hecho demasiados intentos. Podrás volver a intentarlo a las 12:25.')).toBeVisible();
+  await expect(page.getByText('Ha hecho demasiados intentos. Podrá volver a intentarlo a las 12:25.')).toBeVisible();
   await expect(page.getByRole('button', { name: 'Entrar' })).toBeDisabled();
   await page.reload();
-  await expect(page.getByLabel('Escribe las 4 últimas cifras de tu teléfono')).toBeDisabled();
+  await expect(page.getByLabel('Escriba las 4 últimas cifras de su teléfono')).toBeDisabled();
   await sinInfracciones(page);
 
   await fijarFallos(10);
   await page.reload();
   await expect(page.getByRole('heading', { name: 'Enlace bloqueado' })).toBeVisible();
-  await expect(page.getByLabel('Escribe las 4 últimas cifras de tu teléfono')).toHaveCount(0);
+  await expect(page.getByLabel('Escriba las 4 últimas cifras de su teléfono')).toHaveCount(0);
   await sinInfracciones(page);
 });
 
@@ -92,5 +92,5 @@ test('US1 #6: con 3 fallos previos, las cifras correctas dan acceso', async ({ p
   await fijarFallos(3);
   await page.goto(ENLACE_P.ruta);
   await escribirCifras(page, ENLACE_P.cifras);
-  await expect(page.getByRole('heading', { name: 'Tus próximas citas' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Sus próximas citas' })).toBeVisible();
 });

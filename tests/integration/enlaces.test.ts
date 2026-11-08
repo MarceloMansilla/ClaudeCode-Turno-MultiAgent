@@ -76,7 +76,7 @@ describe('US1 #2 / FR-007 — enlace no válido', () => {
     expect(conFormato).toEqual({
       ok: false,
       codigo: 'ENLACE_NO_VALIDO',
-      mensaje: 'Este enlace no es válido. Pide uno nuevo a Clínica de Pruebas en el 911 000 222.',
+      mensaje: 'Este enlace no es válido. Pida uno nuevo a Clínica de Pruebas en el 911 000 222.',
     });
     expect(JSON.stringify(conFormato)).not.toMatch(/Ana|Luis|Pérez|Gómez/);
     expect(await pantallaPaciente(INVENTADO, undefined)).toEqual(await pantallaPaciente('abc', undefined));
@@ -125,7 +125,7 @@ describe('US1 #4–#6 / FR-006a — límite de intentos', () => {
     expect(await confirmarCifrasPaciente(e.tokenAna, '0000')).toEqual({
       ok: false,
       codigo: 'CIFRAS_INCORRECTAS',
-      mensaje: 'Esas cifras no coinciden con el teléfono de tu ficha. Revísalas e inténtalo de nuevo.',
+      mensaje: 'Esas cifras no coinciden con el teléfono de su ficha. Revíselas e inténtelo de nuevo.',
       campo: 'cifras',
     });
     expect((await fallos(e.ana)).fallosSeguidos).toBe(1);
@@ -136,7 +136,7 @@ describe('US1 #4–#6 / FR-006a — límite de intentos', () => {
     expect(await confirmarCifrasPaciente(e.tokenAna, '0000')).toEqual({
       ok: false,
       codigo: 'ACCESO_EN_PAUSA',
-      mensaje: 'Has hecho demasiados intentos. Podrás volver a intentarlo a las 12:25.',
+      mensaje: 'Ha hecho demasiados intentos. Podrá volver a intentarlo a las 12:25.',
       detalle: { hasta: '12:25' },
     });
     expect(await pantallaPaciente(e.tokenAna, undefined)).toMatchObject({ tipo: 'pausa', hasta: '12:25' });
@@ -151,7 +151,7 @@ describe('US1 #4–#6 / FR-006a — límite de intentos', () => {
     expect(await confirmarCifrasPaciente(e.tokenAna, '0000')).toEqual({
       ok: false,
       codigo: 'ENLACE_BLOQUEADO',
-      mensaje: 'Este enlace se ha bloqueado por seguridad. Pide uno nuevo a Clínica de Pruebas en el 911 000 222.',
+      mensaje: 'Este enlace se ha bloqueado por seguridad. Pida uno nuevo a Clínica de Pruebas en el 911 000 222.',
     });
     expect(await confirmarCifrasPaciente(e.tokenAna, '5678')).toMatchObject({ codigo: 'ENLACE_BLOQUEADO' });
     expect(await pantallaPaciente(e.tokenAna, undefined)).toMatchObject({ tipo: 'bloqueado' });
@@ -174,7 +174,7 @@ describe('US1 #4–#6 / FR-006a — límite de intentos', () => {
       expect(await confirmarCifrasPaciente(e.tokenAna, cifras)).toEqual({
         ok: false,
         codigo: 'DATOS_NO_VALIDOS',
-        mensaje: 'Escribe las 4 últimas cifras de tu teléfono.',
+        mensaje: 'Escriba las 4 últimas cifras de su teléfono.',
         campo: 'cifras',
       });
     }

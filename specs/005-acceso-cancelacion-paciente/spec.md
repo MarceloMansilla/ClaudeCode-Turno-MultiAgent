@@ -296,9 +296,9 @@ anterior ya no da acceso y el nuevo sí, y que las citas del paciente no cambian
   3. La alternativa fuera de plazo: llamar a la clínica, con su nombre y teléfono.
 
   Ejemplo de referencia (Clínica Eleva, con el teléfono de la semilla que fija la 001):
-  «Puedes cancelar esta cita desde tu enlace antes del domingo, 15/11/2026 a las 10:00.
-  Después, llama a Clínica Eleva al 911 234 567.» El trato (tú/usted) y el estilo de los
-  textos los fija la guía de textos al paciente de la 002; el contenido, esta spec.
+  «Puede cancelar esta cita desde su enlace antes del domingo, 15/11/2026 a las 10:00.
+  Después, llame a Clínica Eleva al 911 234 567.» El trato es de usted (revisión cruzada S10, 2026-11-08);
+  el estilo lo fija la guía de textos al paciente de la 002; el contenido, esta spec.
 - **FR-017**: Todo texto dirigido al paciente que mencione cuándo puede cancelar (portal,
   correos de recordatorio, canales futuros) DEBE derivarse de FR-016 y citar «005, FR-016».
   NO DEBE contener un plazo redactado por su cuenta (p. ej., «hasta el día anterior», «con un
