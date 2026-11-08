@@ -34,7 +34,7 @@ Con la semilla anterior y `CITACLARA_AHORA=2026-11-09T12:10:00+01:00`:
 | 2 | Entrar con la clave y pulsar «Analítica» | Página sin pedir otra vez la clave; «Agenda» vuelve a la agenda | US1 #2, FR-002 |
 | 3 | Leer el subtítulo | «Últimas 8 semanas: 14/09/2026 – 08/11/2026» | US1 #3, FR-004 |
 | 4 | Bloque de ingresos | 20.800,00 € · 8.200,00 € · 12.740,00 € · 5.400,00 € · Total 47.140,00 € | US1 #4 |
-| 5 | Bloque de no asistencia | María 10,5 % (41 de 390) · Jorge 13,0 % (50 de 385) · Lucía 9,7 % (52 de 536) · Clínica 10,9 % | US1 #5 |
+| 5 | Bloque de no asistencia | María 10,5 % (41 de 390) · Jorge 13,0 % (50 de 385) · Lucía 9,7 % (52 de 536) · Clínica 10,9 % (143 de 1.311), **no** 10,0 % | US1 #5, FR-006 |
 | 6 | Bloque de ocupación | María 71,6 % · Jorge 71,2 % · Lucía 68,4 % · Clínica 70,4 % | US1 #6 |
 | 7 | Evolución: ingresos semanales | 5.540,00 € … 6.380,00 €; suma 47.140,00 € | US2 #2 |
 | 8 | Evolución: no asistencia de la clínica | 14/09: 12,7 % (20 de 157) · 02/11: 5,4 % (9 de 166) | US2 #3 |
@@ -46,6 +46,9 @@ Con la semilla anterior y `CITACLARA_AHORA=2026-11-09T12:10:00+01:00`:
 
 Las cifras completas (por semana y profesional) están en «Cifras de referencia» de la
 [spec](spec.md#cifras-de-referencia-semilla-2026-11-09).
+
+El 10,0 % de `docs/datos-demo.md` (143 de 1.425) es otra magnitud, la proporción sobre el
+total de citas. No es un error del panel (spec, aclaración tras FR-007; research R11).
 
 ## Comprobación de solo lectura (SC-003)
 

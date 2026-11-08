@@ -19,7 +19,9 @@ móvil siguen visibles (texto + icono, objetivo táctil ≥ 44×44 px).
    08/11/2026». Nota breve: «La semana en curso no se incluye.»
 2. **Resumen de la clínica** (3 tarjetas, los valores «de la clínica» de FR-006, FR-008 y
    FR-011): Ocupación («70,4 %»), No asistencia («10,9 %», «143 de 1.311») e Ingresos
-   («47.140,00 €», «1.168 citas completadas»).
+   («47.140,00 €», «1.168 citas completadas»). Toda cifra de no asistencia de la página es la
+   tasa de FR-006. La página nunca muestra la proporción sobre el total de citas (10,0 %,
+   143 de 1.425) de la 001 (research R11).
 3. **Ocupación por profesional**: barras horizontales (una por profesional, escala 0–100 %)
    con el valor al final de la barra; tabla: profesional · minutos ocupados · minutos
    disponibles · ocupación.

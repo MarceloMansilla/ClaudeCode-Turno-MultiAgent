@@ -79,6 +79,10 @@ test.describe('US1 — cifras del periodo', () => {
     }
     // «Jorge: 50 no asistidas de 385»
     await expect(page.locator('[data-grafico="grafico-no-asistencia"] [data-barra="Jorge"]')).toContainText(conNbsp('13,0 % (50 de 385)'));
+    // FR-006, research R11: la tasa es 143 de 1.311, nunca la proporción sobre el total de citas
+    const main = page.getByRole('main');
+    await expect(main).toContainText('143 de 1.311');
+    await expect(main).not.toContainText('143 de 1.425');
   });
 
   test('US1 #6 — ocupación por profesional y de la clínica', async ({ page }) => {

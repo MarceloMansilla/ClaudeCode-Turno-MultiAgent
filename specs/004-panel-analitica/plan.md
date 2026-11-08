@@ -50,11 +50,15 @@ tablas
 Puertas derivadas de `.specify/memory/constitution.md` (v1.0.0). Evaluación previa a la
 investigación y repetida tras el diseño (mismo resultado):
 
-- [x] **I. Spec primero**: ✅ spec con propietario único (fila en `specs/MAPA.md`, que
-      mantiene el propietario de la 001)
-      (MarceloMansilla), clarificada (3 preguntas) y aprobada el 2026-11-07. El plan no añade
-      comportamiento: el resumen de la clínica son los valores «de la clínica» de FR-006,
-      FR-008 y FR-011; el cambio en la cabecera de la 001 es el que pide FR-002.
+- [x] **I. Spec primero**: ✅ spec con propietario único (MarceloMansilla), clarificada (3
+      preguntas), aprobada el 2026-11-07 y ajustada tras la revisión cruzada (S3, S5). El plan
+      no añade comportamiento: el resumen de la clínica son los valores «de la clínica» de
+      FR-006, FR-008 y FR-011; el cambio en la cabecera de la 001 es el que pide FR-002.
+      **Pendiente fuera de esta rama**: `specs/MAPA.md` es idéntico al de `001-agenda-core` y
+      aún no tiene la fila de la 004. Su propietario (el de la 001) la integra (S3). No es una
+      desviación de esta spec, pero la 004 no debe integrarse en el tronco sin esa fila.
+      Propiedad de indicadores: esta spec es la dueña de «tasa de no asistencia» (FR-006,
+      R11). Las demás specs la citan y no la redefinen.
 - [x] **II. Números**: ✅ importes como suma de céntimos enteros, sin divisiones ni redondeos;
       porcentajes en décimas con aritmética entera y redondeo de la mitad hacia arriba (R3);
       totales verificados por dos caminos (por servicio y por semana). Semanas por fecha local
@@ -64,7 +68,9 @@ investigación y repetida tras el diseño (mismo resultado):
       de que la BD queda idéntica tras usar la analítica (R7).
 - [x] **IV. Simplicidad**: ✅ sin dependencias, tablas, índices ni migraciones nuevas; una
       consulta + una función pura; gráficos SVG propios en lugar de una biblioteca (R5,
-      alternativa descartada documentada); sin selector de periodo ni exportación.
+      alternativa descartada documentada); sin selector de periodo ni exportación. La
+      separación por recordatorio no se construye por si acaso: queda fuera hasta que la 003
+      pida una enmienda (R12).
 - [x] **V. Datos demo**: ✅ no cambia la semilla; las cifras de la spec se reproducen con
       `pnpm seed --fecha-referencia 2026-11-09` y los tests las usan como oráculo (R9).
 - [x] **VI. Tests**: ✅ unitarias para cada regla y cada cifra de referencia, integración con
@@ -149,8 +155,8 @@ presentan. Los únicos archivos de la 001 que se tocan reciben cambios aditivos
 
 ## Dependencias y riesgos
 
-- **Prerrequisito (R10)**: integrar la 001 en la rama `analitica` antes de implementar. Hoy la
-  001 está implementada pero sin commit en `001-agenda-core`.
+- **Prerrequisito (R10)**: integrar la 001 en la rama `analitica` antes de implementar.
+  Cumplido: `001-agenda-core` está integrada (merge `b9834c8`).
 - **Cifras de referencia**: dependen de la semilla de la 001; si cambia antes de integrarse,
   recalcular las tablas de la spec y los tests (Principio V).
 - **Ramas en paralelo**: `cabecera.tsx`, `proxy.ts`, `formato.ts` y `globals.css` también
@@ -158,8 +164,13 @@ presentan. Los únicos archivos de la 001 que se tocan reciben cambios aditivos
   003-recordatorios-cita) y `005-acceso-cancelacion-paciente`. Los cambios aquí son aditivos
   para facilitar la integración. La numeración de specs y `specs/MAPA.md` los mantiene el
   propietario de la 001 (revisión cruzada, S3).
-- **Tasa de no asistencia**: esta spec es la propietaria de la definición (spec, FR-006).
-  Las demás specs la citan como «004, FR-006».
+- **Tasa de no asistencia**: esta spec es la propietaria de la definición (spec, FR-006;
+  R11). Las demás specs la citan como «004, FR-006». La cifra del panel (10,9 %) no coincide
+  con el 10,0 % de la 001 y `docs/datos-demo.md`, y no debe coincidir: el 10,0 % es otra
+  magnitud. Riesgo: que alguien «corrija» una de las dos para igualarlas. Ninguna de las dos
+  se toca.
+- **Recordatorios (003)**: el SC-005 de la 003 no se puede medir con este panel (R12). Si la
+  003 lo necesita, pide una enmienda de esta spec.
 
 ## Complexity Tracking
 

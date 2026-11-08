@@ -21,6 +21,9 @@ Citas de la clínica de la sesión con `inicio` en el periodo `[desde, hasta)`:
 Más, de la 001: `clinica` (zona horaria, horario, días laborables), `profesional` (nombre,
 orden) y `servicio` (para listar también servicios sin citas completadas, con 0,00 €).
 
+No se lee ningún dato de recordatorios: el panel no distingue citas con o sin recordatorio
+(R12).
+
 Filtro: `cita.clinica_id = :clinicaId AND cita.inicio >= :desde AND cita.inicio < :hasta`.
 Sin índices nuevos: con el volumen esperado (≤ 3.000 filas) la consulta es trivial.
 
@@ -30,7 +33,7 @@ Sin índices nuevos: con el volumen esperado (≤ 3.000 filas) la consulta es tr
 |-------|------------|------|
 | Periodo | `lunesActual` = lunes de la fecha local de «ahora»; semanas = los 8 lunes anteriores | FR-004 |
 | Semana de una cita | lunes de `fechaLocal(inicio, zona)` | FR-005 |
-| Tasa de no asistencia | `no_asistida ÷ (completada + no_asistida)`; den. 0 → `null` | FR-006, FR-007 |
+| Tasa de no asistencia (definición canónica del producto) | `no_asistida ÷ (completada + no_asistida)`; den. 0 → `null`. No es la proporción sobre el total de citas de la 001 (R11) | FR-006, FR-007 |
 | Minutos ocupados | Σ `(fin − inicio)` de citas `completada`, `no_asistida` y `reservada` | FR-008 |
 | Minutos disponibles | nº de días laborables de la semana × (cierre − apertura) por profesional | FR-008 |
 | Ocupación | ocupados ÷ disponibles; clínica = Σ ocupados ÷ Σ disponibles | FR-008, FR-009 |

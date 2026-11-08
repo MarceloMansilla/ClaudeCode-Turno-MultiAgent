@@ -138,10 +138,41 @@ Playwright + axe). Aquí solo se decide lo nuevo. Formato: Decisión / Razón / 
 ## R10. Dependencia de la 001 (prerrequisito)
 
 - **Decisión**: la implementación de la 004 empieza **después de integrar la 001** en la rama
-  `analitica` (hoy la 001 está implementada pero sin commit en su rama). Las cifras de
-  referencia se obtuvieron con ese código; si cambia la semilla antes de integrarse, se
-  recalculan (Principio V).
+  `analitica`. Cumplido con el merge `b9834c8`. Las cifras de referencia se obtuvieron con
+  ese código; si cambia la semilla, se recalculan (Principio V).
 - **Razón**: la 004 lee el esquema, la sesión, el reloj, el formato y la semilla de la 001.
+
+## R11. «Tasa de no asistencia»: definición canónica del producto (revisión cruzada, S5)
+
+- **Decisión**: FR-006 (no asistidas ÷ (completadas + no asistidas)) es la única definición
+  de «tasa de no asistencia» en CitaClara y esta spec es su propietaria. Las demás specs la
+  citan como «004, FR-006». La fórmula y el código no cambian.
+- **Razón**: la cifra responde a «de los pacientes que se esperaba que vinieran, ¿cuántos
+  no vinieron?». Una cancelación libera el hueco con antelación y no es una no asistencia.
+  Sobre la semilla 2026-11-09: 143 ÷ 1.311 = 10,91 % → «10,9 %». La 001 y
+  `docs/datos-demo.md` dan 143 ÷ 1.425 = 10,04 % → «10,0 %». Es la proporción de no
+  asistidas sobre el total de citas, la magnitud con la que se calibra la semilla. Las dos
+  cifras son correctas y solo la primera lleva ese nombre (aclaración tras FR-007).
+- **Alternativas**:
+  - Adoptar la proporción de la 001 como «tasa de no asistencia»: mezcla en el denominador
+    las cancelaciones, que no son oportunidades de no asistir. Además, cada no asistencia
+    que un recordatorio convierte en cancelación cambiaría el indicador de forma distinta
+    según la fórmula.
+  - Recalibrar la semilla para que las dos cifras coincidan: cambiaría `docs/datos-demo.md`,
+    la 001 y todas las cifras de referencia de esta spec, sin mejorar el indicador.
+
+## R12. Citas con o sin recordatorio (fuera de alcance)
+
+- **Decisión**: el panel no distingue entre citas con recordatorio y citas sin él. La
+  consulta (R1) no lee ninguna tabla ni columna de recordatorios. Medir el SC-005 de la
+  003-recordatorios-cita («tasa de no asistencia de las citas con recordatorio») requiere
+  una enmienda de esta spec, pedida por el propietario de la 003. Esa enmienda tendría que
+  definir la población, por ejemplo citas con recordatorio enviado.
+- **Razón**: Principio IV (sin alcance fantasma) y Principio I (cada spec cambia por
+  petición a su propietario). Hoy la 003 no está integrada en esta rama y su esquema no es
+  estable (revisión cruzada, S2 y S3).
+- **Alternativas**: que la 003 calcule su propia tasa. Se descarta porque volvería a crear
+  dos definiciones con el mismo nombre (S5).
 
 ## Asuntos sin resolver
 
