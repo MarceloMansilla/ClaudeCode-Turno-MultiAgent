@@ -42,6 +42,10 @@
   revisión cruzada (2026-11-07): la 003 ya no escribe en la agenda ni pide enmienda a la 001.
 - Iteración 2 (revisión cruzada S2–S5, 2026-11-07): renumerada de 002 a 003; sin enlace ni
   flujo de cancelación propios (dependen de la 005 y la 002); SC-005 cita la tasa de la 004.
-  Queda abierta la pregunta P1 para Sara (envío de la víspera frente al plazo de 24 h de la
-  005; depende de S1).
+  Quedaba abierta la pregunta P1.
+- Iteración 3 (2026-11-08, 005 como única fuente de verdad): P1 resuelta (se mantiene la
+  víspera); SC-002 revisado a 4 acciones por 005 FR-006; FR-020 toma el enunciado de la 005
+  sin adaptarlo; nuevo FR-022 (ningún otro texto menciona el plazo); sección «Dependencias»
+  con 001, 002, 004 y 005 y peticiones a sus propietarios. Sin [NEEDS CLARIFICATION]. Todos
+  los ítems pasan.
 - Items marked incomplete require spec updates before `/speckit-clarify` or `/speckit-plan`

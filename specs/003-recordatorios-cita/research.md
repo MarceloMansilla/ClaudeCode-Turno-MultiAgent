@@ -94,9 +94,14 @@ axe. Aquí solo se decide lo nuevo. Formato: Decisión / Razón / Alternativas.
   correo y el que aplica el portal son el mismo instante (SC-007).
 - **Alternativas**: enlace por cita con token propio (diseño anterior, `/cancelar/[token]` con
   `token_hash`): retirado por S4; duplicaba la credencial del paciente con otras reglas de
-  exposición. Calcular aquí `inicio − 24 h`: retirado; sería un plazo redactado por su cuenta.
-- **Pendiente**: cómo expone la 005 el enlace vigente y el límite (su plan). Si 005 FR-006
-  pide además las 4 cifras, el correo no cambia; cambia el número de pasos de SC-002.
+  exposición. Calcular aquí el límite: retirado; sería un plazo redactado por su cuenta.
+- **Cómo se toma de la 005** (2026-11-08): se importan, sin copiarlas ni redefinirlas,
+  `rutaEnlacePaciente` (`src/dominio/enlace.ts`), `limiteCancelacionPaciente` y
+  `pacientePuedeCancelar` (`src/dominio/plazo-paciente.ts`) y `enunciadoPoliticaCancelacion`
+  (`src/dominio/politica-cancelacion.ts`). El enunciado se inserta tal cual (FR-020, FR-022);
+  `tests/unit/coherencia-politica.test.ts` vigila que ningún texto del correo redacte el plazo.
+  005 FR-006 pide las 4 cifras al abrir el enlace: el correo no cambia; SC-002 pasa a 4
+  acciones.
 
 ## R6. Página pública de cancelación — *Retirada (S4)*
 
@@ -166,6 +171,7 @@ código de la 001 no cambia» queda retirada: no es una garantía de esta spec.
 
 ## Asuntos sin resolver
 
-- Pregunta abierta P1 de la spec (envío a las 08:00 de la víspera frente al plazo de 24 h de la
-  005; depende de S1). Puede cambiar R1 (hora de ejecución y ventana).
-- Cómo expone la 005 el enlace vigente y el límite de cancelación (R5).
+- ~~Pregunta abierta P1~~: resuelta el 2026-11-08; se mantiene el envío de la víspera a las
+  08:00 (R1 sin cambios).
+- ~~Cómo expone la 005 el enlace vigente y el límite de cancelación (R5)~~: resuelto en R5;
+  falta integrar la 005 en esta rama.

@@ -101,9 +101,10 @@ Para cada una, en orden de inicio:
 Las citas canceladas, completadas o no asistidas no se seleccionan (escenario US1 #4).
 
 Datos que se leen para componer cada correo (solo lectura): la cita, su paciente, profesional
-y servicio (001); la clínica, con nombre, zona y teléfono (001; teléfono pendiente de S9); el
+y servicio (001); la clínica, con nombre, zona y teléfono (001 FR-022); el
 enlace personal vigente de la ficha y el límite de cancelación de la cita (005, FR-001 y
-FR-009, a través de lo que exponga la 005: el plazo no se calcula aquí).
+FR-009: `rutaEnlacePaciente` y `limiteCancelacionPaciente`, importadas de la 005; el plazo no
+se calcula aquí). La 003 no guarda tokens.
 
 ## Ventana: ejemplos (Europe/Madrid)
 
@@ -113,4 +114,4 @@ FR-009, a través de lo que exponga la 005: el plazo no se calcula aquí).
 | sáb 27/03/2027 08:00 | dom 28/03/2027 | 2027-03-27T23:00Z | 2027-03-28T22:00Z | 23 |
 | sáb 30/10/2027 08:00 | dom 31/10/2027 | 2027-10-30T22:00Z | 2027-10-31T23:00Z | 25 |
 
-La ventana puede cambiar según la pregunta abierta P1 de la spec.
+Ventana confirmada en P1 (2026-11-08).

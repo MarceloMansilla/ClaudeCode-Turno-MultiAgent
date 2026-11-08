@@ -4,9 +4,10 @@
 
 **Created**: 2026-11-07
 
-**Status**: En revisión (2026-11-07): renumerada de 002 a 003 y adaptada a la revisión cruzada
-S2–S5; pendiente de la pregunta abierta P1. Se aprobó antes como 002 (2026-11-07,
-MarceloMansilla).
+**Status**: En revisión (2026-11-08): alineada con la 005 como única fuente de verdad del
+acceso y la cancelación del paciente (Principio I); P1 resuelta. Pendiente de aprobación por
+su propietario. Historial: aprobada como 002 (2026-11-07, MarceloMansilla); renumerada a 003 y
+adaptada a la revisión cruzada S2–S5 (2026-11-07).
 
 **Input**: User description: "Recordatorios de cita. El dolor número uno del cliente piloto: la no asistencia. Alcance: un proceso diario genera un recordatorio por email para cada cita reservada de las próximas 24-48 horas, sin duplicar envíos; el email incluye los datos de la cita y una forma de que el paciente cancele si no va a ir (mejor un hueco libre que un no-show). Correo en modo simulado sin SMTP configurado: se escriben ficheros .eml en datos/salida-correo/. Preguntas cerradas para Sara: antelación exacta, qué pasa si el paciente cancela desde el email y con cuánta antelación puede, y si el recordatorio se reenvía cuando la cita se mueve. Fuera de alcance v1: SMS y WhatsApp."
 
@@ -15,24 +16,16 @@ MarceloMansilla).
 ### Session 2026-11-07
 
 - Q: ¿Con cuánta antelación exacta se envía el recordatorio? → A: La víspera: la ejecución diaria de las 08:00 (hora local de la clínica) recuerda todas las citas reservadas del día natural siguiente.
-- Q: ¿Qué pasa si el paciente cancela desde el correo y con cuánta antelación puede? → A: *(Retirada en la revisión cruzada S4, 2026-11-07.)* El acceso del paciente y su cancelación los define la 005 (FR-001–FR-018) y los presenta el portal (002); esta spec ya no tiene flujo de cancelación propio ni fija plazo. La respuesta anterior («hasta la hora de inicio») forma parte de S1, aún abierto, y no rige en esta spec.
+- Q: ¿Qué pasa si el paciente cancela desde el correo y con cuánta antelación puede? → A: *(Retirada en la revisión cruzada S4, 2026-11-07.)* El acceso del paciente y su cancelación los define la 005 (FR-001–FR-018) y los presenta el portal (002); esta spec ya no tiene flujo de cancelación propio ni fija plazo. *(2026-11-08: S1 resuelto; el plazo del paciente es el de 005 FR-009 y esta spec no lo repite.)*
 - Q: ¿Se reenvía el recordatorio cuando la cita se mueve? → A: No hay nada adicional en v1: mover es cancelar y crear otra cita (001), y la nueva recibe su propio recordatorio según FR-002; el enlace del correo antiguo muestra que la cita está cancelada. Sin aviso de anulación al paciente. *(S4: el enlace es ahora el enlace personal de la 005; lo que muestra el portal al abrirlo lo define la 002.)*
+
+### Session 2026-11-08
+
+- Q (P1): Con el envío a las 08:00 de la víspera (FR-002) y el plazo de 005 FR-009, al paciente le quedan desde que sale el correo entre 1 h (cita a las 09:00) y 11 h (cita a las 19:00) para cancelar desde el enlace. ¿Se adelanta el envío para dar más margen? → A: **No; se mantiene la víspera.** El correo sirve ante todo para recordar la cita; quien lo lee dentro del plazo puede cancelar desde su enlace y quien lo lee después ve en el propio enunciado (005 FR-016) que debe llamar a la clínica. Adelantar el envío a dos días haría el recordatorio menos eficaz contra el olvido, que es el dolor principal. El plazo no se toca: es de la 005 (005 FR-018). Si el piloto muestra que el margen es insuficiente, se revisará FR-002 (hora o ventana de envío), nunca el plazo.
 
 ## Preguntas abiertas
 
-- **P1 (para Sara; depende de S1).** ¿Debe poder el paciente cancelar desde el correo con el
-  plazo de la 005? Con el envío a las 08:00 de la víspera (FR-002) y el plazo de 24 h de la
-  005 (FR-009), el límite para cancelar una cita cae la víspera a la misma hora que la cita.
-  Desde que sale el correo, al paciente le quedan entre 1 h (cita a las 09:00) y unas 11 h
-  (citas a partir de las 19:00); quien lee el correo después de ese límite ya no puede
-  cancelar desde el enlace. Ejemplo: cita de Ana del lunes 16/11/2026 a las 10:00 → correo
-  el domingo 15/11/2026 a las 08:00 → puede cancelar desde su enlace antes del domingo,
-  15/11/2026 a las 10:00 (2 h de margen); después, solo llamando a la clínica. Opciones:
-  (a) adelantar el envío a más de 24 h antes del inicio (p. ej., 48 h; cambia FR-002 y la
-  ventana); (b) mantener la víspera y aceptar que el correo sirva sobre todo para recordar y
-  remitir al teléfono (el enlace personal y el enunciado de FR-019 y FR-020 siguen siendo
-  obligatorios). Depende también de S1, aún abierto: si el plazo del paciente cambia, cambia
-  la pregunta. **Sin decidir.**
+Ninguna. P1 quedó resuelta el 2026-11-08 (ver Clarifications).
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -89,9 +82,10 @@ los datos correctos; ejecutarlo de nuevo y comprobar que no aparece ninguno más
 ### User Story 2 - El paciente cancela desde el recordatorio — *Retirada (revisión cruzada S4, 2026-11-07)*
 
 Esta spec ya no tiene página ni flujo de cancelación propios. El paciente cancela desde su
-portal (002), al que llega con el enlace personal del correo, con las reglas de acceso y
-cancelación de la 005 (FR-001–FR-018). Lo que queda en esta spec es lo que lleva el correo:
-el enlace personal (FR-019) y el enunciado de la política (FR-020).
+portal (002), al que llega con el enlace personal del correo y las 4 últimas cifras de su
+teléfono (005 FR-006), con las reglas de acceso y cancelación de la 005 (FR-001–FR-018). Lo
+que queda en esta spec es lo que lleva el correo: el enlace personal (FR-019) y el enunciado
+de la política (FR-020).
 
 ---
 
@@ -120,6 +114,12 @@ el enlace personal (FR-019) y el enunciado de la política (FR-020).
   cita (FR-020).
 - **Enlace personal regenerado después del envío**: el correo ya enviado lleva el enlace
   anterior, que deja de valer (005 FR-004, FR-007). El recordatorio no se reenvía.
+- **Correo leído cuando ya venció el plazo** (p. ej., cita a las 09:00 y correo leído a
+  media mañana de la víspera): el correo es el mismo para todos; el enunciado ya indica el
+  límite de esa cita y la alternativa de llamar (005 FR-016), y el portal no ofrece cancelar
+  (005 FR-011). Esta spec no cambia el texto según la hora de lectura ni envía nada más.
+- **Correo reenviado a otra persona o abierto por un analizador de enlaces**: sin las 4
+  cifras no se muestra ningún dato (005 FR-006); el correo no añade otra protección.
 - **Correo del paciente con formato inválido**: no se genera recordatorio y figura en el
   resumen como «correo no válido».
 - **Cambio de hora (último domingo de marzo/octubre)**: la ejecución y la ventana se fijan en
@@ -144,7 +144,7 @@ el enlace personal (FR-019) y el enunciado de la política (FR-020).
   recordatorio generado. Ventana de antelación: la víspera. La ejecución diaria es a las
   08:00, hora local de la clínica, y su ventana es el día natural siguiente completo (de
   00:00 a 23:59 de mañana, hora local). Una ejecución manual usa la misma ventana: el día
-  natural siguiente al de la ejecución. *(Pendiente de la pregunta abierta P1.)*
+  natural siguiente al de la ejecución. *(Confirmada en P1, 2026-11-08.)*
 - **FR-003 (sin duplicados)**: Cada cita DEBE recibir como máximo un recordatorio,
   independientemente de cuántas veces o con qué solapamiento se ejecute el proceso, incluidas
   ejecuciones simultáneas.
@@ -186,7 +186,7 @@ el enlace personal (FR-019) y el enunciado de la política (FR-020).
 
 - **FR-011 a FR-016**: *Retirados (revisión cruzada S4, 2026-11-07).* Definían un enlace por
   cita, su página y un flujo y plazo de cancelación propios. Los sustituyen la 005 (acceso y
-  cancelación del paciente) y la 002 (pantallas), y en esta spec FR-019 a FR-021. Estos
+  cancelación del paciente) y la 002 (pantallas), y en esta spec FR-019 a FR-022. Estos
   números no se reutilizan.
 
 **Citas que cambian**
@@ -213,15 +213,22 @@ el enlace personal (FR-019) y el enunciado de la política (FR-020).
   Esta spec no define, genera ni guarda enlaces ni credenciales de paciente; si necesitara
   otro tipo de enlace, lo pediría como enmienda de la 005 (005 FR-008).
 - **FR-020**: Cada recordatorio DEBE incluir el enunciado de la política de cancelación del
-  paciente para esa cita, derivado de «005, FR-016», con sus tres elementos y en el trato del
-  correo (FR-008). Esta spec no redacta ni calcula ningún plazo: el límite que muestra es el
-  que fija 005 FR-009 para esa cita y coincide al minuto con el que se aplica al cancelar
-  (005 FR-017).
+  paciente para esa cita tal como lo da la 005 («005, FR-016»), con sus tres elementos, sin
+  reescribirlo ni adaptarlo. Esta spec no redacta ni calcula ningún plazo: el límite que
+  muestra es el que fija 005 FR-009 para esa cita y coincide al minuto con el que se aplica al
+  cancelar (005 FR-017). El trato del enunciado lo fija la guía de textos de la 002 (005
+  FR-016), no esta spec; si no coincide con el trato del correo (FR-008), se pide a sus
+  propietarios (ver Dependencias), sin retocarlo aquí.
 - **FR-021**: Cancelar se hace en el portal (002) con las reglas de la 005. Esta spec no
   ofrece pantalla ni acción de cancelación y no escribe en la agenda: no cambia el estado de
   ninguna cita ni registra el origen de una cancelación (lo registra la 005 con el campo de
   la 001, FR-018a: `cita.cancelada_por`). El proceso de recordatorios solo lee citas, fichas
   y la clínica.
+- **FR-022 (coherencia)**: Ningún texto de esta spec dirigido al paciente (asunto, cuerpo en
+  texto y HTML, texto del botón, plantillas y ejemplos de correo, incluidos los `.eml` de
+  ejemplo) DEBE mencionar cuándo se puede cancelar fuera del enunciado de FR-020: ni cifras ni
+  expresiones propias sobre la antelación (ver los ejemplos prohibidos de 005 FR-017). El resto del
+  correo puede invitar a cancelar si no se va a acudir, sin decir hasta cuándo.
 
 ### Constitution Requirements *(mandatory)*
 
@@ -239,8 +246,9 @@ el enlace personal (FR-019) y el enunciado de la política (FR-020).
     la de Ana de 10:00–10:45; la del martes 17/11/2026 a las 09:00 se recuerda el lunes
     16/11/2026 a las 08:00. La ejecución del viernes cubre las del sábado (ninguna: la clínica
     cierra) y las del lunes las recuerda la ejecución del domingo.
-  - El límite de cancelación que aparece en el correo usa el formato de 005 FR-016
-    («antes del domingo, 15/11/2026 a las 10:00»); su valor lo fija 005 FR-009.
+  - El límite de cancelación que aparece en el correo forma parte del enunciado de la 005:
+    su formato lo fija 005 FR-016 y su valor 005 FR-009 (ejemplos en 005 FR-010). Esta spec no
+    los repite.
   - Cambio de hora: ver Edge Cases (ejemplo del 28–29/03/2027).
 - **Demo data**: esta feature no cambia la semilla de la 001 (40 pacientes, de los que
   aproximadamente 3 de cada 4 tienen correo; 2 semanas de citas reservadas futuras). Necesita
@@ -270,12 +278,14 @@ el enlace personal (FR-019) y el enunciado de la política (FR-020).
 - **SC-001**: Sobre los datos de demostración, el 100 % de las citas reservadas de la
   ventana cuyo paciente tiene correo reciben exactamente 1 recordatorio, y 10 ejecuciones
   repetidas más 2 ejecuciones simultáneas generan 0 duplicados.
-- **SC-002** *(sustituye al anterior, S4)*: Un paciente que nunca ha usado CitaClara, con una
-  cita dentro del plazo de la 005, pasa del correo a tener la cita cancelada en el portal, en
-  un móvil, en menos de 1 minuto. Pasos: pulsar el enlace del correo más los que fijan la 005
-  y la 002 para cancelar (hoy: pedir cancelar y confirmar, 005 FR-012). **Dependencia**: si
-  005 FR-006 acaba pidiendo las 4 últimas cifras del teléfono, se añade ese paso y cambia el
-  número de pasos; el objetivo de tiempo se mantiene.
+- **SC-002** *(revisado 2026-11-08 por 005 FR-006)*: Un paciente que nunca ha usado
+  CitaClara, con una cita dentro del plazo de la 005, pasa del correo a tener la cita
+  cancelada en el portal, en un móvil de 360 px, en menos de 1 minuto y con 4 acciones como
+  máximo: (1) pulsar el enlace del correo; (2) introducir las 4 últimas cifras de su teléfono
+  (005 FR-006); (3) pedir cancelar la cita; (4) confirmar (005 FR-012). Si la 002 añade
+  pantallas intermedias (p. ej., elegir la cita entre varias), sus pulsaciones no cuentan
+  contra este objetivo pero sí contra el tiempo. La 003 solo controla la acción 1: el enlace
+  es lo más visible del correo y se pulsa sin desplazarse en 360 px.
 - **SC-003**: *Retirado (S4).* Que el hueco liberado aparezca libre lo cubre la 005 (US2 #5).
 - **SC-004**: *Retirado (S4).* La resistencia a enlaces inventados la cubre la 005 (FR-002,
   FR-007, US1 #2).
@@ -294,16 +304,15 @@ el enlace personal (FR-019) y el enunciado de la política (FR-020).
 - Destinatario: el correo de la ficha del paciente (opcional en la 001). Los pacientes sin
   correo no reciben recordatorio.
 - Una sola clínica por instalación (como en la 001); el remitente muestra el nombre de la
-  clínica. El enunciado de 005 FR-016 incluye el teléfono de la clínica; hoy la 001 del
-  tronco no lo guarda y su origen se resuelve aparte (S9). Mientras no exista, el correo no
-  puede cumplir ese elemento del enunciado.
+  clínica. El enunciado de 005 FR-016 incluye el teléfono de la clínica, que define la 001
+  enmendada (FR-022, S9); esta rama aún no la tiene integrada.
 - Esta spec no tiene pantallas para pacientes. El acceso del paciente y su cancelación los
   define la 005; las pantallas, la 002 (portal). El correo solo lleva el enlace personal y el
   enunciado de la política.
 - La hora de ejecución diaria es las 08:00, hora local de la clínica (FR-002), antes de la
   apertura de las 09:00; así recepción dispone de toda la jornada para reasignar los huecos
-  que liberen los pacientes. Su relación con el plazo de la 005 está en la pregunta abierta
-  P1.
+  que liberen los pacientes. Su relación con el plazo de la 005 se decidió en P1
+  (Clarifications, 2026-11-08): se mantiene.
 - No hay reintentos dentro de la misma ejecución ni seguimiento de lectura o rebotes del
   correo.
 - La ejecución automática diaria (FR-001) la pone en marcha el planificador de la
@@ -314,25 +323,34 @@ el enlace personal (FR-019) y el enunciado de la política (FR-020).
   correo, confirmar asistencia, recordatorios múltiples por cita, avisos de anulación o de
   cambio de cita y personalización del texto por la clínica.
 
-## Dependencias y enmiendas pedidas
+## Dependencias
 
-Esta spec no escribe en la agenda ni define el acceso del paciente; depende de:
+Esta spec no escribe en la agenda ni define el acceso ni el plazo del paciente. Consume lo
+siguiente, sin reescribir sus reglas (Principio I):
 
-- **005 Acceso y cancelación del paciente** (única fuente de verdad): enlace personal
-  (FR-001, FR-008), plazo (FR-009), enunciado canónico (FR-016, FR-017) y enlaces en la
-  semilla (FR-019). Abierto en la 005: FR-006 (¿4 cifras?), que afecta a SC-002. Petición al
-  plan de la 005: exponer el límite de cancelación de una cita para que el correo lo muestre
-  sin calcularlo por su cuenta (FR-020).
-- **002 Portal del paciente**: la pantalla a la que lleva el enlace del correo y lo que
-  muestra de cada cita; la guía de textos y el trato al paciente (S10, aparte).
-- **001 Núcleo de agenda**: estados de la cita; origen de la cancelación (FR-018a,
-  `cita.cancelada_por ∈ {'recepcion','paciente'}`, acordado y aún no presente en el tronco),
-  que esta spec no escribe; teléfono de la clínica (S9). El plazo del paciente por canal (S1)
-  sigue abierto; esta spec cita solo a la 005 y no toma partido. Esta spec ya no pide
-  enmienda a la 001: se retira la antigua FR-018a de recordatorios.
-- **MAPA** (lo mantiene el propietario de la 001): registrar la 003 como
-  `003-recordatorios-cita`, propietario MarceloMansilla, **Escribe en la agenda: No**, en
-  orden 002, 003, 004 (S3).
-- **004 Panel de analítica**: SC-005 usa su tasa de no asistencia (FR-006). Si se quiere ver
-  en el panel la tasa de las citas con recordatorio enviado, es una petición de enmienda a la
-  004 (segmentar por recordatorio); esta spec no calcula el indicador.
+| Spec | Qué consume la 003 | Dónde lo usa |
+|------|--------------------|--------------|
+| **001 Núcleo de agenda** | Estados de la cita y su inicio, fin, paciente, profesional y servicio; fichas (nombre, correo); clínica (nombre, zona horaria, teléfono, FR-022); semilla de Clínica Eleva. No escribe `cita.cancelada_por` (FR-018a). | FR-002, FR-004, FR-007, FR-021 |
+| **002 Portal del paciente** | La pantalla a la que lleva el enlace y lo que muestra de cada cita (también de una cita cancelada); la guía de textos y trato al paciente (S10). | US2 (retirada), FR-017, FR-020, SC-002 |
+| **004 Panel de analítica** | La fórmula de la tasa de no asistencia (FR-006). La 003 no define fórmula propia. | SC-005 |
+| **005 Acceso y cancelación del paciente** | Enlace personal `/p/[token]` (FR-001, FR-008) y sus enlaces en la semilla (FR-019); acceso con enlace + 4 cifras (FR-006); plazo (FR-009) y límite de cada cita; enunciado canónico (FR-016) y regla de coherencia (FR-017). | FR-019, FR-020, FR-022, SC-002, SC-007 |
+
+**Regla para el código** (cuando la 001 y la 005 se integren en esta rama): la 003 importa de
+la 005, sin redefinirlas ni copiarlas, `rutaEnlacePaciente` (`src/dominio/enlace.ts`),
+`pacientePuedeCancelar` y `limiteCancelacionPaciente` (`src/dominio/plazo-paciente.ts`) y
+`enunciadoPoliticaCancelacion` (`src/dominio/politica-cancelacion.ts`). El cuerpo del correo
+queda cubierto por `tests/unit/coherencia-politica.test.ts`: toda mención al plazo sale de
+`enunciadoPoliticaCancelacion` (FR-020, FR-022).
+
+**Peticiones a otros propietarios** (esta spec no las aplica):
+
+- **005 / 002 — trato del enunciado.** El ejemplo de 005 FR-016 usa «tú» y el correo usa
+  «usted» (FR-008). Se pide que `enunciadoPoliticaCancelacion` acepte el trato que fije la
+  guía de textos de la 002 (o que la guía unifique el trato del paciente), para que el correo
+  no tenga que adaptar el texto por su cuenta. Mientras tanto, el correo usa el enunciado tal
+  cual lo da la 005.
+- **004 — segmentación opcional.** Si se quiere ver en el panel la tasa de no asistencia de
+  las citas con recordatorio enviado (SC-005), es una enmienda de la 004.
+- **MAPA** (propietario de la 001): actualizar la ficha de la 003 («P1 resuelta: se mantiene
+  la víspera») y marcar resuelto, para la 003, el conflicto «002 y 003 aún redefinen acceso y
+  plazo» y la consecuencia de 005 FR-006 sobre SC-002.

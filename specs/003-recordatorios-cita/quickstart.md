@@ -49,7 +49,7 @@ correo):
 Obtenidas con el generador de la semilla de la 001 tal como está hoy en su rama. Al
 implementar, se comprueban contra la semilla integrada y se publican en `docs/datos-demo.md`
 (sección «Recordatorios»); si difieren, mandan las de `docs/datos-demo.md` y se corrige esta
-tabla. Si la pregunta abierta P1 cambia la ventana, esta tabla se recalcula.
+tabla.
 
 ## Escenarios manuales
 
@@ -67,8 +67,9 @@ tabla. Si la pregunta abierta P1 cambia la ventana, esta tabla se recalcula.
 
 Requiere la 002 y la 005. Dos personas que nunca han usado CitaClara reciben un `.eml` en el
 móvil, con una cita dentro del plazo de la 005, y la cancelan desde el portal, cronometradas:
-ambas en menos de 1 minuto. Se anotan los pasos que hicieron; si 005 FR-006 pide las 4
-últimas cifras del teléfono, ese paso forma parte del recorrido. El resultado se registra
+ambas en menos de 1 minuto. Se anotan los pasos que hicieron; el objetivo son 4 acciones como
+máximo: pulsar el enlace, introducir las 4 últimas cifras del teléfono (005 FR-006), pedir
+cancelar y confirmar (005 FR-012). El resultado se registra
 junto a la entrega.
 
 ## Medición en el piloto (SC-005)

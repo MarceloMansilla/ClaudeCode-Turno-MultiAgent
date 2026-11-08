@@ -60,7 +60,7 @@ Puertas derivadas de `.specify/memory/constitution.md` (v1.0.0). Evaluación pre
 investigación y repetida tras el diseño (mismo resultado):
 
 - [ ] **I. Spec primero**: ⚠️ spec 003 (antes 002) en revisión tras la revisión cruzada
-      S2–S5, con la pregunta abierta P1 sin decidir. Ya no pide enmienda a la 001 (se retira
+      S2–S5 y alineada con la 005 el 2026-11-08 (P1 resuelta: se mantiene la víspera). Ya no pide enmienda a la 001 (se retira
       su FR-018a de recordatorios); depende de la 005 (acceso y cancelación) y de la 002
       (portal). El registro de la 003 en `specs/MAPA.md` lo hace el propietario de la 001. El
       plan no añade comportamiento: el envío interrumpido (R2) está en la spec (FR-010 y
@@ -152,8 +152,7 @@ nueva. El enlace personal y el límite de cancelación se leen de lo que exponga
    añaden migraciones).
 3. **La 005 implementada**: enlace personal vigente por ficha, enlaces en la semilla
    (005 FR-019) y límite de cancelación de una cita expuestos para el correo (R5, R11).
-4. Pregunta abierta P1 decidida antes de activar el planificador del piloto (puede cambiar la
-   hora de ejecución y la ventana, R1).
+4. ~~Pregunta abierta P1~~: resuelta el 2026-11-08 (se mantiene la víspera; R1 sin cambios).
 
 ## Complexity Tracking
 

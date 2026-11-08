@@ -1,7 +1,8 @@
 # Contrato: correo de recordatorio
 
 Contenido exacto del recordatorio (FR-007, FR-008, FR-019, FR-020) y forma del fichero del
-modo simulado (FR-009). Ejemplo con la cita de los escenarios de la spec.
+modo simulado (FR-009). Ejemplo con la cita de los escenarios de la spec. Ningún texto de
+este contrato menciona el plazo de cancelación salvo el enunciado que da la 005 (FR-022).
 
 ## Cabeceras
 
@@ -37,28 +38,32 @@ Si no puede venir, cancele la cita para que otra persona pueda aprovechar el hue
 Clínica Eleva
 ```
 
-### Enunciado de la política (FR-020)
+### Enunciado de la política (FR-020, FR-022)
 
-Se deriva de **005, FR-016** y contiene sus tres elementos y ningún otro plazo: la regla, el
-límite concreto de esa cita («antes del [día de la semana], [dd/mm/aaaa] a las [hh:mm]», con
-el vencimiento de 005 FR-009) y la alternativa de llamar a la clínica con su nombre y
-teléfono. Esta spec no redacta el plazo ni lo calcula: toma el límite de la 005. Solo adapta el
-trato al del correo (usted, FR-008). Ejemplo de referencia derivado de 005 FR-016 para la cita
-de Ana:
+El bloque `<enunciado … — 005, FR-016>` es **exactamente** el texto que devuelve
+`enunciadoPoliticaCancelacion` (`src/dominio/politica-cancelacion.ts`, de la 005) para esa
+cita, con el límite de `limiteCancelacionPaciente` (`src/dominio/plazo-paciente.ts`) y el
+nombre y el teléfono de la clínica (001 FR-022). La 003 no lo redacta, no lo adapta (tampoco
+el trato) y no calcula el límite. Este contrato no reproduce el texto: el ejemplo de
+referencia es el de 005 FR-016, y si la 005 lo cambia, el correo cambia con ella sin tocar
+la 003.
 
-```text
-Puede cancelar esta cita desde su enlace antes del domingo, 15/11/2026 a las 10:00.
-Después, llame a Clínica Eleva al <teléfono de la clínica>.
-```
+Trato: el correo va de usted (FR-008) y el ejemplo de 005 FR-016 va de tú. Está pedido a la
+005 y a la 002 (spec, «Dependencias») que el enunciado salga en el trato que fije la guía de
+textos de la 002; hasta entonces se incluye tal cual.
 
-El teléfono procede de la 001 (pendiente de S9). Si la 005 cambia el enunciado o el plazo, este
-ejemplo cambia con ella; el texto final y el trato los revisa la guía de textos de la 002 (S10).
+El resto del correo no dice hasta cuándo se puede cancelar: la frase «Si no puede venir,
+cancele la cita…» invita a cancelar sin dar ningún plazo.
+`tests/unit/coherencia-politica.test.ts` (de la 005) DEBE cubrir el asunto, el texto, el HTML
+y el texto del botón.
 
 Reglas:
 
 - Saludo con el **nombre de pila** de la ficha (primera palabra del nombre).
-- El único enlace a CitaClara es el enlace personal vigente del paciente (`/p/<token>`, 005
-  FR-001 y FR-008). No hay enlaces por cita.
+- El único enlace a CitaClara es el enlace personal vigente del paciente, construido con
+  `rutaEnlacePaciente` (`src/dominio/enlace.ts`, de la 005; 005 FR-001 y FR-008). No hay
+  enlaces por cita ni tokens propios. Al abrirlo, el portal pide las 4 últimas cifras del
+  teléfono (005 FR-006).
 - No incluye precio, teléfono del paciente ni ningún otro dato de la ficha.
 - En HTML, el enlace es un botón «Ver o cancelar mi cita» (texto ≥ 16 px, contraste AA, área
   táctil ≥ 44 px) y debajo la URL en texto por si el botón no se muestra. El texto del botón
