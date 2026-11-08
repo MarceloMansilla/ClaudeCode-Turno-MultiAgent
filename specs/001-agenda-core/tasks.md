@@ -272,7 +272,7 @@ solapes), C con US3 (coordinando con B los archivos `citas.ts`).
 ## Enmienda revisión cruzada (S2)
 
 **Purpose**: implementar FR-018a (origen de la cancelación) de la Enmienda revisión cruzada
-S2–S5 (2026-11-07). Código, migraciones y pruebas hechos; falta la ejecución E2E de T074.
+S2–S5 (2026-11-07). Código, migraciones y pruebas hechos; T074 en verde el 2026-11-08.
 
 ### Tests (MANDATORY - Principle VI) ⚠️
 
@@ -286,7 +286,7 @@ S2–S5 (2026-11-07). Código, migraciones y pruebas hechos; falta la ejecución
 - [X] T071 [S2] Añadir en `src/db/esquema.ts` el enum `origen_cancelacion` (`recepcion`, `paciente`), la columna `cita.cancelada_por` y la restricción `cita_origen_cancelacion`, y generar la migración `src/db/migraciones/0002_origen_cancelacion.sql` con el relleno previo `UPDATE cita SET cancelada_por = 'recepcion' WHERE estado = 'cancelada'` antes del `CHECK` (data-model.md)
 - [X] T072 [S2] En `src/servicios/citas.ts`, `cambiarEstadoCita` con `accion: 'cancelar'` escribe `cancelada_por = 'recepcion'` en el mismo `UPDATE … WHERE estado = 'reservada'` (contracts/server-actions.md) (depende de T071)
 - [X] T073 [S2] En `src/semilla/generar.ts` y `src/semilla/cargar.ts`, generar las citas canceladas con `cancelada_por = 'recepcion'` sin alterar identificadores ni recuentos (FR-021, FR-024) (depende de T071)
-- [ ] T074 [S2] Ejecutar `pnpm lint`, `pnpm typecheck`, `pnpm test` y `pnpm test:e2e` en verde (depende de T067–T073)
+- [X] T074 [S2] Ejecutar `pnpm lint`, `pnpm typecheck`, `pnpm test` y `pnpm test:e2e` en verde (depende de T067–T073)
 
 ---
 
