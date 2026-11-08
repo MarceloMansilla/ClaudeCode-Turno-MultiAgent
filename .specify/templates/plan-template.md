@@ -40,7 +40,24 @@
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+Puertas derivadas de `.specify/memory/constitution.md` (v1.0.0). Marcar cada una como
+✅ cumple, ❌ incumple (justificar en Complexity Tracking) o N/A (explicar por qué):
+
+- [ ] **I. Spec primero**: la spec está aprobada y registrada en `specs/MAPA.md` con un único
+      propietario; el plan no introduce comportamiento ausente de la spec.
+- [ ] **II. Números**: los importes cuadran al céntimo con redondeos definidos en la spec;
+      fechas/horas en hora local de la clínica, sin ambigüedad (incluidos cambios de horario).
+- [ ] **III. Solape (NO NEGOCIABLE)**: si la feature escribe en la agenda, el diseño impide
+      solapes incluso con reservas simultáneas del mismo hueco, y hay pruebas que lo intentan.
+- [ ] **IV. Simplicidad**: es la solución más simple; cada dependencia nueva está justificada
+      en la spec.
+- [ ] **V. Datos demo**: los datos de demostración siguen siendo deterministas y se actualizan
+      las cifras citadas que cambien.
+- [ ] **VI. Tests**: cada regla de negocio y criterio de aceptación relevante tiene un test
+      trazable; la suite en verde es condición de merge.
+- [ ] **VII. Interfaz**: usable por recepción sin formación, sin jerga técnica, accesible, y
+      funcional en portátil y móvil.
+- [ ] **VIII. Idioma**: todo en español de España.
 
 ## Project Structure
 
