@@ -32,15 +32,15 @@ regenerar el enlace) los valida el quickstart de la 005.
 | # | Paso | Resultado esperado | Spec |
 |---|------|--------------------|------|
 | 1 | Abrir el enlace de A en un móvil y escribir sus 4 cifras | Próximas citas de A en orden, con fecha, hora, servicio y profesional; sin precios | US1 #1, FR-007, FR-010; 005 FR-006 |
-| 2 | Abrir «Historial» | Citas de A de la más reciente a la más antigua con «Realizada», «Cancelada», «No asistida» o «Pasada» | US1 #2, FR-008 |
+| 2 | Abrir «Historial» | Citas de A de la más reciente a la más antigua (por inicio de la cita) con «Realizada», «Cancelada por usted», «Cancelada por la clínica», «No asistida» o «Pasada» | US1 #2, FR-008 |
 | 3 | Mirar cada tarjeta de Próximas | Todas muestran el enunciado de 005 FR-016; solo las que la 005 permite cancelar tienen «Cancelar cita» | US2 #1, #4, FR-011 |
 | 4 | En una cita con botón, «Cancelar cita» → «No, mantenerla» | Sigue reservada | US2 #3 |
-| 5 | Repetir y confirmar | «Tu cita del … está cancelada.»; pasa al Historial | US2 #2 |
+| 5 | Repetir y confirmar | «Su cita del … está cancelada.»; pasa al Historial, la primera, como «Cancelada por usted» | US2 #2 |
 | 6 | En el panel, abrir la agenda de ese profesional y día | «Cancelada por el paciente» y hueco libre y reservable | US2 #7, US3 #1 |
 | 7 | Ver la cabecera del panel | «Huecos liberados por pacientes (1)» con ese hueco | US3 #3 |
 | 8 | Reservar ese hueco para otro paciente | El hueco sale del aviso y el aviso desaparece | US3 #4 |
 | 9 | Cancelar otra cita desde el panel (recepción) | «Cancelada», sin indicación de paciente, y no entra en el aviso | US3 #2 |
-| 10 | Enlace de B + sus cifras | «No tienes próximas citas…» con el teléfono | US1 #3 |
+| 10 | Enlace de B + sus cifras | «No tiene próximas citas…» con el teléfono | US1 #3 |
 | 11 | Todo lo anterior a 360 px | Sin desplazamiento horizontal, controles ≥ 44 px | SC-006, FR-017 |
 
 ## Prueba de usabilidad previa a la entrega (SC-001, SC-002)

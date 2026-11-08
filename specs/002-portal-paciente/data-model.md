@@ -36,14 +36,16 @@ La 002 no tiene ninguna tabla de ejemplos del plazo: los ejemplos de referencia 
 | Condición | Lista | Etiqueta |
 |-----------|-------|----------|
 | `reservada` y `inicio > ahora` | Próximas citas (orden ascendente) | — (con «Cancelar cita» si la 005 lo permite, y siempre el enunciado) |
-| `inicio ≤ ahora` y `completada` | Historial (orden descendente) | «Realizada» |
+| `inicio ≤ ahora` y `completada` | Historial (orden descendente por `inicio`, igual para todos los estados) | «Realizada» |
 | `inicio ≤ ahora` y `no_asistida` | Historial | «No asistida» |
 | `inicio ≤ ahora` y `reservada` | Historial | «Pasada» |
-| `cancelada` (cualquier fecha) | Historial | «Cancelada» |
+| `cancelada` (cualquier fecha) y `cancelada_por = 'paciente'` | Historial | «Cancelada por usted» |
+| `cancelada` (cualquier fecha) y `cancelada_por = 'recepcion'` | Historial | «Cancelada por la clínica» |
 
 Ejemplo (reloj 12:10 del 09/11/2026): una cita reservada de hoy a las 12:00 va al Historial
 como «Pasada»; una de las 12:15 va a Próximas (que tenga o no «Cancelar cita» lo decide
-`pacientePuedeCancelar`).
+`pacientePuedeCancelar`). Una cita del 16/11/2026 cancelada hoy va la primera del Historial
+(su inicio es el más reciente).
 
 ### Huecos liberados por pacientes (FR-015a)
 

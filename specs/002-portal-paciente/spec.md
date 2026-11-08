@@ -47,6 +47,9 @@ al viernes 20/11/2026.
 - Se retiran de esta spec las definiciones de acceso (antiguos FR-001 a FR-006, FR-002a,
   FR-002b y la entidad «Enlace personal (acceso del paciente)») y de plazo (antiguos FR-012,
   FR-013 y el supuesto del plazo en «Amounts and dates»). Equivalencias en «Dependencias».
+- Q: ¿Se trata al paciente de «tú» o de «usted»? → A: De «usted» en todos los textos que ve el paciente (revisión cruzada S10, 2026-11-08; ya aplicado en la 005 y la 003).
+- Q: ¿Por qué se ordena «Historial» cuando incluye citas canceladas futuras? → A: Por el inicio de la cita, de la más reciente a la más antigua, igual para todos los estados; las canceladas futuras quedan arriba.
+- Q: ¿Ve el paciente quién canceló cada cita? → A: Sí: «Cancelada por usted» (origen `paciente`) y «Cancelada por la clínica» (origen `recepcion`), según 001 FR-018a.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -71,9 +74,9 @@ las suyas en la semilla, y que no aparece ninguna cita de otro paciente.
    orden cronológico con el resto de sus citas futuras.
 2. **Given** ese paciente tuvo citas entre el 14/09/2026 y el 06/11/2026, **When** abre
    «Historial», **Then** las ve de la más reciente a la más antigua, cada una con su estado
-   («Realizada», «Cancelada» o «No asistida»).
+   («Realizada», «Cancelada por usted», «Cancelada por la clínica» o «No asistida»).
 3. **Given** un paciente sin ninguna cita futura, **When** entra en su portal, **Then** ve
-   «No tienes próximas citas» y el teléfono de la clínica para pedir una.
+   «No tiene próximas citas» y el teléfono de la clínica para pedir una.
 4. **Given** alguien abre un enlace, **When** todavía no ha completado el acceso de la 005
    (enlace no válido, cifras sin confirmar, en pausa o bloqueado), **Then** el portal no
    muestra ninguna de sus pantallas ni ningún dato de citas o pacientes, solo lo que permiten
@@ -94,8 +97,8 @@ decide la 005; el portal lo presenta.
 portal.
 
 **Independent Test**: cancelar desde el portal una cita futura de la semilla para la que
-005 FR-009 permite cancelar y comprobar que pasa a «Cancelada» en el portal y en la agenda de
-recepción; ver otra que 005 FR-009 ya no permite cancelar y comprobar que no ofrece la
+005 FR-009 permite cancelar y comprobar que pasa a «Cancelada por usted» en el portal y a «Cancelada por el
+paciente» en la agenda de recepción; ver otra que 005 FR-009 ya no permite cancelar y comprobar que no ofrece la
 opción y muestra el enunciado de 005 FR-016.
 
 **Acceptance Scenarios**:
@@ -105,8 +108,8 @@ opción y muestra el enunciado de 005 FR-016.
    «Próximas citas», **Then** ve el botón «Cancelar cita» y, debajo, el enunciado de la
    política de 005 FR-016 para esa cita, sin ningún otro texto sobre el plazo.
 2. **Given** esa cita, **When** pulsa «Cancelar cita» y confirma en el paso que exige
-   005 FR-012, **Then** la cita pasa a «Cancelada», desaparece de «Próximas citas», aparece en
-   «Historial» y ve «Tu cita del lunes, 16/11/2026 a las 10:00 está cancelada.».
+   005 FR-012, **Then** la cita desaparece de «Próximas citas», aparece en «Historial» como
+   «Cancelada por usted» y ve «Su cita del lunes, 16/11/2026 a las 10:00 está cancelada.».
 3. **Given** el paciente pulsa «Cancelar cita», **When** en la confirmación elige «No,
    mantenerla», **Then** la cita sigue reservada sin cambios.
 4. **Given** una cita reservada futura que 005 FR-009 ya no permite cancelar, **When** el
@@ -167,6 +170,8 @@ aviso de huecos liberados, hasta que recepción vuelve a ocupar ese hueco.
   005 FR-016; unas pueden tener «Cancelar cita» y otras no a la vez.
 - Cita de hoy, 09/11/2026, a las 12:00 (ya empezada a las 12:10): aparece en «Historial» como
   pasada, sin opción de cancelar.
+- Cita futura cancelada (p. ej., la del lunes 16/11/2026, cancelada el 09/11/2026): aparece
+  la primera en «Historial», como «Cancelada por usted», por delante de las citas pasadas (FR-008).
 - Cita pasada que recepción aún no ha marcado (sigue «reservada», spec 001): en «Historial»
   aparece como «Pasada», sin afirmar si se realizó o no.
 - Paciente cuyo teléfono comparten varios miembros de una familia: imposible, el teléfono es
@@ -195,9 +200,11 @@ identificadores no se reutilizan.
   inicio aún no ha llegado, en orden cronológico, con día de la semana y fecha, hora de
   inicio y fin, servicio y profesional.
 - **FR-008**: El portal DEBE mostrar «Historial»: las citas cuyo inicio ya ha llegado y todas
-  las canceladas, de la más reciente a la más antigua, con su estado en lenguaje de paciente:
-  completada → «Realizada», cancelada → «Cancelada», no asistida → «No asistida», reservada
-  con inicio pasado → «Pasada».
+  las canceladas (también las de inicio futuro), ordenadas por el inicio de la cita, de la más
+  reciente a la más antigua y sin agrupar por estado, con su estado en lenguaje de paciente:
+  completada → «Realizada»; cancelada con origen `paciente` → «Cancelada por usted»;
+  cancelada con origen `recepcion` → «Cancelada por la clínica» (origen de 001 FR-018a);
+  no asistida → «No asistida»; reservada con inicio pasado → «Pasada».
 - **FR-009**: El portal DEBE mostrar el nombre y el teléfono de la clínica en todas sus
   pantallas, con el teléfono como enlace para llamar. El teléfono es el de 001 FR-022.
 - **FR-010**: El portal NO DEBE mostrar importes, notas internas ni datos de otros pacientes o
@@ -211,7 +218,7 @@ identificadores no se reutilizan.
   de la política de **005 FR-016** para esa cita, tal como lo produce la 005, sin añadirle,
   quitarle ni reformularle nada sobre el plazo. El paso de confirmación es el de 005 FR-012;
   esta spec fija sus botones («Sí, cancelar» / «No, mantenerla», con el foco inicial en
-  «No, mantenerla») y el mensaje tras cancelar («Tu cita del [día], [dd/mm/aaaa] a las
+  «No, mantenerla») y el mensaje tras cancelar («Su cita del [día], [dd/mm/aaaa] a las
   [hh:mm] está cancelada.»).
 - *(FR-012 y FR-013 retirados: plazo y comportamiento fuera de plazo → 005 FR-009, FR-011 y
   FR-016.)*
@@ -228,7 +235,7 @@ identificadores no se reutilizan.
   intervención de recepción en cuanto vuelve a ocuparse (total o parcialmente) o su hora de
   inicio llega. Sin huecos pendientes, el aviso no se muestra.
 - **FR-016**: Esta spec no define el origen de la cancelación ni la transición de estado: los
-  definen 001 FR-018a y 005 FR-013. Solo los lee para FR-015 y FR-015a.
+  definen 001 FR-018a y 005 FR-013. Solo los lee para FR-008, FR-015 y FR-015a.
 
 **Guía de textos y trato al paciente (Principios VII y VIII)**
 
@@ -237,7 +244,7 @@ identificadores no se reutilizan.
   Se aplica también a las pantallas de acceso que presenta el portal (005 FR-006, FR-006a,
   FR-007).
 - **FR-018**: Guía de textos al paciente, para todas las pantallas que ve (las de esta spec y
-  las de acceso y cancelación de la 005): español de España; trato de «tú»; sin jerga técnica
+  las de acceso y cancelación de la 005): español de España; trato de «usted» (revisión cruzada S10); sin jerga técnica
   («token», «sesión», «error 404»…); frases cortas; todo error dice qué ha pasado y qué puede
   hacer el paciente; siempre que el paciente no pueda seguir, se le da el nombre y el teléfono
   de la clínica. La guía fija la forma; el contenido de los mensajes de acceso y de la política
@@ -338,7 +345,7 @@ cambia, cambia en su spec y esta la sigue sin enmienda.
 | Estados de la cita y FR-017 (transición a «cancelada») | Etiquetas de FR-008; la cancelación la aplica la 005 sobre esta transición |
 | FR-006, FR-011, FR-012 (sin solapes, hueco libre) | El hueco liberado es reservable (US2 #7, US3 #4) |
 | FR-016b (teléfono único por ficha) | Edge case de familias |
-| FR-018a (origen `recepcion` / `paciente` y momento) | «Cancelada por el paciente» (FR-015) y «Huecos liberados» (FR-015a) filtran por `paciente` |
+| FR-018a (origen `recepcion` / `paciente` y momento) | «Cancelada por usted» / «Cancelada por la clínica» en «Historial» (FR-008); «Cancelada por el paciente» (FR-015) y «Huecos liberados» (FR-015a) filtran por `paciente` |
 | FR-020 (estado cambiado desde que se mostró) | US2 #6 |
 | FR-022 (teléfono de la clínica) | FR-009 y pantallas sin salida |
 | Semilla determinista (fecha de referencia 09/11/2026) | Ejemplos, Paciente A y B, tests |
@@ -389,13 +396,13 @@ prueba de coherencia que lo vigila: [plan.md](plan.md) («Structure Decision») 
 ### Peticiones a otros propietarios (no se cambian desde aquí)
 
 - **005 — enunciado para citas ya fuera de plazo.** 005 FR-011 pide mostrar el enunciado de
-  FR-016 en una cita reservada fuera de plazo, pero el enunciado dice «Puedes cancelar esta
-  cita desde tu enlace antes del [fecha ya pasada]». ¿Puede la 005 dar una variante para ese
+  FR-016 en una cita reservada fuera de plazo, pero el enunciado dice «Puede cancelar esta
+  cita desde su enlace antes del [fecha ya pasada]». ¿Puede la 005 dar una variante para ese
   caso (p. ej., que el elemento 1 cambie a pasado), o confirmar que se muestra tal cual? La
   002 lo mostrará como lo produzca `enunciadoPoliticaCancelacion`.
 - **005 — textos de sus pantallas.** Al integrar, revisar los textos de las pantallas de
-  acceso de la 005 con la guía de FR-018 (p. ej., «No tienes citas próximas.» de la lista
-  provisional frente a «No tienes próximas citas» de US1 #3; la lista desaparece al integrar
+  acceso de la 005 con la guía de FR-018 (p. ej., «No tiene citas próximas.» de la lista
+  provisional frente a «No tiene próximas citas» de US1 #3; la lista desaparece al integrar
   la 002).
 - **005 — prueba de coherencia.** `coherencia-politica.test.ts` recorre `src/`: cubre el
   código de la 002 sin cambios. Si algún texto de la 002 viviera fuera de `src/` (p. ej.,

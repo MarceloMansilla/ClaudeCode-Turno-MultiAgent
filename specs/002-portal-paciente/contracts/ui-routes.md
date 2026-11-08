@@ -13,15 +13,16 @@ contrato fija lo que la 002 pinta **con el acceso abierto** y lo que añade al p
   profesional. Si `puedeCancelar`: botón «Cancelar cita». **Siempre**, debajo, el enunciado de
   005 FR-016 con el componente `PoliticaCancelacion` de la 005 (teléfono como `tel:`). La
   tarjeta no lleva ningún otro texto sobre el plazo.
-- **Diálogo de confirmación** (005 FR-012): «¿Cancelar tu cita?» con fecha, hora, servicio y
+- **Diálogo de confirmación** (005 FR-012): «¿Cancelar su cita?» con fecha, hora, servicio y
   profesional; botones «Sí, cancelar» y «No, mantenerla» (el foco empieza en «No,
   mantenerla»).
-- **Tras cancelar**: aviso «Tu cita del lunes, 16/11/2026 a las 10:00 está cancelada.» y la
-  cita pasa al Historial.
+- **Tras cancelar**: aviso «Su cita del lunes, 16/11/2026 a las 10:00 está cancelada.» y la
+  cita pasa al Historial como «Cancelada por usted».
 - **Historial**: tarjetas con fecha, hora, servicio, profesional y etiqueta de estado (texto
-  + icono, nunca solo color).
-- **Vacíos**: «No tienes próximas citas. Para pedir una, llama a Clínica Eleva al
-  911 234 567.»; «Todavía no tienes citas anteriores.».
+  + icono, nunca solo color): «Realizada», «Cancelada por usted», «Cancelada por la clínica»,
+  «No asistida» o «Pasada»; orden por inicio de la cita, de la más reciente a la más antigua.
+- **Vacíos**: «No tiene próximas citas. Para pedir una, llame a Clínica Eleva al
+  911 234 567.»; «Todavía no tiene citas anteriores.».
 
 ## Panel de recepción (ampliaciones de la 001)
 
@@ -37,5 +38,5 @@ contrato fija lo que la 002 pinta **con el acceso abierto** y lo que añade al p
 
 - Portal diseñado primero para móvil: sin desplazamiento horizontal desde 360 px, objetivos
   táctiles ≥ 44×44 px, texto base 16 px, botón principal al alcance del pulgar.
-- Contraste WCAG 2.2 AA; navegable con teclado; foco visible; trato de «tú».
+- Contraste WCAG 2.2 AA; navegable con teclado; foco visible; trato de «usted» (revisión cruzada S10).
 - Mismo sistema visual que el panel (shadcn/ui, tokens de tema, modo claro/oscuro).

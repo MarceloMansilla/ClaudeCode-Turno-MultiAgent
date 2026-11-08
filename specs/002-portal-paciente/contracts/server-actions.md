@@ -14,7 +14,7 @@ mensaje de este contrato menciona el plazo de cancelación (spec FR-018a).
 
 | codigo | Cuándo | Mensaje |
 |--------|--------|---------|
-| `CITA_NO_ENCONTRADA` | la cita no existe o no es del paciente del acceso (solo si la 005 no lo cubre ya) | «No encontramos esa cita entre las tuyas.» (no revela si existe) |
+| `CITA_NO_ENCONTRADA` | la cita no existe o no es del paciente del acceso (solo si la 005 no lo cubre ya) | «No encontramos esa cita entre las suyas.» (no revela si existe) |
 
 ## Lectura del portal (Server Component)
 
@@ -25,7 +25,7 @@ abierto». La ficha y la clínica las resuelve la 005; nunca vienen del cliente.
 Portal = {
   clinica: { nombre: string; telefono: string };       // FR-009 (teléfono: 001 FR-022)
   proximas: CitaPortal[];                               // FR-007, orden ascendente
-  historial: CitaPortal[];                              // FR-008, orden descendente
+  historial: CitaPortal[];                              // FR-008, orden descendente por inicio (todos los estados)
 }
 CitaPortal = {
   id: string;
@@ -33,7 +33,8 @@ CitaPortal = {
   inicio: 'HH:mm'; fin: 'HH:mm';
   servicio: string;               // sin precio (FR-010)
   profesional: string;
-  etiqueta?: 'Realizada' | 'Cancelada' | 'No asistida' | 'Pasada';   // solo historial
+  etiqueta?: 'Realizada' | 'Cancelada por usted' | 'Cancelada por la clínica'
+           | 'No asistida' | 'Pasada';   // solo historial; origen: 001 FR-018a
   puedeCancelar: boolean;         // solo próximas: pacientePuedeCancelar(...) de la 005
   enunciado?: string;             // solo próximas: enunciadoPoliticaCancelacion(...) de la 005
 }
@@ -45,8 +46,8 @@ nunca importes, teléfono del paciente ni datos de otros pacientes o de la agend
 
 ## Tras cancelar (presentación propia)
 
-La acción es la de la 005. Con éxito, el portal muestra «Tu cita del lunes, 16/11/2026 a las
-10:00 está cancelada.» y la cita pasa al Historial. Ante cualquier rechazo, muestra el mensaje
+La acción es la de la 005. Con éxito, el portal muestra «Su cita del lunes, 16/11/2026 a las
+10:00 está cancelada.» y la cita pasa al Historial como «Cancelada por usted». Ante cualquier rechazo, muestra el mensaje
 que devuelve la 005 y refresca la lista (spec FR-014).
 
 ## Ampliaciones del panel de recepción (sesión de recepción)
