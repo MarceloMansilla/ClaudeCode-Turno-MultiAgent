@@ -1,7 +1,7 @@
 # Specification Quality Checklist: Portal del paciente
 
 **Purpose**: Validate specification completeness and quality before proceeding to planning
-**Created**: 2026-11-07
+**Created**: 2026-11-07 · revalidada el 2026-11-08 (enmienda «fuente única 005»)
 **Feature**: [spec.md](../spec.md)
 
 ## Content Quality
@@ -13,7 +13,7 @@
 
 ## Requirement Completeness
 
-- [x] No [NEEDS CLARIFICATION] markers remain — quedan 3 (FR-002 acceso, FR-012 plazo, FR-015 hueco), pendientes de Sara
+- [x] No [NEEDS CLARIFICATION] markers remain
 - [x] Requirements are testable and unambiguous
 - [x] Success criteria are measurable
 - [x] Success criteria are technology-agnostic (no implementation details)
@@ -31,15 +31,15 @@
 
 ## Notes
 
-- Iteración 1: solo falla el punto de [NEEDS CLARIFICATION]; los 3 marcadores son las
-  decisiones que la petición reservó expresamente a Sara.
-- Los ejemplos citan cifras fijas de la semilla de la 001 (fecha de referencia 09/11/2026,
-  profesionales, servicios, rango de fechas). Los pacientes concretos aún no existen porque la
-  semilla no se ha generado; el plan los fijará desde `docs/datos-demo.md`.
-- Antes del plan: solicitar el cambio en la spec 001 (ver «Dependencias» en la spec).
-- Revisión cruzada S2–S4 (2026-11-07): la spec ya no define el acceso (pasa a la 005,
-  FR-001–FR-008) ni el origen de la cancelación o el teléfono de la clínica (001 FR-018a,
-  FR-022). La spec no tiene marcadores [NEEDS CLARIFICATION] propios, pero depende de uno
-  ajeno: 005 FR-006 (¿confirmación de 4 cifras?). La aportación de la 002 está en
-  «Dependencias y enmiendas requeridas».
-- Items marked incomplete require spec updates before `/speckit-clarify` or `/speckit-plan`
+- Enmienda 2026-11-08: retirados FR-001–FR-006, FR-002a, FR-002b, FR-012, FR-013, el supuesto
+  del plazo y la entidad «Enlace personal (acceso del paciente)»; todo se cita de la 005
+  (tabla «Equivalencias de lo retirado»). Ya no hay dependencia de ninguna clarificación
+  ajena: 005 FR-006 está decidido (enlace + 4 cifras).
+- Comprobación de la regla 5 de la enmienda: búsqueda en toda la carpeta de la 002 de la
+  duración del plazo, «hasta el [día de la semana]», «día anterior», «un día» y
+  «antelación»: 0 resultados como texto propio.
+- Detalles de implementación: la spec solo nombra valores de dominio de la 001
+  (`paciente` / `recepcion`, FR-018a); los nombres de funciones y archivos de la 005 están en
+  plan.md y tasks.md.
+- Pendiente fuera de la spec: integrar la 005 en `portal` (tasks T000) y las peticiones a la
+  005 y al MAPA de «Peticiones a otros propietarios».
