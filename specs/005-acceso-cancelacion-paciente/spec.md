@@ -4,7 +4,7 @@
 
 **Created**: 2026-11-07
 
-**Status**: Draft
+**Status**: Aprobada (2026-11-07, MarceloMansilla)
 
 **Input**: User description: "Acceso y cancelación del paciente (specs/000-revision-cruzada-jul2026.md). Esta spec es la ÚNICA fuente de verdad sobre cómo un paciente accede a sus datos y cancela citas; el portal (002) y los recordatorios (003) la consumen y la referencian, nunca la redefinen. Acceso: cada paciente tiene UN enlace personal estable /p/[token] (token opaco, regenerable por recepción si se compromete). Sin cuentas ni contraseñas. Todo enlace que reciba el paciente (portal, recordatorios, futuros canales) apunta a /p/[token]. Cancelación por el paciente: permitida hasta 24 horas antes del inicio (decisión de Sara sobre C1: «regla única y que se pueda explicar por teléfono»; la propuesta de 2 h queda registrada como posible v2 con lista de espera). Dentro de la ventana: el portal no ofrece cancelar y muestra el teléfono de la clínica. Cancelar libera el hueco (estado 'cancelada' del núcleo). RN de coherencia: cualquier texto que comunique la política de cancelación (portal, emails) debe derivarse de esta spec, no reescribirla. Criterios de aceptación con test: token válido/inválido/regenerado; cancelación a 25 h (procede) y a 23 h (no procede); hueco liberado aceptando nueva cita."
 

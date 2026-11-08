@@ -8,9 +8,9 @@
  */
 import { randomUUID } from 'node:crypto';
 import { and, asc, eq, gt, inArray, lt } from 'drizzle-orm';
-import { enTransaccionConReintento, obtenerBd, type Tx } from '@/db/cliente';
+import { enTransaccionConReintento, obtenerBd, type Ejecutor, type Tx } from '@/db/cliente';
 import { esReintentable, esViolacion, PG_VIOLACION_EXCLUSION } from '@/db/errores-pg';
-import { cita, type EstadoCita } from '@/db/esquema';
+import { cita, type EstadoCita, type OrigenCancelacion } from '@/db/esquema';
 import {
   ESTADO_DESTINO,
   ESTADOS_QUE_OCUPAN,
@@ -169,7 +169,7 @@ export interface EstadoActualizado {
   fecha: string;
 }
 
-/** US3 — FR-017–FR-020: completar, cancelar o marcar no asistida una cita reservada. */
+/** US3 — FR-017–FR-020 y FR-018a: completar, cancelar o marcar no asistida una cita reservada. */
 export async function cambiarEstadoCita(
   clinicaId: string,
   citaId: string,
@@ -195,10 +195,22 @@ export async function cambiarEstadoCita(
   if (problema === 'CANCELACION_TARDIA') return fallo('CANCELACION_TARDIA', mensajes.cancelacionTardia());
   if (problema === 'TRANSICION_NO_PERMITIDA') return fallo('TRANSICION_NO_PERMITIDA', mensajes.transicionNoPermitida());
 
+  if (accion === 'cancelar') {
+    // Vía de recepción: origen `recepcion` (FR-018a; no es una entrada, el cliente no puede
+    // elegirlo) y su plazo, hasta la hora de inicio (FR-018).
+    const r = await cancelarCita(obtenerBd(), { clinicaId, citaId, origen: 'recepcion', ahora, inicioMinimo: ahora });
+    if (r.ok) return exito(vista(r.cita));
+    if (r.motivo === 'no_encontrada') return fallo('NO_ENCONTRADO', mensajes.citaNoEncontrada());
+    if (r.motivo === 'fuera_de_plazo') return fallo('CANCELACION_TARDIA', mensajes.cancelacionTardia());
+    return fallo('ESTADO_CAMBIADO', mensajes.estadoCambiado(ETIQUETA_ESTADO[r.actual.estado]), {
+      detalle: vista(r.actual),
+    });
+  }
+
   // Actualización condicional: solo prospera si sigue reservada (FR-020).
   const [actualizada] = await obtenerBd()
     .update(cita)
-    .set({ estado: ESTADO_DESTINO[accion], estadoCambiadoEn: ahora })
+    .set({ estado: ESTADO_DESTINO[accion], estadoCambiadoEn: ahora, canceladaPor: null })
     .where(and(eq(cita.id, citaId), eq(cita.clinicaId, clinicaId), eq(cita.estado, 'reservada')))
     .returning({ id: cita.id, estado: cita.estado, profesionalId: cita.profesionalId, inicio: cita.inicio });
   if (!actualizada) {
@@ -208,6 +220,63 @@ export async function cambiarEstadoCita(
     });
   }
   return exito(vista(actualizada));
+}
+
+interface CitaLeida {
+  id: string;
+  estado: EstadoCita;
+  profesionalId: string;
+  inicio: Date;
+}
+
+export type ResultadoCancelacion =
+  | { ok: true; cita: CitaLeida }
+  | { ok: false; motivo: 'no_encontrada' }
+  | { ok: false; motivo: 'estado_cambiado'; actual: CitaLeida }
+  | { ok: false; motivo: 'fuera_de_plazo'; actual: CitaLeida };
+
+/**
+ * Operación única de cancelación (revisión cruzada S7; spec 005 research R7): la transición
+ * «reservada» → «cancelada» la hacen recepción y el paciente con este mismo `UPDATE`
+ * condicional, que comprueba estado y plazo en la propia escritura. De dos cancelaciones
+ * simultáneas solo una cambia el estado (FR-020, 005 FR-014). Pasar a `cancelada` saca la cita
+ * de `cita_sin_solape`: el hueco queda libre al confirmarse (001 FR-006, 005 FR-013).
+ *
+ * - Recepción: `origen = 'recepcion'`, `inicioMinimo = ahora` (001 FR-018).
+ * - Paciente: `origen = 'paciente'`, su `pacienteId` e `inicioMinimo = ahora + 24 h` (005 FR-009).
+ */
+export async function cancelarCita(
+  ejecutor: Ejecutor,
+  datos: {
+    clinicaId: string;
+    citaId: string;
+    origen: OrigenCancelacion;
+    ahora: Date;
+    inicioMinimo: Date;
+    pacienteId?: string;
+  },
+): Promise<ResultadoCancelacion> {
+  const deLaFicha = (id: string) =>
+    and(
+      eq(cita.id, id),
+      eq(cita.clinicaId, datos.clinicaId),
+      datos.pacienteId ? eq(cita.pacienteId, datos.pacienteId) : undefined,
+    );
+  const columnas = { id: cita.id, estado: cita.estado, profesionalId: cita.profesionalId, inicio: cita.inicio };
+
+  const [cancelada] = await ejecutor
+    .update(cita)
+    .set({ estado: 'cancelada', estadoCambiadoEn: datos.ahora, canceladaPor: datos.origen })
+    .where(and(deLaFicha(datos.citaId), eq(cita.estado, 'reservada'), gt(cita.inicio, datos.inicioMinimo)))
+    .returning(columnas);
+  if (cancelada) return { ok: true, cita: cancelada };
+
+  // Nada cambió: se relee para explicar el motivo. «No existe» y «no es de este paciente» no
+  // se distinguen (005 FR-006).
+  const [actual] = await ejecutor.select(columnas).from(cita).where(deLaFicha(datos.citaId)).limit(1);
+  if (!actual) return { ok: false, motivo: 'no_encontrada' };
+  if (actual.estado !== 'reservada') return { ok: false, motivo: 'estado_cambiado', actual };
+  return { ok: false, motivo: 'fuera_de_plazo', actual };
 }
 
 async function leerCita(clinicaId: string, citaId: string) {

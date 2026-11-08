@@ -18,6 +18,8 @@ export interface Prng {
   barajar<T>(lista: readonly T[]): T[];
   /** UUID con formato v4 construido con 16 bytes de la secuencia. */
   uuid(): string;
+  /** `n` bytes de la secuencia (spec 005: tokens deterministas de la semilla, research R9). */
+  bytes(n: number): Uint8Array;
 }
 
 export function crearPrng(semilla: number): Prng {
@@ -63,6 +65,14 @@ export function crearPrng(semilla: number): Prng {
       bytes[8] = (bytes[8]! & 0x3f) | 0x80; // variante RFC 4122
       const hex = Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
       return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+    },
+    bytes: (n) => {
+      const bytes = new Uint8Array(n);
+      for (let i = 0; i < n; i += 4) {
+        const v = u32();
+        for (let k = 0; k < 4 && i + k < n; k++) bytes[i + k] = (v >>> (24 - 8 * k)) & 0xff;
+      }
+      return bytes;
     },
   };
 }

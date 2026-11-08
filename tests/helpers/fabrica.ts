@@ -4,20 +4,26 @@
  */
 import { randomUUID } from 'node:crypto';
 import { hash } from '@node-rs/argon2';
+import { eq } from 'drizzle-orm';
 import { obtenerBd } from '../../src/db/cliente';
 import {
   cita,
   clinica,
+  enlacePaciente,
   paciente,
   profesional,
   servicio,
   type Cita,
   type EstadoCita,
+  type OrigenCancelacion,
 } from '../../src/db/esquema';
 import { instanteLocal } from '../../src/lib/zona';
 
 export const CLAVE_PRUEBAS = 'clave-de-pruebas';
 export const ZONA = 'Europe/Madrid';
+/** Tokens fijos con el formato de la spec 005 (43 caracteres base64url, FR-002). */
+export const TOKEN_ANA = 'AnaAnaAnaAnaAnaAnaAnaAnaAnaAnaAnaAnaAnaAna0';
+export const TOKEN_LUIS = 'LuisLuisLuisLuisLuisLuisLuisLuisLuisLuis-_0';
 
 export interface Escenario {
   clinicaId: string;
@@ -30,6 +36,8 @@ export interface Escenario {
   primeraNutricion: string; // 45 min, 45,00 €
   ana: string; // paciente con teléfono 612 345 678
   luis: string; // paciente con teléfono 699 000 111
+  tokenAna: string; // enlace personal de Ana (spec 005); sus 4 cifras: 5678
+  tokenLuis: string; // enlace personal de Luis; sus 4 cifras: 0111
 }
 
 export async function crearEscenario(): Promise<Escenario> {
@@ -45,10 +53,13 @@ export async function crearEscenario(): Promise<Escenario> {
     primeraNutricion: randomUUID(),
     ana: randomUUID(),
     luis: randomUUID(),
+    tokenAna: TOKEN_ANA,
+    tokenLuis: TOKEN_LUIS,
   };
   await bd.insert(clinica).values({
     id: e.clinicaId,
     nombre: 'Clínica de Pruebas',
+    telefono: '911 000 222',
     zonaHoraria: ZONA,
     horaApertura: '09:00',
     horaCierre: '20:00',
@@ -70,6 +81,10 @@ export async function crearEscenario(): Promise<Escenario> {
     { id: e.ana, clinicaId: e.clinicaId, nombre: 'Ana Pérez', telefono: '612 345 678', telefonoNormalizado: '612345678', email: 'ana@example.com' },
     { id: e.luis, clinicaId: e.clinicaId, nombre: 'Luis Gómez', telefono: '699000111', telefonoNormalizado: '699000111' },
   ]);
+  await bd.insert(enlacePaciente).values([
+    { pacienteId: e.ana, token: TOKEN_ANA, generadoEn: new Date('2026-11-02T08:00:00Z') },
+    { pacienteId: e.luis, token: TOKEN_LUIS, generadoEn: new Date('2026-11-02T08:00:00Z') },
+  ]);
   return e;
 }
 
@@ -84,6 +99,7 @@ export async function insertarCita(
     hora: string;
     minutos: number;
     estado?: EstadoCita;
+    canceladaPor?: OrigenCancelacion;
   },
 ): Promise<Cita> {
   const inicio = instanteLocal(datos.fecha, datos.hora, ZONA);
@@ -99,7 +115,20 @@ export async function insertarCita(
       inicio,
       fin,
       estado: datos.estado ?? 'reservada',
+      // FR-018a: toda cancelada lleva origen (cita_origen_cancelacion); por defecto, recepción.
+      canceladaPor: datos.estado === 'cancelada' ? (datos.canceladaPor ?? 'recepcion') : null,
     })
     .returning();
   return fila!;
+}
+
+/** Spec 005: prepara los contadores de intentos de un enlace (pausa, bloqueo). */
+export async function fijarIntentos(
+  pacienteId: string,
+  intentos: { fallosSeguidos: number; pausaHasta?: Date | null },
+): Promise<void> {
+  await obtenerBd()
+    .update(enlacePaciente)
+    .set({ fallosSeguidos: intentos.fallosSeguidos, pausaHasta: intentos.pausaHasta ?? null })
+    .where(eq(enlacePaciente.pacienteId, pacienteId));
 }

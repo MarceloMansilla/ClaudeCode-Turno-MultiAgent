@@ -8,6 +8,8 @@ import { esViolacion, PG_VIOLACION_UNICIDAD } from '@/db/errores-pg';
 import { paciente } from '@/db/esquema';
 import { exito, fallo, mensajes, type Resultado } from '@/dominio/errores';
 import { cifrasDeBusqueda, normalizarTelefono } from '@/dominio/telefono';
+import { ahora } from '@/lib/reloj';
+import { crearEnlace } from './enlaces';
 
 export interface PacienteResumen {
   id: string;
@@ -122,6 +124,8 @@ export async function crearPaciente(
         telefonoNormalizado: v.telefonoNormalizado,
         email: v.email,
       });
+      // Spec 005, FR-001: cada ficha nace con su enlace personal, en la misma transacción.
+      await crearEnlace(sp, id, ahora());
     });
   } catch (error) {
     if (esViolacion(error, PG_VIOLACION_UNICIDAD)) {

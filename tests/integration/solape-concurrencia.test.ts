@@ -100,6 +100,7 @@ describe('FR-012 — ninguna vía de escritura se salta la regla', () => {
       inicio,
       fin: new Date(inicio.getTime() + minutos * 60_000),
       estado,
+      canceladaPor: estado === 'cancelada' ? 'recepcion' : null, // FR-018a
     });
   };
 
@@ -121,8 +122,15 @@ describe('FR-012 — ninguna vía de escritura se salta la regla', () => {
   it('reactivar por SQL una cancelada que solaparía es rechazado', async () => {
     await insertarDirecto('10:00', 45, 'cancelada');
     await insertarDirecto('10:15', 45, 'reservada');
+    // Se quita también el origen para que el único motivo de rechazo sea el solape.
     await expect(
-      obtenerBd().update(cita).set({ estado: 'reservada' }).where(eq(cita.estado, 'cancelada')),
-    ).rejects.toThrow();
+      obtenerBd()
+        .update(cita)
+        .set({ estado: 'reservada', canceladaPor: null })
+        .where(eq(cita.estado, 'cancelada')),
+    ).rejects.toSatisfy((err: unknown) =>
+      JSON.stringify(err, Object.getOwnPropertyNames(err)).includes('cita_sin_solape') ||
+      String((err as { cause?: { constraint?: string } }).cause?.constraint) === 'cita_sin_solape',
+    );
   });
 });

@@ -24,6 +24,16 @@ export const MARIA = semilla.profesionales[0]!;
 export const JORGE = semilla.profesionales[1]!;
 export const LUCIA = semilla.profesionales[2]!;
 export const PACIENTE_1 = semilla.pacientes[0]!;
+export const CLINICA_ID = semilla.clinica.id;
+export const SESION_FISIO = semilla.servicios[0]!; // «Sesión de fisioterapia», 45 min
+/** Spec 005: enlace de P (docs/datos-demo.md, «Enlaces de pacientes»). */
+export const ENLACE_P = {
+  pacienteId: PACIENTE_1.id,
+  nombre: PACIENTE_1.nombre,
+  ruta: `/p/${semilla.enlaces[0]!.token}`,
+  token: semilla.enlaces[0]!.token,
+  cifras: PACIENTE_1.telefonoNormalizado.slice(-4),
+};
 
 export function conBd<T>(trabajo: (bd: ReturnType<typeof drizzle<typeof esquema>>) => Promise<T>): Promise<T> {
   const pool = new Pool({ connectionString: URL_BD_E2E, max: 2 });
@@ -57,3 +67,22 @@ export async function entrar(page: Page) {
 }
 
 export const agendaDe = (profesionalId: string, fecha: string) => `/agenda/${profesionalId}/${fecha}`;
+
+/** Spec 005: crea una «Sesión de fisioterapia» reservada de P con María (hora local de Eleva). */
+export async function crearCitaDeP(fecha: string, hora: string): Promise<string> {
+  const id = crypto.randomUUID();
+  const inicio = instanteLocal(fecha, hora, 'Europe/Madrid');
+  await conBd((bd) =>
+    bd.insert(esquema.cita).values({
+      id,
+      clinicaId: CLINICA_ID,
+      profesionalId: MARIA.id,
+      servicioId: SESION_FISIO.id,
+      pacienteId: ENLACE_P.pacienteId,
+      inicio,
+      fin: new Date(inicio.getTime() + SESION_FISIO.duracionMinutos * 60_000),
+      estado: 'reservada',
+    }),
+  );
+  return id;
+}

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatearFecha, formatearHora, formatearPrecio, formatearRango } from '@/lib/formato';
+import { formatearFecha, formatearHora, formatearLimite, formatearPrecio, formatearRango } from '@/lib/formato';
 import { instanteLocal } from '@/lib/zona';
 
 const NBSP = ' ';
@@ -32,5 +32,12 @@ describe('Principio II — formato español', () => {
 
   it('rechaza importes que no sean céntimos enteros', () => {
     expect(() => formatearPrecio(40.5)).toThrow();
+  });
+});
+
+describe('formatearLimite (spec 005, FR-016)', () => {
+  it('«domingo, 15/11/2026 a las 10:00» en la hora local de la clínica', () => {
+    expect(formatearLimite(new Date('2026-11-15T09:00:00Z'), 'Europe/Madrid')).toBe('domingo, 15/11/2026 a las 10:00');
+    expect(formatearLimite(new Date('2026-11-15T09:00:00Z'), 'Atlantic/Canary')).toBe('domingo, 15/11/2026 a las 09:00');
   });
 });

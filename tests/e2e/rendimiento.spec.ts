@@ -1,6 +1,6 @@
 /** SC-004: la agenda del día se muestra completa en menos de 2 segundos. */
 import { expect, test } from '@playwright/test';
-import { agendaDe, entrar, HOY, JORGE, MARIA, recargarSemilla } from './apoyo';
+import { agendaDe, ENLACE_P, entrar, HOY, JORGE, MARIA, recargarSemilla } from './apoyo';
 
 test.beforeAll(recargarSemilla);
 
@@ -12,4 +12,15 @@ test('cambiar de profesional y de día muestra la agenda en menos de 2 s', async
     await expect(page.getByRole('list', { name: /^Agenda de / })).toBeVisible();
     expect(Date.now() - t0).toBeLessThan(2000);
   }
+});
+
+test('spec 005: /p/[token] con el acceso abierto se muestra completa en menos de 2 s', async ({ page }) => {
+  await page.goto(ENLACE_P.ruta);
+  await page.getByLabel('Escribe las 4 últimas cifras de tu teléfono').fill(ENLACE_P.cifras);
+  await page.getByRole('button', { name: 'Entrar' }).click();
+  await expect(page.getByRole('heading', { name: 'Tus próximas citas' })).toBeVisible();
+  const t0 = Date.now();
+  await page.reload();
+  await expect(page.getByRole('heading', { name: 'Tus próximas citas' })).toBeVisible();
+  expect(Date.now() - t0).toBeLessThan(2000);
 });
