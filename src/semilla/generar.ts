@@ -13,7 +13,7 @@
  *
  * El hash de la clave se recibe ya calculado: es lo único que puede variar entre ejecuciones.
  */
-import type { Especialidad, EstadoCita } from '@/db/esquema';
+import type { Especialidad, EstadoCita, OrigenCancelacion } from '@/db/esquema';
 import { diaSemanaIso, horaDeMinutos, instanteLocal, sumarDias } from '@/lib/zona';
 import { APELLIDOS, DOMINIO_CORREO, NOMBRES } from './catalogo';
 import { crearPrng, SEMILLA_DEMO } from './prng';
@@ -24,6 +24,8 @@ export const DIAS_FUTURO = 10;
 export const NUM_PACIENTES = 40;
 export const TASA_NO_ASISTIDA = 0.1;
 export const TASA_CANCELADA = 0.08;
+/** Teléfono de contacto de Clínica Eleva (spec 001, FR-022; lo muestra la spec 005). */
+export const TELEFONO_ELEVA = '911 234 567';
 
 const APERTURA = 9 * 60;
 const CIERRE = 20 * 60;
@@ -33,6 +35,7 @@ export interface DatosSemilla {
   clinica: {
     id: string;
     nombre: string;
+    telefono: string;
     zonaHoraria: string;
     horaApertura: string;
     horaCierre: string;
@@ -68,7 +71,11 @@ export interface DatosSemilla {
     estado: EstadoCita;
     creadoEn: Date;
     estadoCambiadoEn: Date | null;
+    /** FR-018a: solo en las canceladas; en la semilla todas son de recepción. */
+    canceladaPor: OrigenCancelacion | null;
   }[];
+  /** Spec 005, FR-019: un enlace personal por paciente, en el orden de `pacientes`. */
+  enlaces: { pacienteId: string; token: string; generadoEn: Date; fallosSeguidos: number }[];
 }
 
 /** Días laborables anteriores (orden cronológico) y desde la fecha de referencia. */
@@ -96,6 +103,7 @@ export function generarSemilla(fechaReferencia: string, claveHash: string): Dato
   const clinica: DatosSemilla['clinica'] = {
     id: clinicaId,
     nombre: 'Clínica Eleva',
+    telefono: TELEFONO_ELEVA,
     zonaHoraria: ZONA_ELEVA,
     horaApertura: '09:00',
     horaCierre: '20:00',
@@ -185,6 +193,7 @@ export function generarSemilla(fechaReferencia: string, claveHash: string): Dato
           estado: 'reservada',
           creadoEn: new Date(inicio.getTime() - antelacion * 24 * 60 * 60_000),
           estadoCambiadoEn: null,
+          canceladaPor: null,
         });
         cursor += srv.duracionMinutos;
       }
@@ -206,6 +215,7 @@ export function generarSemilla(fechaReferencia: string, claveHash: string): Dato
       c.estadoCambiadoEn = new Date(c.inicio.getTime() + 15 * 60_000);
     } else if (posicion < noAsistidas + canceladas) {
       c.estado = 'cancelada';
+      c.canceladaPor = 'recepcion'; // FR-018a; no consume azar: identificadores y recuentos intactos
       const horasAntes = azar.entero(2, 72);
       c.estadoCambiadoEn = new Date(
         Math.max(c.creadoEn.getTime() + 60_000, c.inicio.getTime() - horasAntes * 60 * 60_000),
@@ -216,7 +226,17 @@ export function generarSemilla(fechaReferencia: string, claveHash: string): Dato
     }
   });
 
-  return { clinica, profesionales, servicios, pacientes, citas };
+  // Spec 005, FR-019 (research R9): los enlaces se generan al final y con un flujo propio, para
+  // no consumir nada de `azar` ni de `ids`: identificadores, citas y recuentos no cambian.
+  const flujoEnlaces = crearPrng(SEMILLA_DEMO ^ 0x0e1ace);
+  const enlaces: DatosSemilla['enlaces'] = pacientes.map((p) => ({
+    pacienteId: p.id,
+    token: Buffer.from(flujoEnlaces.bytes(32)).toString('base64url'),
+    generadoEn: p.creadoEn,
+    fallosSeguidos: 0,
+  }));
+
+  return { clinica, profesionales, servicios, pacientes, citas, enlaces };
 }
 
 export interface ResumenSemilla {

@@ -31,3 +31,11 @@ export const esquemaCambiarEstado = z.object({
   citaId: uuid,
   accion: z.enum(['cancelar', 'completar', 'no_asistida']),
 });
+
+// Spec 005. Solo la forma: si el token no tiene el formato de FR-002 o las cifras no son 4
+// dígitos, lo decide el servicio, que necesita distinguir ENLACE_NO_VALIDO de DATOS_NO_VALIDOS.
+const texto = z.string().max(200);
+export const esquemaToken = z.object({ token: texto });
+export const esquemaConfirmarCifras = z.object({ token: texto, cifras: z.string().max(20) });
+export const esquemaCancelarMiCita = z.object({ token: texto, citaId: uuid });
+export const esquemaPacienteId = z.object({ pacienteId: uuid });
