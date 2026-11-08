@@ -4,9 +4,8 @@
 
 **Created**: 2026-11-07
 
-**Status**: En revisión (2026-11-08): alineada con la 005 como única fuente de verdad del
-acceso y la cancelación del paciente (Principio I); P1 resuelta. Pendiente de aprobación por
-su propietario. Historial: aprobada como 002 (2026-11-07, MarceloMansilla); renumerada a 003 y
+**Status**: Aprobada (2026-11-08, MarceloMansilla): alineada con la 005 como única fuente de
+verdad del acceso y la cancelación del paciente (Principio I); P1 resuelta. Historial: aprobada como 002 (2026-11-07, MarceloMansilla); renumerada a 003 y
 adaptada a la revisión cruzada S2–S5 (2026-11-07).
 
 **Input**: User description: "Recordatorios de cita. El dolor número uno del cliente piloto: la no asistencia. Alcance: un proceso diario genera un recordatorio por email para cada cita reservada de las próximas 24-48 horas, sin duplicar envíos; el email incluye los datos de la cita y una forma de que el paciente cancele si no va a ir (mejor un hueco libre que un no-show). Correo en modo simulado sin SMTP configurado: se escriben ficheros .eml en datos/salida-correo/. Preguntas cerradas para Sara: antelación exacta, qué pasa si el paciente cancela desde el email y con cuánta antelación puede, y si el recordatorio se reenvía cuando la cita se mueve. Fuera de alcance v1: SMS y WhatsApp."
@@ -335,10 +334,11 @@ siguiente, sin reescribir sus reglas (Principio I):
 | **004 Panel de analítica** | La fórmula de la tasa de no asistencia (FR-006). La 003 no define fórmula propia. | SC-005 |
 | **005 Acceso y cancelación del paciente** | Enlace personal `/p/[token]` (FR-001, FR-008) y sus enlaces en la semilla (FR-019); acceso con enlace + 4 cifras (FR-006); plazo (FR-009) y límite de cada cita; enunciado canónico (FR-016) y regla de coherencia (FR-017). | FR-019, FR-020, FR-022, SC-002, SC-007 |
 
-**Regla para el código** (cuando la 001 y la 005 se integren en esta rama): la 003 importa de
-la 005, sin redefinirlas ni copiarlas, `rutaEnlacePaciente` (`src/dominio/enlace.ts`),
-`pacientePuedeCancelar` y `limiteCancelacionPaciente` (`src/dominio/plazo-paciente.ts`) y
-`enunciadoPoliticaCancelacion` (`src/dominio/politica-cancelacion.ts`). El cuerpo del correo
+**Regla para el código**: la 003 no redefine ni copia `rutaEnlacePaciente`
+(`src/dominio/enlace.ts`), `pacientePuedeCancelar` y `limiteCancelacionPaciente`
+(`src/dominio/plazo-paciente.ts`) ni `enunciadoPoliticaCancelacion`
+(`src/dominio/politica-cancelacion.ts`); importa de la 005 las que usa (hoy
+`rutaEnlacePaciente` y `enunciadoPoliticaCancelacion`, que ya aplica el límite). El cuerpo del correo
 queda cubierto por `tests/unit/coherencia-politica.test.ts`: toda mención al plazo sale de
 `enunciadoPoliticaCancelacion` (FR-020, FR-022).
 

@@ -13,7 +13,7 @@ de recordatorio por cada cita reservada del día siguiente cuyo paciente tenga c
 máximo uno por cita aunque se ejecute varias veces o a la vez. Sin servidor SMTP configurado,
 los correos se escriben como `.eml` en `datos/salida-correo/`. Cada correo lleva el enlace
 personal del paciente (005 FR-001, FR-008) y el enunciado de la política de cancelación
-derivado de 005 FR-016; el paciente cancela, si está en plazo, desde el portal (002) con las
+tal como lo da 005 FR-016; el paciente cancela, si está en plazo, desde el portal (002) con las
 reglas de la 005. La 003 no escribe en la agenda (revisión cruzada S2 y S4).
 
 Enfoque técnico, sobre el stack de la 001: la unicidad la impone la BD
@@ -59,8 +59,8 @@ correo
 Puertas derivadas de `.specify/memory/constitution.md` (v1.0.0). Evaluación previa a la
 investigación y repetida tras el diseño (mismo resultado):
 
-- [ ] **I. Spec primero**: ⚠️ spec 003 (antes 002) en revisión tras la revisión cruzada
-      S2–S5 y alineada con la 005 el 2026-11-08 (P1 resuelta: se mantiene la víspera). Ya no pide enmienda a la 001 (se retira
+- [x] **I. Spec primero**: ✅ spec 003 (antes 002) aprobada el 2026-11-08 por su propietario,
+      alineada con la 005 (P1 resuelta: se mantiene la víspera). Ya no pide enmienda a la 001 (se retira
       su FR-018a de recordatorios); depende de la 005 (acceso y cancelación) y de la 002
       (portal). El registro de la 003 en `specs/MAPA.md` lo hace el propietario de la 001. El
       plan no añade comportamiento: el envío interrumpido (R2) está en la spec (FR-010 y
@@ -143,7 +143,8 @@ cambio en `cita`), `tests/helpers/fabrica.ts`, `package.json` (dependencia y scr
 **Structure Decision**: mismo proyecto Next.js de la 001. Las reglas puras nuevas van en
 `src/dominio`, el caso de uso en `src/servicios/recordatorios.ts` (lo usa el
 comando), y todo lo relativo al correo en `src/correo` para aislar la única dependencia
-nueva. El enlace personal y el límite de cancelación se leen de lo que exponga la 005.
+nueva. El enlace (`rutaEnlacePaciente`) y el enunciado (`enunciadoPoliticaCancelacion`) se
+importan de la 005.
 
 ## Dependencias y orden
 

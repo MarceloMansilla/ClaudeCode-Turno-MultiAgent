@@ -13,7 +13,7 @@
 
 ## Requirement Completeness
 
-- [ ] No [NEEDS CLARIFICATION] markers remain *(pregunta abierta P1, revisión cruzada 2026-11-07)*
+- [x] No [NEEDS CLARIFICATION] markers remain *(P1 resuelta el 2026-11-08)*
 - [x] Requirements are testable and unambiguous
 - [x] Success criteria are measurable
 - [x] Success criteria are technology-agnostic (no implementation details)
