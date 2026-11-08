@@ -55,3 +55,27 @@ Cada paciente tiene un enlace personal determinista. Para entrar hacen falta el 
 | Manuel Ortiz Gómez | `/p/m1oGnwYf4G7yVWAkTgu_gjt-NOl8ooix9duqBDbcuZ4` | 6157 |
 
 Los enlaces no cambian ninguna otra cifra de este documento.
+
+## Recordatorios (spec 003)
+
+Recordatorios que genera `pnpm recordatorios` sobre la semilla 2026-11-09, en modo simulado y
+con BD recién sembrada: cada ejecución de las 08:00 cubre el día natural siguiente (spec 003,
+FR-002). «Enviados» son las citas reservadas cuyo paciente tiene correo (32 de los 40 pacientes);
+una segunda ejecución del mismo día da 0 enviados.
+
+| Día de las citas | Ejecución que las recuerda | Reservadas | Enviados | Sin correo |
+|------------------|----------------------------|-----------:|---------:|-----------:|
+| mar 10/11/2026 | lun 09/11/2026 08:00 | 26 | 20 | 6 |
+| mié 11/11/2026 | mar 10/11/2026 08:00 | 28 | 25 | 3 |
+| jue 12/11/2026 | mié 11/11/2026 08:00 | 21 | 16 | 5 |
+| vie 13/11/2026 | jue 12/11/2026 08:00 | 28 | 23 | 5 |
+| sáb 14/11/2026 | vie 13/11/2026 08:00 | 0 | 0 | 0 |
+| dom 15/11/2026 | sáb 14/11/2026 08:00 | 0 | 0 | 0 |
+| lun 16/11/2026 | dom 15/11/2026 08:00 | 28 | 24 | 4 |
+| mar 17/11/2026 | lun 16/11/2026 08:00 | 33 | 26 | 7 |
+| mié 18/11/2026 | mar 17/11/2026 08:00 | 26 | 21 | 5 |
+| jue 19/11/2026 | mié 18/11/2026 08:00 | 30 | 23 | 7 |
+| vie 20/11/2026 | jue 19/11/2026 08:00 | 27 | 21 | 6 |
+
+Los recordatorios no cambian ninguna cita ni ninguna otra cifra de este documento (spec 003,
+FR-021). La primera fila es la del test `tests/integration/recordatorios-ejecucion.test.ts`.

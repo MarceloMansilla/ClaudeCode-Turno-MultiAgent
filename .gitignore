@@ -25,3 +25,6 @@ Thumbs.db
 *.tmp
 .vscode/
 .idea/
+
+# Correos del modo simulado (spec 003)
+datos/salida-correo/

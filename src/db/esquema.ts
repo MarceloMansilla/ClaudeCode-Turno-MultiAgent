@@ -13,8 +13,10 @@
 import { sql } from 'drizzle-orm';
 import {
   check,
+  date,
   index,
   integer,
+  jsonb,
   pgEnum,
   pgTable,
   smallint,
@@ -180,9 +182,79 @@ export const enlacePaciente = pgTable(
   ],
 );
 
+/**
+ * Spec 003 (recordatorios de cita, data-model.md). Tablas propias: la 003 no cambia `cita`
+ * (FR-021) ni guarda enlaces o tokens de paciente (FR-019; los da la 005).
+ */
+export const modoCorreoEnum = pgEnum('modo_correo', ['simulado', 'smtp']);
+export const estadoRecordatorioEnum = pgEnum('estado_recordatorio', ['enviando', 'enviado', 'fallido']);
+
+export type ModoCorreo = (typeof modoCorreoEnum.enumValues)[number];
+export type EstadoRecordatorio = (typeof estadoRecordatorioEnum.enumValues)[number];
+
+/** Como máximo un recordatorio por cita (FR-003): `UNIQUE (cita_id)` + «reclamar antes de enviar» (R2). */
+export const recordatorio = pgTable(
+  'recordatorio',
+  {
+    id: uuid('id').primaryKey(),
+    clinicaId: uuid('clinica_id')
+      .notNull()
+      .references(() => clinica.id),
+    citaId: uuid('cita_id')
+      .notNull()
+      .references(() => cita.id)
+      .unique('recordatorio_cita_unica'),
+    destinatario: text('destinatario').notNull(),
+    modo: modoCorreoEnum('modo').notNull(),
+    estado: estadoRecordatorioEnum('estado').notNull(),
+    intentos: smallint('intentos').notNull().default(1),
+    generadoEn: timestamp('generado_en', { withTimezone: true }).notNull(),
+    ultimoIntentoEn: timestamp('ultimo_intento_en', { withTimezone: true }).notNull(),
+    enviadoEn: timestamp('enviado_en', { withTimezone: true }),
+    ultimoError: text('ultimo_error'),
+    fichero: text('fichero'),
+  },
+  (t) => [check('recordatorio_intentos_validos', sql`${t.intentos} >= 1`)],
+);
+
+/** Forma de `ejecucion_recordatorios.resumen` (FR-005, data-model.md). */
+export interface ResumenRecordatorios {
+  totales: {
+    enviado: number;
+    yaEnviadoAntes: number;
+    sinCorreo: number;
+    correoNoValido: number;
+    fallido: number;
+  };
+  citas: {
+    citaId: string;
+    hora: string;
+    profesional: string;
+    resultado: 'enviado' | 'ya_enviado_antes' | 'sin_correo' | 'correo_no_valido' | 'fallido';
+    interrumpido?: true;
+    detalle?: string;
+  }[];
+}
+
+export const ejecucionRecordatorios = pgTable('ejecucion_recordatorios', {
+  id: uuid('id').primaryKey(),
+  clinicaId: uuid('clinica_id')
+    .notNull()
+    .references(() => clinica.id),
+  iniciadaEn: timestamp('iniciada_en', { withTimezone: true }).notNull(),
+  terminadaEn: timestamp('terminada_en', { withTimezone: true }),
+  fechaObjetivo: date('fecha_objetivo', { mode: 'string' }).notNull(),
+  ventanaDesde: timestamp('ventana_desde', { withTimezone: true }).notNull(),
+  ventanaHasta: timestamp('ventana_hasta', { withTimezone: true }).notNull(),
+  modo: modoCorreoEnum('modo').notNull(),
+  resumen: jsonb('resumen').$type<ResumenRecordatorios>().notNull(),
+});
+
 export type Clinica = typeof clinica.$inferSelect;
 export type Profesional = typeof profesional.$inferSelect;
 export type Servicio = typeof servicio.$inferSelect;
 export type Paciente = typeof paciente.$inferSelect;
 export type Cita = typeof cita.$inferSelect;
 export type EnlacePaciente = typeof enlacePaciente.$inferSelect;
+export type Recordatorio = typeof recordatorio.$inferSelect;
+export type EjecucionRecordatorios = typeof ejecucionRecordatorios.$inferSelect;

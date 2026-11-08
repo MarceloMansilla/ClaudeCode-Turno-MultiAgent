@@ -1,0 +1,845 @@
+{
+  "id": "868140db-6c7d-4b61-b2ea-e020b15191f7",
+  "prevId": "32f963dd-24d5-4d24-aa88-db5231eda3f2",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.cita": {
+      "name": "cita",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "clinica_id": {
+          "name": "clinica_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "profesional_id": {
+          "name": "profesional_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "servicio_id": {
+          "name": "servicio_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "paciente_id": {
+          "name": "paciente_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "inicio": {
+          "name": "inicio",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "fin": {
+          "name": "fin",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "estado": {
+          "name": "estado",
+          "type": "estado_cita",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'reservada'"
+        },
+        "creado_en": {
+          "name": "creado_en",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "estado_cambiado_en": {
+          "name": "estado_cambiado_en",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cancelada_por": {
+          "name": "cancelada_por",
+          "type": "origen_cancelacion",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "cita_agenda_idx": {
+          "name": "cita_agenda_idx",
+          "columns": [
+            {
+              "expression": "clinica_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "profesional_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "inicio",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "cita_clinica_id_clinica_id_fk": {
+          "name": "cita_clinica_id_clinica_id_fk",
+          "tableFrom": "cita",
+          "tableTo": "clinica",
+          "columnsFrom": [
+            "clinica_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "cita_profesional_id_profesional_id_fk": {
+          "name": "cita_profesional_id_profesional_id_fk",
+          "tableFrom": "cita",
+          "tableTo": "profesional",
+          "columnsFrom": [
+            "profesional_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "cita_servicio_id_servicio_id_fk": {
+          "name": "cita_servicio_id_servicio_id_fk",
+          "tableFrom": "cita",
+          "tableTo": "servicio",
+          "columnsFrom": [
+            "servicio_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "cita_paciente_id_paciente_id_fk": {
+          "name": "cita_paciente_id_paciente_id_fk",
+          "tableFrom": "cita",
+          "tableTo": "paciente",
+          "columnsFrom": [
+            "paciente_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "cita_fin_posterior": {
+          "name": "cita_fin_posterior",
+          "value": "\"cita\".\"fin\" > \"cita\".\"inicio\""
+        },
+        "cita_origen_cancelacion": {
+          "name": "cita_origen_cancelacion",
+          "value": "(\"cita\".\"estado\" = 'cancelada') = (\"cita\".\"cancelada_por\" IS NOT NULL)"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.clinica": {
+      "name": "clinica",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "nombre": {
+          "name": "nombre",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "telefono": {
+          "name": "telefono",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "zona_horaria": {
+          "name": "zona_horaria",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "hora_apertura": {
+          "name": "hora_apertura",
+          "type": "time",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "hora_cierre": {
+          "name": "hora_cierre",
+          "type": "time",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "dias_laborables": {
+          "name": "dias_laborables",
+          "type": "smallint[]",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "clave_hash": {
+          "name": "clave_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "clinica_nombre_valido": {
+          "name": "clinica_nombre_valido",
+          "value": "char_length(\"clinica\".\"nombre\") between 1 and 120"
+        },
+        "clinica_horario_valido": {
+          "name": "clinica_horario_valido",
+          "value": "\"clinica\".\"hora_cierre\" > \"clinica\".\"hora_apertura\""
+        },
+        "clinica_telefono_valido": {
+          "name": "clinica_telefono_valido",
+          "value": "regexp_replace(\"clinica\".\"telefono\", '[[:space:]().-]', '', 'g') ~ '^((\\+|00)?34)?[6-9][0-9]{8}$'"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.ejecucion_recordatorios": {
+      "name": "ejecucion_recordatorios",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "clinica_id": {
+          "name": "clinica_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "iniciada_en": {
+          "name": "iniciada_en",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "terminada_en": {
+          "name": "terminada_en",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "fecha_objetivo": {
+          "name": "fecha_objetivo",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "ventana_desde": {
+          "name": "ventana_desde",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "ventana_hasta": {
+          "name": "ventana_hasta",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "modo": {
+          "name": "modo",
+          "type": "modo_correo",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "resumen": {
+          "name": "resumen",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "ejecucion_recordatorios_clinica_id_clinica_id_fk": {
+          "name": "ejecucion_recordatorios_clinica_id_clinica_id_fk",
+          "tableFrom": "ejecucion_recordatorios",
+          "tableTo": "clinica",
+          "columnsFrom": [
+            "clinica_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.enlace_paciente": {
+      "name": "enlace_paciente",
+      "schema": "",
+      "columns": {
+        "paciente_id": {
+          "name": "paciente_id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "token": {
+          "name": "token",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "generado_en": {
+          "name": "generado_en",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "fallos_seguidos": {
+          "name": "fallos_seguidos",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "pausa_hasta": {
+          "name": "pausa_hasta",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "enlace_paciente_paciente_id_paciente_id_fk": {
+          "name": "enlace_paciente_paciente_id_paciente_id_fk",
+          "tableFrom": "enlace_paciente",
+          "tableTo": "paciente",
+          "columnsFrom": [
+            "paciente_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "enlace_paciente_token_unico": {
+          "name": "enlace_paciente_token_unico",
+          "nullsNotDistinct": false,
+          "columns": [
+            "token"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "enlace_paciente_fallos_validos": {
+          "name": "enlace_paciente_fallos_validos",
+          "value": "\"enlace_paciente\".\"fallos_seguidos\" >= 0"
+        },
+        "enlace_paciente_token_valido": {
+          "name": "enlace_paciente_token_valido",
+          "value": "\"enlace_paciente\".\"token\" ~ '^[A-Za-z0-9_-]{43}$'"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.paciente": {
+      "name": "paciente",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "clinica_id": {
+          "name": "clinica_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nombre": {
+          "name": "nombre",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "telefono": {
+          "name": "telefono",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "telefono_normalizado": {
+          "name": "telefono_normalizado",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "creado_en": {
+          "name": "creado_en",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "paciente_clinica_nombre_idx": {
+          "name": "paciente_clinica_nombre_idx",
+          "columns": [
+            {
+              "expression": "clinica_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "nombre",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "paciente_clinica_id_clinica_id_fk": {
+          "name": "paciente_clinica_id_clinica_id_fk",
+          "tableFrom": "paciente",
+          "tableTo": "clinica",
+          "columnsFrom": [
+            "clinica_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "paciente_telefono_valido": {
+          "name": "paciente_telefono_valido",
+          "value": "\"paciente\".\"telefono_normalizado\" ~ '^[6-9][0-9]{8}$'"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.profesional": {
+      "name": "profesional",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "clinica_id": {
+          "name": "clinica_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nombre": {
+          "name": "nombre",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "especialidad": {
+          "name": "especialidad",
+          "type": "especialidad",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "orden": {
+          "name": "orden",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "profesional_clinica_orden_idx": {
+          "name": "profesional_clinica_orden_idx",
+          "columns": [
+            {
+              "expression": "clinica_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "orden",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "profesional_clinica_id_clinica_id_fk": {
+          "name": "profesional_clinica_id_clinica_id_fk",
+          "tableFrom": "profesional",
+          "tableTo": "clinica",
+          "columnsFrom": [
+            "clinica_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.recordatorio": {
+      "name": "recordatorio",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "clinica_id": {
+          "name": "clinica_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "cita_id": {
+          "name": "cita_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "destinatario": {
+          "name": "destinatario",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "modo": {
+          "name": "modo",
+          "type": "modo_correo",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "estado": {
+          "name": "estado",
+          "type": "estado_recordatorio",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "intentos": {
+          "name": "intentos",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
+        "generado_en": {
+          "name": "generado_en",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "ultimo_intento_en": {
+          "name": "ultimo_intento_en",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "enviado_en": {
+          "name": "enviado_en",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ultimo_error": {
+          "name": "ultimo_error",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "fichero": {
+          "name": "fichero",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "recordatorio_clinica_id_clinica_id_fk": {
+          "name": "recordatorio_clinica_id_clinica_id_fk",
+          "tableFrom": "recordatorio",
+          "tableTo": "clinica",
+          "columnsFrom": [
+            "clinica_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "recordatorio_cita_id_cita_id_fk": {
+          "name": "recordatorio_cita_id_cita_id_fk",
+          "tableFrom": "recordatorio",
+          "tableTo": "cita",
+          "columnsFrom": [
+            "cita_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "recordatorio_cita_unica": {
+          "name": "recordatorio_cita_unica",
+          "nullsNotDistinct": false,
+          "columns": [
+            "cita_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "recordatorio_intentos_validos": {
+          "name": "recordatorio_intentos_validos",
+          "value": "\"recordatorio\".\"intentos\" >= 1"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.servicio": {
+      "name": "servicio",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "clinica_id": {
+          "name": "clinica_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nombre": {
+          "name": "nombre",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "especialidad": {
+          "name": "especialidad",
+          "type": "especialidad",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "duracion_minutos": {
+          "name": "duracion_minutos",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "precio_centimos": {
+          "name": "precio_centimos",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "servicio_clinica_id_clinica_id_fk": {
+          "name": "servicio_clinica_id_clinica_id_fk",
+          "tableFrom": "servicio",
+          "tableTo": "clinica",
+          "columnsFrom": [
+            "clinica_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "servicio_duracion_valida": {
+          "name": "servicio_duracion_valida",
+          "value": "\"servicio\".\"duracion_minutos\" > 0 and \"servicio\".\"duracion_minutos\" % 15 = 0"
+        },
+        "servicio_precio_valido": {
+          "name": "servicio_precio_valido",
+          "value": "\"servicio\".\"precio_centimos\" >= 0"
+        }
+      },
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {
+    "public.especialidad": {
+      "name": "especialidad",
+      "schema": "public",
+      "values": [
+        "fisioterapia",
+        "nutricion"
+      ]
+    },
+    "public.estado_cita": {
+      "name": "estado_cita",
+      "schema": "public",
+      "values": [
+        "reservada",
+        "completada",
+        "cancelada",
+        "no_asistida"
+      ]
+    },
+    "public.estado_recordatorio": {
+      "name": "estado_recordatorio",
+      "schema": "public",
+      "values": [
+        "enviando",
+        "enviado",
+        "fallido"
+      ]
+    },
+    "public.modo_correo": {
+      "name": "modo_correo",
+      "schema": "public",
+      "values": [
+        "simulado",
+        "smtp"
+      ]
+    },
+    "public.origen_cancelacion": {
+      "name": "origen_cancelacion",
+      "schema": "public",
+      "values": [
+        "recepcion",
+        "paciente"
+      ]
+    }
+  },
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

@@ -2,7 +2,7 @@
  * Fábrica de datos mínimos para tests de integración: una única clínica (FR-001, una clínica
  * por instalación) con la misma forma que Clínica Eleva.
  */
-import { randomUUID } from 'node:crypto';
+import { randomBytes, randomUUID } from 'node:crypto';
 import { hash } from '@node-rs/argon2';
 import { eq } from 'drizzle-orm';
 import { obtenerBd } from '../../src/db/cliente';
@@ -131,4 +131,27 @@ export async function fijarIntentos(
     .update(enlacePaciente)
     .set({ fallosSeguidos: intentos.fallosSeguidos, pausaHasta: intentos.pausaHasta ?? null })
     .where(eq(enlacePaciente.pacienteId, pacienteId));
+}
+
+/**
+ * Spec 003: ficha de paciente con su enlace personal (005), con el correo que se indique:
+ * `null` (sin correo) o uno con formato inválido (insertado sin pasar la validación de la 001).
+ */
+export async function crearPaciente(
+  e: Escenario,
+  datos: { nombre: string; telefono: string; email: string | null },
+): Promise<{ id: string; token: string }> {
+  const id = randomUUID();
+  const token = randomBytes(32).toString('base64url');
+  const normalizado = datos.telefono.replace(/\D/g, '').slice(-9);
+  await obtenerBd().insert(paciente).values({
+    id,
+    clinicaId: e.clinicaId,
+    nombre: datos.nombre,
+    telefono: datos.telefono,
+    telefonoNormalizado: normalizado,
+    email: datos.email,
+  });
+  await obtenerBd().insert(enlacePaciente).values({ pacienteId: id, token, generadoEn: new Date('2026-11-02T08:00:00Z') });
+  return { id, token };
 }
