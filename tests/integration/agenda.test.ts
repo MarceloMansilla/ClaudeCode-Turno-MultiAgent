@@ -34,7 +34,8 @@ describe('US1 — agenda del día (FR-005, FR-006)', () => {
       ['16:00', '16:45', 'reservada'],
     ]);
     const primera = agenda.citas[3]!;
-    expect(primera.paciente).toEqual({ nombre: 'Luis Gómez', telefono: '699000111' });
+    // Spec 005 (T048): la vista incluye el id de la ficha para el menú «Enlace del paciente».
+    expect(primera.paciente).toEqual({ id: e.luis, nombre: 'Luis Gómez', telefono: '699000111' });
     expect(primera.servicio).toEqual({
       nombre: 'Primera visita de fisioterapia',
       duracionMinutos: 60,

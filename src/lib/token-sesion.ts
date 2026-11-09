@@ -8,7 +8,8 @@ import { ahora } from './reloj';
 export const NOMBRE_COOKIE = 'citaclara_sesion';
 export const DURACION_SESION_SEGUNDOS = 12 * 60 * 60;
 
-function secreto(): Uint8Array {
+/** Clave de firma de las cookies (panel y, en la spec 005, acceso del paciente). */
+export function secreto(): Uint8Array {
   const valor = process.env.SESION_SECRETO;
   if (!valor || valor.length < 32) {
     throw new Error('SESION_SECRETO debe tener al menos 32 caracteres.');

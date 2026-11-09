@@ -5,7 +5,7 @@
 import { TZDate } from '@date-fns/tz';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { horaLocal } from './zona';
+import { fechaLocal, horaLocal } from './zona';
 
 /** «lunes, 16/11/2026» a partir de 'AAAA-MM-DD'. */
 export function formatearFecha(fecha: string): string {
@@ -16,6 +16,11 @@ export function formatearFecha(fecha: string): string {
 /** «10:00» en la hora local de la clínica. */
 export function formatearHora(instante: Date, zona: string): string {
   return horaLocal(instante, zona);
+}
+
+/** «domingo, 15/11/2026 a las 10:00»: un instante en la hora local de la clínica (spec 005, FR-016). */
+export function formatearLimite(instante: Date, zona: string): string {
+  return `${formatearFecha(fechaLocal(instante, zona))} a las ${horaLocal(instante, zona)}`;
 }
 
 /** «10:00–10:45» (guion largo, sin espacios). */

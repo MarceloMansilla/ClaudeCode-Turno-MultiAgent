@@ -3,6 +3,7 @@ import {
   formatearEntero,
   formatearFecha,
   formatearHora,
+  formatearLimite,
   formatearPorcentaje,
   formatearPrecio,
   formatearRango,
@@ -73,5 +74,12 @@ describe('Principio II — enteros y porcentajes (clarificación 2026-11-07: sep
   it('solo acepta enteros', () => {
     expect(() => formatearEntero(1.5)).toThrow();
     expect(() => formatearPorcentaje(10.5)).toThrow();
+  });
+});
+
+describe('formatearLimite (spec 005, FR-016)', () => {
+  it('«domingo, 15/11/2026 a las 10:00» en la hora local de la clínica', () => {
+    expect(formatearLimite(new Date('2026-11-15T09:00:00Z'), 'Europe/Madrid')).toBe('domingo, 15/11/2026 a las 10:00');
+    expect(formatearLimite(new Date('2026-11-15T09:00:00Z'), 'Atlantic/Canary')).toBe('domingo, 15/11/2026 a las 09:00');
   });
 });

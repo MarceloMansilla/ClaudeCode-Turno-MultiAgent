@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { seSolapan } from '@/dominio/solape';
+import { tieneFormatoDeToken } from '@/dominio/enlace';
+import { esTelefonoValido } from '@/dominio/telefono';
 import { fechaLocal, horaLocal, minutosDeHora } from '@/lib/zona';
 import {
   DIAS_FUTURO,
@@ -126,5 +128,70 @@ describe('FR-024 — la semilla respeta RN1, el horario y la granularidad', () =
         expect(seSolapan(suyas[i - 1]!, suyas[i]!)).toBe(false);
       }
     }
+  });
+});
+
+describe('Principio V — las cifras de docs/datos-demo.md no cambian', () => {
+  it('totales y desglose por profesional con la fecha 2026-11-09', () => {
+    expect(resumen.totalCitas).toBe(1705);
+    expect(resumen.historia).toEqual({ total: 1425, completada: 1168, cancelada: 114, no_asistida: 143 });
+    expect(resumen.futuro).toEqual({ reservada: 280 });
+    expect(resumen.porProfesional).toEqual({
+      María: { reservada: 84, completada: 349, cancelada: 34, no_asistida: 41 },
+      Jorge: { reservada: 87, completada: 335, cancelada: 32, no_asistida: 50 },
+      Lucía: { reservada: 109, completada: 484, cancelada: 48, no_asistida: 52 },
+    });
+  });
+});
+
+describe('FR-018a (enmienda S2) — origen de las canceladas de la semilla', () => {
+  it('las 114 canceladas tienen cancelada_por = recepcion y ninguna otra cita tiene origen', () => {
+    const canceladas = datos.citas.filter((c) => c.estado === 'cancelada');
+    expect(canceladas).toHaveLength(114);
+    for (const c of canceladas) expect(c.canceladaPor).toBe('recepcion');
+    for (const c of datos.citas.filter((x) => x.estado !== 'cancelada')) expect(c.canceladaPor).toBeNull();
+  });
+});
+
+describe('FR-022 (enmienda S3) — teléfono de contacto de la clínica', () => {
+  it('Clínica Eleva tiene el teléfono «911 234 567», válido según FR-016c', () => {
+    expect(datos.clinica.telefono).toBe('911 234 567');
+    expect(esTelefonoValido(datos.clinica.telefono)).toBe(true);
+  });
+});
+
+describe('Spec 005, FR-019 — enlaces personales de la semilla', () => {
+  it('40 enlaces, uno por paciente y en su orden, con formato válido y todos distintos', () => {
+    expect(datos.enlaces).toHaveLength(40);
+    expect(datos.enlaces.map((e) => e.pacienteId)).toEqual(datos.pacientes.map((p) => p.id));
+    for (const e of datos.enlaces) {
+      expect(tieneFormatoDeToken(e.token)).toBe(true);
+      expect(e.fallosSeguidos).toBe(0);
+    }
+    expect(new Set(datos.enlaces.map((e) => e.token)).size).toBe(40);
+  });
+
+  it('deterministas: los mismos tokens en cada generación (docs/datos-demo.md, «Enlaces de pacientes»)', () => {
+    expect(generarSemilla(REFERENCIA, 'otro-hash').enlaces).toEqual(datos.enlaces);
+    expect(datos.enlaces.slice(0, 3).map((e) => e.token)).toEqual([
+      'ZKMK6mfIPpP1wk982OEY1YSFFrkC5977gToHkvRIVYA',
+      'l95yvqRQ4f32ZfiKDEph7hQGTNIMwM-vJs7IPcBfad8',
+      'm1oGnwYf4G7yVWAkTgu_gjt-NOl8ooix9duqBDbcuZ4',
+    ]);
+  });
+
+  it('no alteran ningún identificador que ya generaba la 001 (comprobado contra la versión anterior)', () => {
+    expect(datos.clinica.id).toBe('cc6b4552-07fc-48de-a4b4-d0bf2345a0ce');
+    expect(datos.pacientes[0]!.id).toBe('35d58c7e-3b36-40d2-bf78-506b9a58212f');
+    expect(datos.pacientes[39]!.id).toBe('50fc83ab-3b77-401c-835d-960b92051233');
+    expect(datos.citas.at(-1)!.id).toBe('66f2bde2-1f08-44c1-868f-59d552c45704');
+  });
+
+  it('el token no se deduce del paciente: no contiene su id, nombre ni teléfono (FR-002)', () => {
+    datos.enlaces.forEach((e, i) => {
+      const p = datos.pacientes[i]!;
+      expect(e.token).not.toContain(p.telefonoNormalizado);
+      expect(e.token).not.toContain(p.id.replaceAll('-', '').slice(0, 8));
+    });
   });
 });

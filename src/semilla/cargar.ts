@@ -5,7 +5,7 @@
 import { hash } from '@node-rs/argon2';
 import { sql } from 'drizzle-orm';
 import type { Bd } from '@/db/cliente';
-import { cita, clinica, paciente, profesional, servicio } from '@/db/esquema';
+import { cita, clinica, enlacePaciente, paciente, profesional, servicio } from '@/db/esquema';
 import { generarSemilla, resumirSemilla, type ResumenSemilla } from './generar';
 
 const LOTE = 500;
@@ -27,6 +27,7 @@ export async function cargarSemilla(
     for (let i = 0; i < datos.citas.length; i += LOTE) {
       await tx.insert(cita).values(datos.citas.slice(i, i + LOTE));
     }
+    await tx.insert(enlacePaciente).values(datos.enlaces); // spec 005, FR-019
   });
   return resumirSemilla(datos, fechaReferencia);
 }
