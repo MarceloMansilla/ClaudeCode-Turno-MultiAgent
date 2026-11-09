@@ -70,7 +70,7 @@ investigación, repetida tras el diseño con el mismo resultado:
     clarificada (4 preguntas, sin marcadores) y sin conflicto con la 001, cuya enmienda S1
     está aplicada.
   - Aprobada por su propietario el 2026-11-07, antes de `/speckit-tasks`.
-  - El plan no añade comportamiento fuera de la spec. La lista provisional «Tus próximas
+  - El plan no añade comportamiento fuera de la spec. La lista provisional «Sus próximas
     citas» (R1) es la superficie mínima para FR-011 y FR-012 y se declara reemplazable por
     la 002. Los textos de los mensajes concretan el contenido que fija la spec.
 - [x] **II. Números**: ✅ sin importes. El plazo compara instantes UTC (24 h =
@@ -103,8 +103,8 @@ investigación, repetida tras el diseño con el mismo resultado:
   - mensajes que dicen qué pasa y qué hacer, con el teléfono como enlace `tel:`;
   - el menú del panel sigue el patrón de acciones de la 001;
   - axe en todas las pantallas nuevas.
-- [x] **VIII. Idioma**: ✅ textos, datos y documentación en español de España; trato de «tú»
-  al paciente (guía de la 002).
+- [x] **VIII. Idioma**: ✅ textos, datos y documentación en español de España; trato de «usted»
+  al paciente (revisión cruzada S10).
 
 **Prerrequisito de otra spec (no es una desviación)**: la enmienda S2–S5 de la 001 tiene que
 estar en el código antes de las tareas de la 005: `clinica.telefono`, `cita.cancelada_por` y

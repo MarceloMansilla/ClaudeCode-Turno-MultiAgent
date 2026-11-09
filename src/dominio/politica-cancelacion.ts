@@ -24,7 +24,7 @@ export function enunciadoPoliticaCancelacion({
 }): string {
   const limite = formatearLimite(limiteCancelacionPaciente(inicio), zonaHoraria);
   return (
-    `Puedes cancelar esta cita desde tu enlace antes del ${limite}. ` +
-    `Después, llama a ${clinicaNombre} al ${clinicaTelefono}.`
+    `Puede cancelar esta cita desde su enlace antes del ${limite}. ` +
+    `Después, llame a ${clinicaNombre} al ${clinicaTelefono}.`
   );
 }

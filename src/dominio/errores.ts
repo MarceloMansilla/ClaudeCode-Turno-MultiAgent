@@ -72,21 +72,21 @@ export const mensajes = {
     'No encontramos el profesional, el servicio o el paciente elegidos. Actualiza la página.',
   datosIncompletos: () => 'Faltan datos de la cita. Revisa el formulario.',
 
-  // Spec 005: mensajes al paciente (contracts/server-actions.md). Trato de «tú» (guía de la 002).
+  // Spec 005: mensajes al paciente (contracts/server-actions.md). Trato de «usted» (revisión cruzada S10).
   enlaceNoValido: (clinica: string, telefono: string) =>
-    `Este enlace no es válido. Pide uno nuevo a ${clinica} en el ${telefono}.`,
+    `Este enlace no es válido. Pida uno nuevo a ${clinica} en el ${telefono}.`,
   enlaceBloqueado: (clinica: string, telefono: string) =>
-    `Este enlace se ha bloqueado por seguridad. Pide uno nuevo a ${clinica} en el ${telefono}.`,
+    `Este enlace se ha bloqueado por seguridad. Pida uno nuevo a ${clinica} en el ${telefono}.`,
   cifrasIncorrectas: () =>
-    'Esas cifras no coinciden con el teléfono de tu ficha. Revísalas e inténtalo de nuevo.',
+    'Esas cifras no coinciden con el teléfono de su ficha. Revíselas e inténtelo de nuevo.',
   accesoEnPausa: (hasta: string) =>
-    `Has hecho demasiados intentos. Podrás volver a intentarlo a las ${hasta}.`,
-  accesoCaducado: () => 'Por seguridad, vuelve a escribir las 4 últimas cifras de tu teléfono.',
-  cifrasNoValidas: () => 'Escribe las 4 últimas cifras de tu teléfono.',
+    `Ha hecho demasiados intentos. Podrá volver a intentarlo a las ${hasta}.`,
+  accesoCaducado: () => 'Por seguridad, vuelva a escribir las 4 últimas cifras de su teléfono.',
+  cifrasNoValidas: () => 'Escriba las 4 últimas cifras de su teléfono.',
   /** Seguido del enunciado de 005 FR-016, que construye `enunciadoPoliticaCancelacion`. */
-  fueraDePlazo: (enunciado: string) => `Ya no puedes cancelar esta cita desde tu enlace. ${enunciado}`,
-  citaDelPacienteNoEncontrada: () => 'No encontramos esa cita. Actualiza la página.',
+  fueraDePlazo: (enunciado: string) => `Ya no puede cancelar esta cita desde su enlace. ${enunciado}`,
+  citaDelPacienteNoEncontrada: () => 'No encontramos esa cita. Actualice la página.',
   estadoCambiadoPaciente: (estado: string) => `Esta cita ya figura como ${estado.toLowerCase()}.`,
   citaCanceladaPorPaciente: (fecha: string, hora: string) =>
-    `Tu cita del ${fecha} a las ${hora} está cancelada.`,
+    `Su cita del ${fecha} a las ${hora} está cancelada.`,
 } as const;

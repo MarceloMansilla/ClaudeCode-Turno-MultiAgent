@@ -6,7 +6,7 @@ import { TelefonoClinica } from './marco-paciente';
 import { PoliticaCancelacion } from './politica-cancelacion';
 
 /**
- * «Tus próximas citas» (spec 005, research R1): lista mínima y provisional tras entrar. La 002
+ * «Sus próximas citas» (spec 005, research R1): lista mínima y provisional tras entrar. La 002
  * la sustituye por sus pantallas y reutiliza los componentes de acceso y cancelación.
  */
 export function ProximasCitas({
@@ -22,14 +22,14 @@ export function ProximasCitas({
     <section aria-labelledby="titulo-citas" className="space-y-4">
       <div className="flex items-center justify-between gap-3">
         <h1 id="titulo-citas" className="text-xl font-semibold">
-          Tus próximas citas
+          Sus próximas citas
         </h1>
         <BotonSalir />
       </div>
       {citas.length === 0 ? (
         <div className="space-y-3 rounded-2xl border bg-card p-5">
-          <p className="text-base">No tienes citas próximas.</p>
-          <p className="text-sm text-muted-foreground">Para pedir una, llama a {clinica.nombre}:</p>
+          <p className="text-base">No tiene citas próximas.</p>
+          <p className="text-sm text-muted-foreground">Para pedir una, llame a {clinica.nombre}:</p>
           <TelefonoClinica telefono={clinica.telefono} />
         </div>
       ) : (

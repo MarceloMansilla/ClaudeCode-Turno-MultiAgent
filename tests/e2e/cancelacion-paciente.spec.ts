@@ -31,9 +31,9 @@ const estadoDe = (id: string) =>
 
 async function entrarComoP(page: Page) {
   await page.goto(ENLACE_P.ruta);
-  await page.getByLabel('Escribe las 4 últimas cifras de tu teléfono').fill(ENLACE_P.cifras);
+  await page.getByLabel('Escriba las 4 últimas cifras de su teléfono').fill(ENLACE_P.cifras);
   await page.getByRole('button', { name: 'Entrar' }).click();
-  await expect(page.getByRole('heading', { name: 'Tus próximas citas' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Sus próximas citas' })).toBeVisible();
 }
 
 const tarjeta = (page: Page, fecha: string) => page.locator('article', { hasText: `${fecha} · 10:00` });
@@ -51,7 +51,7 @@ test('quickstart 8 — US2 #1: cancelar en plazo con confirmación', async ({ pa
   const miercoles = tarjeta(page, 'miércoles, 11/11/2026');
   await miercoles.getByRole('button', { name: 'Cancelar cita' }).click();
 
-  const dialogo = page.getByRole('alertdialog', { name: '¿Cancelar tu cita?' });
+  const dialogo = page.getByRole('alertdialog', { name: '¿Cancelar su cita?' });
   await expect(dialogo).toContainText(
     'Sesión de fisioterapia con María, el miércoles, 11/11/2026 a las 10:00. El hueco quedará libre para otro paciente.',
   );
@@ -59,7 +59,7 @@ test('quickstart 8 — US2 #1: cancelar en plazo con confirmación', async ({ pa
   await new AxeBuilder({ page }).include('[role="alertdialog"]').analyze().then((r) => expect(r.violations).toEqual([]));
 
   await dialogo.getByRole('button', { name: 'Sí, cancelar mi cita' }).click();
-  await expect(page.getByText('Tu cita del miércoles, 11/11/2026 a las 10:00 está cancelada.')).toBeVisible();
+  await expect(page.getByText('Su cita del miércoles, 11/11/2026 a las 10:00 está cancelada.')).toBeVisible();
   await expect(tarjeta(page, 'miércoles, 11/11/2026')).toHaveCount(0);
   expect(await estadoDe(citaMiercoles)).toMatchObject({ estado: 'cancelada', canceladaPor: 'paciente' });
 });
@@ -77,7 +77,7 @@ test('quickstart 10 — US2 #2: fuera de plazo no hay «Cancelar» y se ve el en
   const martes = tarjeta(page, 'martes, 10/11/2026');
   await expect(martes.getByRole('button', { name: 'Cancelar cita' })).toHaveCount(0);
   await expect(martes).toContainText(
-    'Puedes cancelar esta cita desde tu enlace antes del lunes, 09/11/2026 a las 10:00. Después, llama a Clínica Eleva al 911 234 567.',
+    'Puede cancelar esta cita desde su enlace antes del lunes, 09/11/2026 a las 10:00. Después, llame a Clínica Eleva al 911 234 567.',
   );
   await expect(martes.getByRole('link', { name: '911 234 567' })).toHaveAttribute('href', 'tel:+34911234567');
 });
@@ -91,7 +91,7 @@ test('US2 #3: con el diálogo abierto, si la cita pasa a estar fuera de plazo, s
     bd.update(cita).set({ inicio, fin: new Date(inicio.getTime() + 45 * 60_000) }).where(eq(cita.id, citaMiercoles)),
   );
   await page.getByRole('alertdialog').getByRole('button', { name: 'Sí, cancelar mi cita' }).click();
-  await expect(page.getByText('Ya no puedes cancelar esta cita desde tu enlace.', { exact: false })).toBeVisible();
+  await expect(page.getByText('Ya no puede cancelar esta cita desde su enlace.', { exact: false })).toBeVisible();
   expect((await estadoDe(citaMiercoles)).estado).toBe('reservada');
 });
 
@@ -111,6 +111,6 @@ test('SC-006: en móvil, abrir el enlace, escribir las cifras y cancelar en meno
   await entrarComoP(page);
   await tarjeta(page, 'miércoles, 11/11/2026').getByRole('button', { name: 'Cancelar cita' }).click();
   await page.getByRole('alertdialog').getByRole('button', { name: 'Sí, cancelar mi cita' }).click();
-  await expect(page.getByText('Tu cita del miércoles, 11/11/2026 a las 10:00 está cancelada.')).toBeVisible();
+  await expect(page.getByText('Su cita del miércoles, 11/11/2026 a las 10:00 está cancelada.')).toBeVisible();
   expect(Date.now() - inicio).toBeLessThan(60_000);
 });
