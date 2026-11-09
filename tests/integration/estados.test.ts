@@ -4,6 +4,7 @@ import { obtenerBd } from '@/db/cliente';
 import { cita } from '@/db/esquema';
 import { fijarAhora } from '@/lib/reloj';
 import { cambiarEstadoCita, crearCita } from '@/servicios/citas';
+import { esquemaCambiarEstado } from '@/acciones/esquemas';
 import { vaciarTablas } from '../helpers/bd';
 import { crearEscenario, insertarCita, type Escenario } from '../helpers/fabrica';
 
@@ -19,6 +20,9 @@ afterEach(() => fijarAhora(undefined));
 
 const estadoDe = async (id: string) =>
   (await obtenerBd().select({ estado: cita.estado }).from(cita).where(eq(cita.id, id)))[0]!.estado;
+const origenDe = async (id: string) =>
+  (await obtenerBd().select({ canceladaPor: cita.canceladaPor }).from(cita).where(eq(cita.id, id)))[0]!
+    .canceladaPor;
 
 describe('US3 — desenlace de la cita', () => {
   it('US3 #1 — cancelar antes del inicio libera el hueco y se puede volver a reservar', async () => {
@@ -90,6 +94,29 @@ describe('US3 — desenlace de la cita', () => {
     expect(fallos[0]).toMatchObject({ codigo: 'ESTADO_CAMBIADO' });
     const final = await estadoDe(c.id);
     expect(fallos[0]).toMatchObject({ detalle: { estado: final } });
+  });
+
+  it('FR-018a — el origen no es una entrada: la acción descarta «origen» y siempre se escribe recepcion', async () => {
+    const c = await insertarCita(e, { profesionalId: e.maria, fecha: HOY, hora: '16:00', minutos: 45 });
+    const entrada = esquemaCambiarEstado.parse({ citaId: c.id, accion: 'cancelar', origen: 'paciente' });
+    expect(entrada).toEqual({ citaId: c.id, accion: 'cancelar' });
+    expect(await cambiarEstadoCita(e.clinicaId, entrada.citaId, entrada.accion)).toMatchObject({ ok: true });
+    expect(await origenDe(c.id)).toBe('recepcion');
+  });
+
+  it('FR-018a / FR-020 — dos cancelaciones simultáneas: una prospera con un único origen, la otra ESTADO_CAMBIADO', async () => {
+    const c = await insertarCita(e, { profesionalId: e.maria, fecha: HOY, hora: '16:00', minutos: 45 });
+    const resultados = await Promise.all([
+      cambiarEstadoCita(e.clinicaId, c.id, 'cancelar'),
+      cambiarEstadoCita(e.clinicaId, c.id, 'cancelar'),
+    ]);
+    expect(resultados.filter((r) => r.ok)).toHaveLength(1);
+    expect(resultados.find((r) => !r.ok)).toMatchObject({
+      codigo: 'ESTADO_CAMBIADO',
+      detalle: { estado: 'cancelada' },
+    });
+    expect(await estadoDe(c.id)).toBe('cancelada');
+    expect(await origenDe(c.id)).toBe('recepcion');
   });
 
   it('cita inexistente o de otra clínica: NO_ENCONTRADO', async () => {

@@ -16,7 +16,14 @@ export type CodigoError =
   | 'CANCELACION_TARDIA'
   | 'TRANSICION_NO_PERMITIDA'
   | 'ESTADO_CAMBIADO'
-  | 'NO_ENCONTRADO';
+  | 'NO_ENCONTRADO'
+  // Spec 005 (acceso y cancelación del paciente)
+  | 'ENLACE_NO_VALIDO'
+  | 'CIFRAS_INCORRECTAS'
+  | 'ACCESO_EN_PAUSA'
+  | 'ENLACE_BLOQUEADO'
+  | 'ACCESO_CADUCADO'
+  | 'FUERA_DE_PLAZO';
 
 export type Resultado<T> =
   | { ok: true; datos: T }
@@ -64,4 +71,22 @@ export const mensajes = {
   datosNoEncontrados: () =>
     'No encontramos el profesional, el servicio o el paciente elegidos. Actualiza la página.',
   datosIncompletos: () => 'Faltan datos de la cita. Revisa el formulario.',
+
+  // Spec 005: mensajes al paciente (contracts/server-actions.md). Trato de «usted» (revisión cruzada S10).
+  enlaceNoValido: (clinica: string, telefono: string) =>
+    `Este enlace no es válido. Pida uno nuevo a ${clinica} en el ${telefono}.`,
+  enlaceBloqueado: (clinica: string, telefono: string) =>
+    `Este enlace se ha bloqueado por seguridad. Pida uno nuevo a ${clinica} en el ${telefono}.`,
+  cifrasIncorrectas: () =>
+    'Esas cifras no coinciden con el teléfono de su ficha. Revíselas e inténtelo de nuevo.',
+  accesoEnPausa: (hasta: string) =>
+    `Ha hecho demasiados intentos. Podrá volver a intentarlo a las ${hasta}.`,
+  accesoCaducado: () => 'Por seguridad, vuelva a escribir las 4 últimas cifras de su teléfono.',
+  cifrasNoValidas: () => 'Escriba las 4 últimas cifras de su teléfono.',
+  /** Seguido del enunciado de 005 FR-016, que construye `enunciadoPoliticaCancelacion`. */
+  fueraDePlazo: (enunciado: string) => `Ya no puede cancelar esta cita desde su enlace. ${enunciado}`,
+  citaDelPacienteNoEncontrada: () => 'No encontramos esa cita. Actualice la página.',
+  estadoCambiadoPaciente: (estado: string) => `Esta cita ya figura como ${estado.toLowerCase()}.`,
+  citaCanceladaPorPaciente: (fecha: string, hora: string) =>
+    `Su cita del ${fecha} a las ${hora} está cancelada.`,
 } as const;

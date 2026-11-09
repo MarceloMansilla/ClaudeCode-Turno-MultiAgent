@@ -4,7 +4,7 @@
 
 **Created**: 2026-11-07
 
-**Status**: Aprobada (2026-11-07, MarceloMansilla)
+**Status**: Aprobada (2026-11-07, MarceloMansilla) · Enmienda revisión cruzada S2–S5 aprobada (2026-11-07, MarceloMansilla) · Enmienda S1 (plazo del paciente → 005) aprobada (2026-11-07, MarceloMansilla)
 
 **Input**: User description: "Núcleo de agenda de CitaClara. Contexto: clínicas pequeñas (2-5 profesionales); la recepción gestiona la agenda; los pacientes, de momento, solo existen como fichas. Alcance de la 001: entidades (clínica con clave de panel, profesionales, servicios, pacientes, citas); cita = profesional + servicio + paciente con inicio y fin = inicio + duración; estados reservada → completada | cancelada | no_asistida; RN1 sin solapes (también con reservas simultáneas); RN2 sin citas en el pasado; interfaz de recepción con agenda del día por profesional, alta de cita y acciones de estado; acceso con clave de clínica; semilla determinista de Clínica Eleva; fuera de alcance: acceso del paciente, recordatorios, analítica, pagos online."
 
@@ -22,6 +22,38 @@
 - Q: ¿Qué significa «datos idénticos» en la semilla? → A: Mismo contenido y mismos identificadores; solo puede variar el hash de la clave (la misma clave sigue funcionando).
 - Q: ¿La duración de los servicios debe ser múltiplo de 15 minutos? → A: Sí (15, 30, 45, 60…).
 - Q: ¿Cómo se verifican SC-002 y SC-003? → A: Prueba manual previa a la entrega: 2 personas que nunca han usado CitaClara realizan ambas tareas en portátil y móvil, cronometradas.
+- Q: ¿Hasta cuándo puede cancelar el paciente, desde el portal o desde el enlace del recordatorio? (S1 de la revisión cruzada) → A: Hasta 24 horas antes del inicio, en todos los canales del paciente (decisión de Sara sobre C1: «regla única y que se pueda explicar por teléfono»; sustituye a la opción A, «hasta la hora de inicio», que se había fijado antes). El plazo del paciente lo fija solo la spec 005 (FR-009); la 001 fija solo el de recepción (FR-018) y remite a la 005 para el del paciente.
+
+### Enmienda revisión cruzada S2–S5, 2026-11-07
+
+Origen: `specs/000-revision-cruzada-jul2026.md`. Sustituye a las enmiendas a la 001 que
+proponían por separado las ramas del portal (Enmienda 1) y de recordatorios (FR-018a propio);
+lo que pedían pasa a ser de la 001 o de la 005, y esas copias no se integran.
+
+- **S2 — Origen de la cancelación**: nuevo FR-018a. Toda cancelación registra quién la hizo
+  (`recepcion` o `paciente`) y cuándo; ningún canal añade valores ni columnas propias.
+- **S3 — Una sola enmienda y numeración única**: la 001 tiene un único FR-018a (el de S2). La
+  cancelación desde el enlace del recordatorio no se incorpora aquí: la cubre la spec 005. La
+  clínica tiene teléfono de contacto (FR-022, Key Entities). «Fuera de alcance» remite a la
+  spec dueña de cada tema (Assumptions).
+- **S4 — Identidad del paciente**: el acceso del paciente lo define la spec 005 (Key
+  Entities, «Paciente (ficha)»).
+- **S5 — No asistencia**: FR-023 y SC-005 hablan de «proporción de no asistidas sobre el total
+  de citas de la historia»; la «tasa de no asistencia» como indicador es de la 004. La
+  semilla y sus porcentajes no cambian.
+- Fuera de esta enmienda: el plazo de cancelación por canal (FR-018, punto S1), que se
+  resuelve en la enmienda S1 siguiente.
+
+### Enmienda S1 (plazo del paciente), 2026-11-07
+
+Origen: petición de la spec 005-acceso-cancelacion-paciente («Dependencias y enmiendas
+requeridas») y decisión de Sara sobre C1 (24 h).
+
+- **FR-018**: las filas «Paciente – portal» y «Paciente – recordatorio» se sustituyen por
+  una única fila «Paciente» que remite a «005, FR-009». La 001 sigue fijando solo el plazo
+  de recepción (hasta la hora de inicio), que no cambia.
+- **Clarificación S1**: actualizada con la decisión de 24 h; la opción A queda sustituida.
+- Sin cambios de código en la 001: la 001 no implementa ningún canal de paciente.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -220,10 +252,48 @@ no están disponibles.
 
 - **FR-017**: Los únicos cambios de estado permitidos son desde «reservada» a «completada»,
   «cancelada» o «no asistida». Los tres estados finales son definitivos.
-- **FR-018**: «Cancelar» solo DEBE estar disponible antes de la hora de inicio de la cita, y
-  DEBE pedir confirmación. Un intento de cancelar a partir de la hora de inicio (p. ej., con
-  la pantalla abierta desde antes) se rechaza indicando que debe marcarse como completada o
-  no asistida.
+- **FR-018** *(Enmienda S1, 2026-11-07)*: Política de cancelación. Este requisito fija el
+  plazo de recepción y remite a la spec 005 para el del paciente. En ambos casos el plazo se
+  comprueba con el reloj del servidor en el momento de procesar la cancelación (al
+  confirmar), no al mostrar la pantalla o el enlace, y compara instantes, por lo que el
+  cambio de hora no lo altera.
+
+  **Plazo de cancelación por canal**
+
+  | Canal | Se puede cancelar si | El plazo vence | Ejemplo: cita del lunes 16/11/2026 a las 10:00 |
+  |-------|----------------------|----------------|------------------------------------------------|
+  | Recepción (panel) | `ahora < inicio` | en el instante de inicio: con `ahora ≥ inicio` se rechaza | Último minuto permitido: lunes 16/11/2026 a las 09:59 (hasta las 09:59:59). Primer minuto rechazado: lunes 16/11/2026 a las 10:00 (desde las 10:00:00). |
+  | Paciente (cualquier canal) | Lo fija la spec 005, FR-009 | Lo fija la spec 005, FR-009 | Ver 005, FR-010. |
+
+  - *Recepción (panel)*: «Cancelar» solo DEBE estar disponible antes de la hora de inicio de
+    la cita, y DEBE pedir confirmación. Un intento de cancelar a partir de la hora de inicio
+    (p. ej., con la pantalla abierta desde antes) se rechaza indicando que debe marcarse como
+    completada o no asistida. Recepción es la vía del paciente fuera de su plazo.
+  - *Fila «Paciente»*: la 001 no fija ni implementa el plazo del paciente. La única fuente es
+    «005, FR-009», que vale para todos sus canales (portal, correos de recordatorio y
+    futuros). Las demás specs citan la 005, no esta fila.
+  - La fila «Recepción» solo cambia por enmienda de este requisito. Lo que se muestra al
+    paciente fuera de plazo es de la 005; cómo se registra quién canceló, de FR-018a.
+- **FR-018a** *(Enmienda revisión cruzada S2–S5, 2026-11-07)*: Origen de la cancelación.
+  Toda cancelación DEBE registrar quién la hizo y cuándo.
+  - *Quién*: exactamente uno de dos valores, «recepción» (`recepcion`), cuando cancela el
+    panel (FR-018), o «paciente» (`paciente`), cuando cancela el propio paciente. El paciente
+    solo cancela por la vía que define la spec 005-acceso-cancelacion-paciente, y esa vía
+    escribe `paciente`.
+  - *Cuándo*: el momento del cambio de estado a «cancelada».
+  - Una cita cancelada siempre tiene origen y una cita en cualquier otro estado nunca lo
+    tiene.
+  - Ningún otro canal ni spec añade valores ni registra el origen por su cuenta (con columnas,
+    marcas o tablas propias). Distinguir más orígenes exige una enmienda de este requisito.
+  - Las citas canceladas antes de esta enmienda, incluidas las de la semilla, quedan con
+    origen `recepcion`.
+  - En el panel, las citas canceladas se siguen mostrando como «Cancelada». Cómo se presenta
+    el origen al paciente o a recepción en otras pantallas lo deciden las specs que las
+    definen.
+  - Modelo de datos: columna `cita.cancelada_por` con enum `origen_cancelacion` =
+    `recepcion` | `paciente`, nula salvo si `estado = 'cancelada'`
+    (`CHECK ((estado = 'cancelada') = (cancelada_por IS NOT NULL))`). El momento es
+    `cita.estado_cambiado_en`. Detalle en data-model.md.
 - **FR-019**: «Completada» y «No asistida» solo DEBEN estar disponibles a partir de la hora de
   inicio de la cita. «No asistida» significa exclusivamente que el paciente no se presentó a
   una cita que seguía reservada.
@@ -237,14 +307,18 @@ no están disponibles.
   todos los registros (así las direcciones de la agenda citadas en documentación y tests son
   reproducibles). La única excepción es el hash de la clave de panel, que puede variar entre
   ejecuciones; la clave en sí es siempre la misma.
-- **FR-022**: La semilla DEBE contener: «Clínica Eleva»; 3 profesionales (María y Jorge,
+- **FR-022**: La semilla DEBE contener: «Clínica Eleva», con teléfono de contacto
+  «911 234 567» *(Enmienda revisión cruzada S2–S5)*; 3 profesionales (María y Jorge,
   Fisioterapia; Lucía, Nutrición); 4 servicios (Sesión de fisioterapia, 45 min, 40,00 €;
   Primera visita de fisioterapia, 60 min, 50,00 €; Consulta de nutrición, 30 min, 35,00 €;
   Primera visita de nutrición, 45 min, 45,00 €); 40 pacientes con nombres, teléfonos (todos
   distintos) y correos españoles ficticios.
 - **FR-023**: La semilla DEBE generar 8 semanas de historia anteriores a la fecha de
-  referencia, con citas en estados finales (en torno al 10 % no asistidas y al 8 %
-  canceladas, ±1 punto, el resto completadas), y 2 semanas futuras con citas reservadas.
+  referencia, con citas en estados finales y 2 semanas futuras con citas reservadas. En la
+  historia, la proporción de no asistidas sobre el total de citas de la historia está en
+  torno al 10 % y la de canceladas en torno al 8 % (±1 punto); el resto son completadas. La
+  «tasa de no asistencia» como indicador la define 004, FR-006 (no asistidas ÷ (completadas
+  + no asistidas)).
   Como consecuencia de FR-009a, los servicios de fisioterapia solo aparecen con María y
   Jorge, y los de nutrición solo con Lucía.
 - **FR-024**: Ninguna cita de la semilla DEBE incumplir RN1, el horario ni la granularidad de
@@ -277,16 +351,20 @@ no están disponibles.
 
 ### Key Entities *(include if feature involves data)*
 
-- **Clínica**: nombre, zona horaria, horario de apertura y clave de panel. Agrupa todo lo
-  demás.
+- **Clínica**: nombre, teléfono de contacto, zona horaria, horario de apertura y clave de
+  panel. Agrupa todo lo demás. Otras specs leen el nombre y el teléfono para mostrarlos al
+  paciente.
 - **Profesional**: nombre y especialidad; pertenece a una clínica.
 - **Servicio**: nombre, especialidad, duración en minutos (siempre múltiplo de 15: 15, 30,
   45, 60…) y precio en euros (con céntimos); pertenece a una clínica. Solo lo atienden profesionales de su misma especialidad.
 - **Paciente (ficha)**: nombre y teléfono (obligatorios; teléfono único por clínica) y
-  correo electrónico (opcional); pertenece a una clínica. No tiene acceso al sistema.
+  correo electrónico (opcional); pertenece a una clínica. No entra en el panel de recepción.
+  Su acceso a sus datos y la cancelación de sus citas los define únicamente la spec
+  005-acceso-cancelacion-paciente.
 - **Cita**: une profesional, servicio y paciente de la misma clínica; inicio, fin (= inicio +
   duración del servicio en el momento de reservar) y estado (reservada, completada,
-  cancelada, no asistida).
+  cancelada, no asistida). Si está cancelada, también quién la canceló (recepción o
+  paciente) y cuándo (FR-018a).
 
 ## Success Criteria *(mandatory)*
 
@@ -305,8 +383,10 @@ no están disponibles.
 - **SC-004**: La agenda del día se muestra completa en menos de 2 segundos tras elegir
   profesional o día.
 - **SC-005**: Regenerar la semilla con la misma fecha de referencia produce datos idénticos
-  (contenido e identificadores, salvo el hash de la clave) en el 100 % de las ejecuciones, y sus porcentajes de no asistencia y cancelación quedan en
-  10 % ± 1 y 8 % ± 1.
+  (contenido e identificadores, salvo el hash de la clave) en el 100 % de las ejecuciones, y
+  la proporción de no asistidas sobre el total de citas de la historia queda en 10 % ± 1 y
+  la de canceladas en 8 % ± 1. La «tasa de no asistencia» como indicador la define 004,
+  FR-006 (no asistidas ÷ (completadas + no asistidas)).
 - **SC-006**: Todas las pantallas se usan sin desplazamiento horizontal desde 360 px de ancho
   y cumplen el contraste mínimo AA.
 
@@ -324,6 +404,11 @@ no están disponibles.
   afectan a citas existentes.
 - Las citas pasadas que sigan reservadas permanecen así hasta que recepción las marque; no
   hay cierre automático.
-- Fuera de alcance: cualquier acceso del paciente, recordatorios, analítica, pagos online y
-  varias clínicas en una misma instalación.
+- Fuera de alcance de la 001, cada tema en la spec que es su dueña:
+  - acceso del paciente y cancelación por el paciente → 005-acceso-cancelacion-paciente;
+  - portal del paciente → 002-portal-paciente;
+  - recordatorios → 003-recordatorios-cita;
+  - analítica → 004-panel-analitica.
+
+  También quedan fuera los pagos online y varias clínicas en una misma instalación.
 - Dependencia: `specs/MAPA.md` se crea con esta spec y la registra.

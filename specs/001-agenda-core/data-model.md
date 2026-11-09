@@ -22,6 +22,7 @@ clinica 1───* cita *───1 profesional
 |-------|------|--------|
 | id | uuid | PK |
 | nombre | texto | obligatorio, 1–120 caracteres |
+| telefono | texto | obligatorio; teléfono de contacto tal como se muestra; mismas reglas que FR-016c. Clínica Eleva: «911 234 567» (FR-022). *(Enmienda revisión cruzada S2–S5)* |
 | zona_horaria | texto | zona IANA válida; Clínica Eleva: `Europe/Madrid` |
 | hora_apertura | time | 09:00 en la 001 (FR-014) |
 | hora_cierre | time | 20:00 en la 001; `hora_cierre > hora_apertura` |
@@ -78,7 +79,13 @@ clinica 1───* cita *───1 profesional
 | fin | timestamptz | = inicio + duracion_minutos del servicio al reservar (FR-009); `fin > inicio` |
 | estado | enum `estado_cita` | `reservada` \| `completada` \| `cancelada` \| `no_asistida` |
 | creado_en | timestamptz | por defecto `now()` |
-| estado_cambiado_en | timestamptz | nulo mientras esté reservada |
+| estado_cambiado_en | timestamptz | nulo mientras esté reservada; en las canceladas es el momento de la cancelación (FR-018a) |
+| cancelada_por | enum `origen_cancelacion` | `recepcion` \| `paciente`; nulo salvo si `estado = 'cancelada'` (FR-018a) *(Enmienda revisión cruzada S2–S5)* |
+
+`origen_cancelacion` tiene exactamente dos valores. Ninguna otra spec añade valores ni
+columnas, marcas o tablas propias para registrar quién canceló: recepción escribe
+`recepcion` (acción `cambiarEstadoCita`) y el paciente, solo por la vía de la spec 005,
+escribe `paciente`.
 
 ### Restricciones de base de datos
 
@@ -92,7 +99,18 @@ ALTER TABLE cita ADD CONSTRAINT cita_sin_solape
   ) WHERE (estado IN ('reservada', 'completada'));   -- RN1, FR-011, FR-012
 
 ALTER TABLE cita ADD CONSTRAINT cita_fin_posterior CHECK (fin > inicio);
+
+-- Enmienda revisión cruzada S2–S5 (FR-018a)
+CREATE TYPE origen_cancelacion AS ENUM ('recepcion', 'paciente');
+ALTER TABLE cita ADD COLUMN cancelada_por origen_cancelacion;
+UPDATE cita SET cancelada_por = 'recepcion' WHERE estado = 'cancelada';  -- migración de datos
+ALTER TABLE cita ADD CONSTRAINT cita_origen_cancelacion
+  CHECK ((estado = 'cancelada') = (cancelada_por IS NOT NULL));
 ```
+
+La migración rellena primero las citas ya canceladas (todas de recepción) y después añade la
+restricción, de modo que ninguna fila existente la incumple. La semilla genera sus citas
+canceladas con `cancelada_por = 'recepcion'`.
 
 Las reglas que dependen de la hora local (horario, granularidad, pasado) y de otras tablas
 (especialidad, misma clínica) se validan en el servicio de dominio dentro de la misma
@@ -115,6 +133,10 @@ reservada ──────┼── completar       (solo si ahora ≥ inicio)
   (`UPDATE … WHERE id = $1 AND estado = 'reservada'`); si no afecta a ninguna fila, la acción
   se rechaza y se devuelve el estado actual (FR-020).
 - Pasar a `cancelada` libera el tramo: la fila deja de entrar en la restricción de exclusión.
+- Cancelar escribe en el mismo `UPDATE` condicional `estado = 'cancelada'`,
+  `estado_cambiado_en = ahora` y `cancelada_por` con el origen (FR-018a): `recepcion` desde
+  el panel; `paciente` solo desde la vía de la spec 005. Completar y no asistida dejan
+  `cancelada_por` nulo.
 
 ## Huecos libres (derivado, no se almacena)
 

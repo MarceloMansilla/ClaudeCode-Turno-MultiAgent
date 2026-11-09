@@ -18,7 +18,7 @@ export interface CitaVista {
   fin: string;
   estado: EstadoCita;
   etiquetaEstado: string;
-  paciente: { nombre: string; telefono: string };
+  paciente: { id: string; nombre: string; telefono: string };
   servicio: { nombre: string; duracionMinutos: number; precio: string };
   accionesDisponibles: AccionCita[];
 }
@@ -55,6 +55,7 @@ export async function obtenerAgendaDia(
       inicio: cita.inicio,
       fin: cita.fin,
       estado: cita.estado,
+      pacienteId: cita.pacienteId,
       pacienteNombre: paciente.nombre,
       pacienteTelefono: paciente.telefono,
       servicioNombre: servicio.nombre,
@@ -96,7 +97,7 @@ export async function obtenerAgendaDia(
       fin: horaLocal(f.fin, zona),
       estado: f.estado,
       etiquetaEstado: ETIQUETA_ESTADO[f.estado],
-      paciente: { nombre: f.pacienteNombre, telefono: f.pacienteTelefono },
+      paciente: { id: f.pacienteId, nombre: f.pacienteNombre, telefono: f.pacienteTelefono },
       servicio: {
         nombre: f.servicioNombre,
         duracionMinutos: f.duracion,

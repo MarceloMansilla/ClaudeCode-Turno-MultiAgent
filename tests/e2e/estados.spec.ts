@@ -67,7 +67,9 @@ test('quickstart 13 — US3 #2–#4: cita empezada → «Completar» y «No asis
 
   await bloque.getByRole('button', { name: 'Completar' }).click();
   await expect(bloque).toHaveAttribute('data-estado', 'completada');
-  await expect(bloque.getByRole('button')).toHaveCount(0);
+  // Una cita terminal no tiene acciones de estado; solo queda «Enlace del paciente» (spec 005, US3).
+  await expect(bloque.getByRole('button', { name: /^(Completar|No asistió|Cancelar cita)$/ })).toHaveCount(0);
+  await expect(bloque.getByRole('button')).toHaveText(['Enlace del paciente']);
 
   if (otraPasada) {
     const rango2 = `${horaLocal(otraPasada.inicio, Z)}–${horaLocal(otraPasada.fin, Z)}`;

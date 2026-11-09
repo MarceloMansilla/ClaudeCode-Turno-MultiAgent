@@ -2,6 +2,7 @@ import { CalendarOff } from 'lucide-react';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { AccionesCita } from '@/components/agenda/acciones-cita';
+import { EnlacePaciente } from '@/components/agenda/enlace-paciente';
 import { LineaTiempo } from '@/components/agenda/linea-tiempo';
 import { formatearRango } from '@/lib/formato';
 import { NavegacionDia } from '@/components/agenda/navegacion-dia';
@@ -93,12 +94,16 @@ export default async function PaginaAgendaDia({ params }: { params: Promise<Para
           <LineaTiempo
             agenda={agenda}
             renderAcciones={(cita) => (
-              <AccionesCita
-                citaId={cita.id}
-                acciones={cita.accionesDisponibles}
-                paciente={cita.paciente.nombre}
-                rango={formatearRango(cita.inicio, cita.fin)}
-              />
+              <>
+                <AccionesCita
+                  citaId={cita.id}
+                  acciones={cita.accionesDisponibles}
+                  paciente={cita.paciente.nombre}
+                  rango={formatearRango(cita.inicio, cita.fin)}
+                />
+                {/* Spec 005, FR-004/FR-005: en citas de cualquier estado. */}
+                <EnlacePaciente pacienteId={cita.paciente.id} paciente={cita.paciente.nombre} />
+              </>
             )}
           />
         ) : (
