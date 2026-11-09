@@ -48,9 +48,7 @@ el trato) y no calcula el límite. Este contrato no reproduce el texto: el ejemp
 referencia es el de 005 FR-016, y si la 005 lo cambia, el correo cambia con ella sin tocar
 la 003.
 
-Trato: el correo va de usted (FR-008) y el ejemplo de 005 FR-016 va de tú. Está pedido a la
-005 y a la 002 (spec, «Dependencias») que el enunciado salga en el trato que fije la guía de
-textos de la 002; hasta entonces se incluye tal cual.
+Trato: el enunciado ya usa el trato de usted (S10), igual que el correo (FR-008).
 
 El resto del correo no dice hasta cuándo se puede cancelar: la frase «Si no puede venir,
 cancele la cita…» invita a cancelar sin dar ningún plazo.

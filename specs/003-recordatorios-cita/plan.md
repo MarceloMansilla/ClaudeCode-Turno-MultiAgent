@@ -86,7 +86,7 @@ investigación y repetida tras el diseño (mismo resultado):
 - [x] **VII. Interfaz**: ✅ sin pantallas propias; el correo es legible desde 360 px con
       contraste AA (SC-006). Recepción no necesita nada nuevo.
 - [x] **VIII. Idioma**: ✅ correo, salida del comando y documentación en español de España;
-      trato de usted al paciente (sin cambios; S10 se resuelve aparte).
+      trato de usted al paciente, también en el enunciado de la 005 (S10).
 
 ## Project Structure
 

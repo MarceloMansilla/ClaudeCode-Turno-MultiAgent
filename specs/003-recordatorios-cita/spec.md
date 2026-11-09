@@ -215,9 +215,8 @@ de la política (FR-020).
   paciente para esa cita tal como lo da la 005 («005, FR-016»), con sus tres elementos, sin
   reescribirlo ni adaptarlo. Esta spec no redacta ni calcula ningún plazo: el límite que
   muestra es el que fija 005 FR-009 para esa cita y coincide al minuto con el que se aplica al
-  cancelar (005 FR-017). El trato del enunciado lo fija la guía de textos de la 002 (005
-  FR-016), no esta spec; si no coincide con el trato del correo (FR-008), se pide a sus
-  propietarios (ver Dependencias), sin retocarlo aquí.
+  cancelar (005 FR-017). El enunciado ya usa el trato de usted (S10), igual que el correo
+  (FR-008).
 - **FR-021**: Cancelar se hace en el portal (002) con las reglas de la 005. Esta spec no
   ofrece pantalla ni acción de cancelación y no escribe en la agenda: no cambia el estado de
   ninguna cita ni registra el origen de una cancelación (lo registra la 005 con el campo de
@@ -344,11 +343,6 @@ queda cubierto por `tests/unit/coherencia-politica.test.ts`: toda mención al pl
 
 **Peticiones a otros propietarios** (esta spec no las aplica):
 
-- **005 / 002 — trato del enunciado.** El ejemplo de 005 FR-016 usa «tú» y el correo usa
-  «usted» (FR-008). Se pide que `enunciadoPoliticaCancelacion` acepte el trato que fije la
-  guía de textos de la 002 (o que la guía unifique el trato del paciente), para que el correo
-  no tenga que adaptar el texto por su cuenta. Mientras tanto, el correo usa el enunciado tal
-  cual lo da la 005.
 - **004 — segmentación opcional.** Si se quiere ver en el panel la tasa de no asistencia de
   las citas con recordatorio enviado (SC-005), es una enmienda de la 004.
 - **MAPA** (propietario de la 001): actualizar la ficha de la 003 («P1 resuelta: se mantiene
