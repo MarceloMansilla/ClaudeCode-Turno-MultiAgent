@@ -15,8 +15,8 @@ import { vaciarTablas } from '../helpers/bd';
 import { crearEscenario, insertarCita, type Escenario } from '../helpers/fabrica';
 
 const ENUNCIADO =
-  'Puedes cancelar esta cita desde tu enlace antes del domingo, 15/11/2026 a las 10:00. ' +
-  'Después, llama a Clínica de Pruebas al 911 000 222.';
+  'Puede cancelar esta cita desde su enlace antes del domingo, 15/11/2026 a las 10:00. ' +
+  'Después, llame a Clínica de Pruebas al 911 000 222.';
 let e: Escenario;
 let citaId: string;
 
@@ -47,7 +47,7 @@ describe('US2 — cancelación por el paciente', () => {
         citaId,
         fecha: 'lunes, 16/11/2026',
         hora: '10:00',
-        mensaje: 'Tu cita del lunes, 16/11/2026 a las 10:00 está cancelada.',
+        mensaje: 'Su cita del lunes, 16/11/2026 a las 10:00 está cancelada.',
       },
     });
     expect(await leer(citaId)).toMatchObject({
@@ -76,7 +76,7 @@ describe('US2 — cancelación por el paciente', () => {
     expect(await cancelarCitaPaciente(e.tokenAna, cookie, citaId)).toEqual({
       ok: false,
       codigo: 'FUERA_DE_PLAZO',
-      mensaje: `Ya no puedes cancelar esta cita desde tu enlace. ${ENUNCIADO}`,
+      mensaje: `Ya no puede cancelar esta cita desde su enlace. ${ENUNCIADO}`,
       detalle: { enunciado: ENUNCIADO },
     });
     expect(await leer(citaId)).toMatchObject({ estado: 'reservada', canceladaPor: null });
@@ -116,7 +116,7 @@ describe('US2 — cancelación por el paciente', () => {
     expect(await cancelarCitaPaciente(e.tokenAna, cookie, deLuis)).toEqual({
       ok: false,
       codigo: 'NO_ENCONTRADO',
-      mensaje: 'No encontramos esa cita. Actualiza la página.',
+      mensaje: 'No encontramos esa cita. Actualice la página.',
     });
     expect((await leer(deLuis)).estado).toBe('reservada');
     expect(await cancelarCitaPaciente(e.tokenAna, cookie, '00000000-0000-4000-8000-000000000000')).toMatchObject({ codigo: 'NO_ENCONTRADO' });
@@ -139,7 +139,7 @@ describe('US2 — cancelación por el paciente', () => {
     expect(await cancelarCitaPaciente(e.tokenAna, undefined, citaId)).toEqual({
       ok: false,
       codigo: 'ACCESO_CADUCADO',
-      mensaje: 'Por seguridad, vuelve a escribir las 4 últimas cifras de tu teléfono.',
+      mensaje: 'Por seguridad, vuelva a escribir las 4 últimas cifras de su teléfono.',
     });
     const cookie = await accesoDeAna('2026-11-15T08:00:00+01:00');
     fijarAhora('2026-11-15T08:31:00+01:00');

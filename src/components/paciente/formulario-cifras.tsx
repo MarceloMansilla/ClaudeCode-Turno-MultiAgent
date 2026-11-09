@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import { mensajes } from '@/dominio/errores';
 
 /**
- * «Confirma que eres tú» (spec 005, FR-006): segundo paso del acceso con las 4 últimas cifras
+ * «Confirme que es usted» (spec 005, FR-006): segundo paso del acceso con las 4 últimas cifras
  * del teléfono de la ficha. Con `pausaHasta` se muestra deshabilitado (FR-006a).
  */
 export function FormularioCifras({
@@ -59,7 +59,7 @@ export function FormularioCifras({
     <section aria-labelledby="titulo-cifras" className="space-y-5 rounded-2xl border bg-card p-5 shadow-xs">
       <div className="space-y-1">
         <h1 id="titulo-cifras" className="text-xl font-semibold">
-          Confirma que eres tú
+          Confirme que es usted
         </h1>
         {aviso && (
           <p role="status" className="rounded-lg bg-muted px-3 py-2 text-sm">
@@ -70,7 +70,7 @@ export function FormularioCifras({
       <form action={enviar} className="space-y-4" noValidate>
         <div className="space-y-2">
           <Label htmlFor="cifras" className="text-base">
-            Escribe las 4 últimas cifras de tu teléfono
+            Escriba las 4 últimas cifras de su teléfono
           </Label>
           <Input
             ref={campo}

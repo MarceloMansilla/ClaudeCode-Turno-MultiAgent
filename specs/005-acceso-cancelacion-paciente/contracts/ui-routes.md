@@ -4,7 +4,7 @@
 
 | Ruta | Acceso | Contenido |
 |------|--------|-----------|
-| `/p/[token]` | público (token + 4 cifras) | Pantallas de acceso y, con acceso abierto, «Tus próximas citas» (provisional hasta la 002, research R1) |
+| `/p/[token]` | público (token + 4 cifras) | Pantallas de acceso y, con acceso abierto, «Sus próximas citas» (provisional hasta la 002, research R1) |
 | `/agenda/…` (001) | sesión de panel | Añade el menú «Enlace del paciente» a cada bloque de cita |
 
 `proxy.ts` (de la 001) amplía su `matcher` con `'/p/:path*'`. En `/p/*`:
@@ -25,18 +25,18 @@ clínica. Nunca aparece el nombre del paciente antes de entrar.
 |--------|----------|-----------|
 | No válido | «Enlace no válido» | Mensaje de `ENLACE_NO_VALIDO` y el teléfono como enlace `tel:` |
 | Bloqueado | «Enlace bloqueado» | Mensaje de `ENLACE_BLOQUEADO` y el teléfono como enlace `tel:` |
-| Vigente, sin acceso abierto | «Confirma que eres tú» | Texto «Escribe las 4 últimas cifras de tu teléfono». Campo de 4 cifras (`inputmode="numeric"`, `autocomplete="one-time-code"`, etiqueta visible) y botón «Entrar». Errores debajo del campo. Debajo del formulario, «¿Tienes algún problema? Llama a Clínica Eleva:» con el teléfono como enlace `tel:` (FR-006) |
+| Vigente, sin acceso abierto | «Confirme que es usted» | Texto «Escriba las 4 últimas cifras de su teléfono». Campo de 4 cifras (`inputmode="numeric"`, `autocomplete="one-time-code"`, etiqueta visible) y botón «Entrar». Errores debajo del campo. Debajo del formulario, «¿Tiene algún problema? Llame a Clínica Eleva:» con el teléfono como enlace `tel:` (FR-006) |
 | En pausa | la misma, deshabilitada | Mensaje de `ACCESO_EN_PAUSA` con la hora |
-| Acceso abierto | «Tus próximas citas» | Lista de citas reservadas con `inicio ≥ ahora`, ordenadas por inicio. Por cita: «lunes, 16/11/2026 · 10:00», servicio y profesional. Si `pacientePuedeCancelar`: botón «Cancelar cita» y, debajo, el enunciado de FR-016. Si no: solo el enunciado (FR-011). Sin citas: «No tienes citas próximas.» y el teléfono de la clínica |
+| Acceso abierto | «Sus próximas citas» | Lista de citas reservadas con `inicio ≥ ahora`, ordenadas por inicio. Por cita: «lunes, 16/11/2026 · 10:00», servicio y profesional. Si `pacientePuedeCancelar`: botón «Cancelar cita» y, debajo, el enunciado de FR-016. Si no: solo el enunciado (FR-011). Sin citas: «No tiene citas próximas.» y el teléfono de la clínica |
 
 ## Diálogo «Cancelar cita» (FR-012)
 
-- Título: «¿Cancelar tu cita?».
+- Título: «¿Cancelar su cita?».
 - Cuerpo: «Sesión de fisioterapia con María, el lunes, 16/11/2026 a las 10:00. El hueco
   quedará libre para otro paciente.».
 - Botones: «No, mantener cita» (foco inicial) y «Sí, cancelar mi cita».
 - Al confirmar llama a `cancelarMiCita`:
-  - Éxito: aviso «Tu cita del lunes, 16/11/2026 a las 10:00 está cancelada.» y la lista se
+  - Éxito: aviso «Su cita del lunes, 16/11/2026 a las 10:00 está cancelada.» y la lista se
     actualiza; la cita deja de ofrecer «Cancelar».
   - `FUERA_DE_PLAZO` o `ESTADO_CAMBIADO`: aviso con el mensaje y la lista se actualiza, con el
     enunciado y el teléfono (US2 #3).

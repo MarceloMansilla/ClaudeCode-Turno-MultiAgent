@@ -104,15 +104,15 @@ test.describe('spec 005 — pantallas del paciente', () => {
 
     await fijarIntentosDeP(0);
     await page.reload();
-    await page.getByLabel('Escribe las 4 últimas cifras de tu teléfono').fill(ENLACE_P.cifras);
+    await page.getByLabel('Escriba las 4 últimas cifras de su teléfono').fill(ENLACE_P.cifras);
     await page.getByRole('button', { name: 'Entrar' }).click();
-    await expect(page.getByRole('heading', { name: 'Tus próximas citas' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Sus próximas citas' })).toBeVisible();
     await revisar(page);
   });
 
   test('recorrido con teclado: cifras → Entrar → Cancelar cita → Escape', async ({ page }) => {
     await page.goto(ENLACE_P.ruta);
-    await expect(page.getByLabel('Escribe las 4 últimas cifras de tu teléfono')).toBeFocused();
+    await expect(page.getByLabel('Escriba las 4 últimas cifras de su teléfono')).toBeFocused();
     await page.keyboard.type(ENLACE_P.cifras);
     await page.keyboard.press('Enter');
     const cancelar = page.locator('article', { hasText: 'miércoles, 11/11/2026 · 10:00' }).getByRole('button', { name: 'Cancelar cita' });

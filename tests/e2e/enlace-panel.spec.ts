@@ -31,9 +31,9 @@ async function abrirMenu(page: Page) {
 
 async function entrarComoPaciente(page: Page, ruta: string) {
   await page.goto(ruta);
-  await page.getByLabel('Escribe las 4 últimas cifras de tu teléfono').fill(ENLACE_P.cifras);
+  await page.getByLabel('Escriba las 4 últimas cifras de su teléfono').fill(ENLACE_P.cifras);
   await page.getByRole('button', { name: 'Entrar' }).click();
-  await expect(page.getByRole('heading', { name: 'Tus próximas citas' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Sus próximas citas' })).toBeVisible();
 }
 
 test('FR-005: «Copiar enlace» deja la URL completa en el portapapeles', async ({ page, baseURL }) => {

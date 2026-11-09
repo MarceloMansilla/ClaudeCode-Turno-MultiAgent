@@ -19,7 +19,7 @@ export function PantallaEnlaceNoValido({ clinica }: { clinica: { nombre: string;
           <TelefonoClinica telefono={clinica.telefono} />
         </>
       ) : (
-        <p className="text-base">Este enlace no es válido. Pide uno nuevo a tu clínica.</p>
+        <p className="text-base">Este enlace no es válido. Pida uno nuevo a su clínica.</p>
       )}
     </section>
   );

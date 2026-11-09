@@ -516,6 +516,11 @@ constitución, si se prefiere regla global). Fijar un trato único y un catálog
 paciente que recordatorios reutilice; para `no_asistida`, usar la etiqueta del portal («No
 asistida»).
 
+**Decisión (2026-11-08)**: trato de **usted** con el paciente en todos los canales (portal,
+correos y canales futuros). La 005 ya lo aplica en sus textos y en `enunciadoPoliticaCancelacion`
+(005, FR-016). Pendiente: la 002 cambia FR-018 a «usted» y la 003 retira la nota de trato en su
+spec y en `contracts/correo-recordatorio.md`.
+
 ---
 
 ### S11. Correo del paciente en la semilla — MEDIA
@@ -566,7 +571,7 @@ and dates» de la 001 y alinear `docs/datos-demo.md`; la 004 la cita en vez de d
 2. **S4**: si el enlace de cita del recordatorio pide o no las 4 cifras.
 3. **S5/S6**: qué «no asistencia» y qué «ocupación» se enseñan en la renovación, sabiendo el
    efecto de los recordatorios sobre ambas.
-4. **S10**: tú o usted con el paciente.
+4. **S10**: tú o usted con el paciente. **Decidido (2026-11-08): usted.**
 
 Todo lo demás es de propietario técnico y se resuelve con las enmiendas a la 001 y el orden
 de integración de S8.
