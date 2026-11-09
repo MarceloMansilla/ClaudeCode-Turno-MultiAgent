@@ -54,7 +54,8 @@ toda mención sale de `enunciadoPoliticaCancelacion` y
 
 ## Phase 0: Integración previa
 
-- [ ] T000 Integrar en `portal` la rama `005-acceso-cancelacion-paciente` (que trae la 001 enmendada) cuando su propietario la haya cerrado; resolver conflictos de forma aditiva y dejar `pnpm lint`, `pnpm typecheck` y `pnpm test` en verde **sin cambios de la 002**, incluido `tests/unit/coherencia-politica.test.ts`
+- [X] T000 Integrar en `portal` la rama `005-acceso-cancelacion-paciente` (que trae la 001 enmendada) cuando su propietario la haya cerrado; resolver conflictos de forma aditiva y dejar `pnpm lint`, `pnpm typecheck` y `pnpm test` en verde **sin cambios de la 002**, incluido `tests/unit/coherencia-politica.test.ts`
+  - Hecho el 2026-11-09 vía `main` (fusión caae20c, que trae `005-acceso-cancelacion-paciente` hasta e5a58f7, la 001 enmendada y S10). Único conflicto: `.specify/feature.json` (se queda `specs/002-portal-paciente`). Verde: lint, typecheck, `pnpm test` (27 ficheros, 322 pruebas) y `pnpm test:e2e` (93 pasadas, 1 omitida por diseño: SC-006 de la 005 solo en `movil`).
 
 ---
 
