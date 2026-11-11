@@ -98,6 +98,13 @@
 - **FR-006**: System MUST authenticate users via [NEEDS CLARIFICATION: auth method not specified - email/password, SSO, OAuth?]
 - **FR-007**: System MUST retain user data for [NEEDS CLARIFICATION: retention period not specified]
 
+### Constitution Requirements *(mandatory)*
+
+- **Owner**: [single owner, as registered in specs/MAPA.md]
+- **Writes to the agenda?**: [Yes/No — if yes, list the flows; overlap tests are mandatory (Principle III)]
+- **Amounts and dates**: [concrete numeric examples, rounding rules, and how dates/times are shown — or N/A (Principle II)]
+- **Demo data**: [figures cited from the deterministic demo data and whether this feature changes them — or N/A (Principle V)]
+
 ### Key Entities *(include if feature involves data)*
 
 - **[Entity 1]**: [What it represents, key attributes without implementation]
